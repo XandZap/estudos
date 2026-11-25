@@ -82,6 +82,7 @@ b{font-weight:650}
 .subtab:hover{color:var(--ink)}
 .subtab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
 main .wrap{padding-block:20px 44px;display:grid;gap:18px}
+main .wrap>*{min-width:0}
 
 /* Peças comuns */
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
@@ -91,6 +92,9 @@ main .wrap{padding-block:20px 44px;display:grid;gap:18px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .sec-h{display:grid;gap:3px}
 .sec-h h2,.hy-intro h2{font-size:clamp(1.3rem,3vw,1.7rem);text-transform:uppercase}
+.sec-title{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.help-dot{display:inline-grid;place-items:center;width:21px;height:21px;border-radius:50%;border:1px solid var(--line);background:var(--sunk);color:var(--muted);font-family:var(--mono);font-size:.75rem;font-weight:700;cursor:help;padding:0;line-height:1;text-decoration:none}
+.help-dot:hover,.help-dot:focus-visible{color:var(--ink);border-color:var(--muted);background:var(--surface)}
 .hy-intro{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline}
 .chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);padding:5px 12px;min-height:36px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.84rem;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -391,15 +395,15 @@ body.study .fld.shown .reveal{display:none}
 .fc-bar{height:6px;background:var(--sunk);border-radius:999px;overflow:hidden}
 .fc-bar>div{height:100%;background:var(--primary);transition:width .25s}
 .fc-card{background:var(--surface);border:1px solid var(--line);border-top:8px solid var(--tbg);border-radius:16px;min-height:240px;padding:18px;display:grid;gap:12px;align-content:start;cursor:pointer;box-shadow:var(--shadow)}
-.fc-card .q{font-size:1.22rem;font-weight:700;font-family:var(--display)}
+.fc-card .q{display:block;border-top:0;padding-top:0;font-size:1.22rem;font-weight:700;font-family:var(--display);line-height:1.35}
 .fc-card .a{border-top:1px dashed var(--line);padding-top:12px;font-size:1.02rem}
 .fc-card .hint{font-size:.82rem;color:var(--muted)}
 .fc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fc-actions .btn{min-height:50px}
 
-/* Glossário inline */
-.gl{text-decoration:underline dotted 1px;text-decoration-color:color-mix(in srgb,currentColor 28%,transparent);text-underline-offset:3px;cursor:help}
-.gl:hover,.gl:focus-visible{text-decoration-color:currentColor}
+/* Glossário inline e tooltips de ajuda */
+.gl{text-decoration:none;cursor:help}
+.gl:hover,.gl:focus-visible{text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px}
 #gltip{position:absolute;z-index:60;max-width:min(19rem,calc(100vw - 32px));background:var(--ink);color:var(--bg);font-size:.85rem;line-height:1.4;padding:8px 10px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
 #gltip b{display:block;font-family:var(--mono);font-size:.78rem;margin-bottom:2px}
 
@@ -3866,18 +3870,22 @@ function gloss(root){
   });
 }
 const tip=$('gltip');let tipFor=null;
+const secHead=(title,tipTxt)=>`<div class="sec-h"><div class="sec-title"><h2>${title}</h2>${tipTxt?`<button type="button" class="help-dot" data-help="${esc(tipTxt)}" aria-label="Sobre ${esc(title)}">?</button>`:''}</div></div>`;
 function showTip(el){
-  if(!tip)return;tipFor=el;tip.innerHTML=`<b>${esc(el.textContent)}</b>${esc(el.getAttribute('data-def'))}`;tip.hidden=false;
+  if(!tip)return;tipFor=el;
+  const help=el.getAttribute('data-help');
+  tip.innerHTML=help?esc(help):`<b>${esc(el.textContent)}</b>${esc(el.getAttribute('data-def'))}`;
+  tip.hidden=false;
   const r=el.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight;
   const x=Math.min(Math.max(8,r.left+window.scrollX+r.width/2-tw/2),window.scrollX+document.documentElement.clientWidth-tw-8);
   let y=r.top+window.scrollY-th-8;if(r.top-th-8<60)y=r.bottom+window.scrollY+8;
   tip.style.left=x+'px';tip.style.top=y+'px';
 }
 function hideTip(){if(tip){tip.hidden=true;tipFor=null}}
-document.addEventListener('mouseover',e=>{const g=e.target.closest&&e.target.closest('.gl');if(g)showTip(g)});
-document.addEventListener('mouseout',e=>{if(e.target.closest&&e.target.closest('.gl'))hideTip()});
-document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('gl'))showTip(e.target)});
-document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('gl'))hideTip()});
+document.addEventListener('mouseover',e=>{const g=e.target.closest&&e.target.closest('.gl,.help-dot');if(g)showTip(g)});
+document.addEventListener('mouseout',e=>{if(e.target.closest&&e.target.closest('.gl,.help-dot'))hideTip()});
+document.addEventListener('focusin',e=>{if(e.target.classList&&(e.target.classList.contains('gl')||e.target.classList.contains('help-dot')))showTip(e.target)});
+document.addEventListener('focusout',e=>{if(e.target.classList&&(e.target.classList.contains('gl')||e.target.classList.contains('help-dot')))hideTip()});
 
 /* ---------- prova / treino ---------- */
 const sTopic=s=>s.topic||s.th;
@@ -3934,7 +3942,7 @@ function renderTreinoSetup(){
   if(treinoFilter==='erros'&&!wrongIds.size)treinoFilter='todos';
   const pick=k=>k==='todos'?S:k==='erros'?S.filter(s=>wrongIds.has(s.id)):S.filter(s=>sTopic(s)===k);
   const pool=pick(treinoFilter);
-  app.innerHTML=`<section class="panel" style="display:grid;gap:14px"><div class="sec-h"><h2>Treino por tópico</h2><p class="muted small">Sem cronômetro. Responda e veja na hora o porquê da resposta.</p></div>
+  app.innerHTML=`<section class="panel" style="display:grid;gap:14px">${secHead('Treino por tópico','Sem cronômetro. Responda e veja na hora o porquê da resposta.')}
     <div class="filters">${keys.map(k=>`<button type="button" class="chip ${k==='erros'?'err':''}" aria-pressed="${treinoFilter===k}" data-k="${k}">${k==='todos'?'Todas':k==='erros'?'Meus erros':esc(D[k]||k)} <span class="muted">${pick(k).length}</span></button>`).join('')}</div>
     <div><button class="btn" id="go" type="button" ${pool.length?'':'disabled'}>Treinar ${pool.length} ${pool.length>1?esc(M.itemLabelPl):esc(IL())}</button></div></section>`;
   app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{treinoFilter=b.dataset.k;renderTreinoSetup()});
@@ -4049,10 +4057,10 @@ function renderAtlas(){
 /* ---------- 80/20 ---------- */
 function renderResumo(){
   const alerts=DATA.alerts||[], pairs=DATA.pairs||[], snaps=DATA.snaps||[], rules=DATA.rules;
-  let h=`<div class="hy-intro"><h2>Resumo 80/20</h2><p class="muted" style="margin:0">O pouco que resolve a maior parte da prova.</p></div>`;
+  let h=secHead('Resumo 80/20','O pouco que resolve a maior parte da prova.');
   let rn=0;
   if(alerts.length){
-    h+=`<div class="sec-h"><h2>Alertas do professor</h2><p class="muted small">Pontos destacados em aula que exigem atenção redobrada.</p></div><div class="alert-list">${alerts.map(a=>{rn++;return `<div class="alert" data-gl><p><span class="num">${rn}</span>${a.txt}</p>${a.q?`<p class="quote">“${esc(a.q)}”</p>`:''}<div class="row">${a.th?chipTh(a.th):''}${a.src?`<span class="src">${esc((DATA.sources&&DATA.sources[a.src])||a.src)}</span>`:''}</div></div>`}).join('')}</div>`;
+    h+=`${secHead('Alertas do professor','Pontos destacados em aula que exigem atenção redobrada.')}<div class="alert-list">${alerts.map(a=>{rn++;return `<div class="alert" data-gl><p><span class="num">${rn}</span>${a.txt}</p>${a.q?`<p class="quote">“${esc(a.q)}”</p>`:''}<div class="row">${a.th?chipTh(a.th):''}${a.src?`<span class="src">${esc((DATA.sources&&DATA.sources[a.src])||a.src)}</span>`:''}</div></div>`}).join('')}</div>`;
   }
   if(Array.isArray(rules)&&rules.length){
     h+=`<div class="sec-h"><h2>As ${rules.length} regras</h2></div><ol class="rules20">${rules.map(([t,d])=>`<li data-gl><div><b>${t}</b>${d}</div></li>`).join('')}</ol>`;
@@ -4064,13 +4072,13 @@ function renderResumo(){
     }).join('');
   }
   if(pairs.length){
-    h+=`<div class="sec-h"><h2>Pares que confundem</h2><p class="muted small">Quando duas coisas parecem iguais, decida pelo critério de desempate.</p></div><div class="pairs">${pairs.map(p=>{
+    h+=`${secHead('Pares que confundem','Quando duas coisas parecem iguais, decida pelo critério de desempate.')}<div class="pairs">${pairs.map(p=>{
       if(p.ka!=null)return `<div class="pair th" style="${p.th?ts(p.th):''}" data-gl><div class="vs"><span>${esc(p.a)}</span><span class="x">×</span><span>${esc(p.b)}</span></div><div class="key no-gl">Desempate: ${esc(p.key)}</div><div class="ans2"><div>${p.ka}</div><div>${p.kb}</div></div></div>`;
       return `<article class="pair th" style="${p.th?ts(p.th):''}" data-gl><h3>${p.t}</h3><div class="ans2">${p.a?`<div><strong>${esc(p.a[0])}</strong><br>${p.a[1]}</div>`:''}${p.b?`<div><strong>${esc(p.b[0])}</strong><br>${p.b[1]}</div>`:''}${p.c?`<div><strong>${esc(p.c[0])}</strong><br>${p.c[1]}</div>`:''}</div><p class="key">${p.k}</p></article>`;
     }).join('')}</div>`;
   }
   if(snaps.length){
-    h+=`<div class="sec-h"><h2>Síntese por tópico</h2><p class="muted small">A ideia central e a conduta de cada bloco da matéria.</p></div><div class="dcards">${snaps.map(([k,img,ag,tags,cl,cd])=>`<article class="dcard th" style="${ts(k)}">${img?tagImg(img,D[k],'loading="lazy"'):`<div class="nolab">${esc((TH[k]&&TH[k].short)||D[k]||k)}</div>`}<div class="db" data-gl><h3>${esc(D[k]||k)}</h3><div class="ag">${ag}</div>${tags&&tags.length?`<div class="row">${tags.map(t=>`<span class="badge kind">${esc(t)}</span>`).join('')}</div>`:''}<div>${cl}</div><div class="cd"><b>${esc(M.condLabel)}:</b> ${cd}</div></div></article>`).join('')}</div>`;
+    h+=`${secHead('Síntese por tópico','A ideia central e a conduta de cada bloco da matéria.')}<div class="dcards">${snaps.map(([k,img,ag,tags,cl,cd])=>`<article class="dcard th" style="${ts(k)}">${img?tagImg(img,D[k],'loading="lazy"'):`<div class="nolab">${esc((TH[k]&&TH[k].short)||D[k]||k)}</div>`}<div class="db" data-gl><h3>${esc(D[k]||k)}</h3><div class="ag">${ag}</div>${tags&&tags.length?`<div class="row">${tags.map(t=>`<span class="badge kind">${esc(t)}</span>`).join('')}</div>`:''}<div>${cl}</div><div class="cd"><b>${esc(M.condLabel)}:</b> ${cd}</div></div></article>`).join('')}</div>`;
   }
   app.innerHTML=h;
 }
@@ -4088,7 +4096,7 @@ function renderCards(){
       return `<article class="ccard th" style="${ts(id)}"><div class="hd"><h3>${esc(t.short||t.name)}</h3>${stars(t.stars)}</div>
       <dl>${(C.rows||[]).map(r=>`<dt>${esc(r[0])}</dt><dd data-gl>${r[1]}</dd>`).join('')}</dl>${C.warn?`<p class="warnb" data-gl>Atenção: ${C.warn}</p>`:''}${C.src?`<p class="src">${esc(C.src)}</p>`:''}</article>`}).join('');
   }
-  app.innerHTML=`<div class="hy-intro"><h2>Cards</h2><p class="muted" style="margin:0">Um card por tópico, com o essencial e os alertas.</p></div><section class="cgrid">${cardsHTML}</section>`;
+  app.innerHTML=`${secHead('Cards','Um card por tópico, com o essencial e os alertas.')}<section class="cgrid">${cardsHTML}</section>`;
 }
 
 /* ---------- definitivo ---------- */
@@ -4116,7 +4124,7 @@ function renderDef(){
   const pages=[],used=new Set();
   list.forEach(o=>{if(used.has(o.k))return;used.add(o.k);const d=o.duo&&list.find(x=>x.k===o.duo);if(d)used.add(d.k);pages.push(d?[o,d]:[o])});
   document.body.classList.toggle('study',!!defStudy);
-  app.innerHTML=`<div class="toolbar"><div class="sec-h"><h2>Resumo definitivo</h2><p class="muted small">Uma página por tópico. No modo estudo, as respostas ficam ocultas até você tocar.</p></div>
+  app.innerHTML=`<div class="toolbar">${secHead('Resumo definitivo','Uma página por tópico. No modo estudo, as respostas ficam ocultas até você tocar.')}
     <label class="switch" for="dstudy"><input type="checkbox" id="dstudy" ${defStudy?'checked':''}> Modo estudo</label></div>
   <nav class="dnav">${pages.map((pg,i)=>pg.map(o=>`<button type="button" class="chip" data-go="pg${i}">${esc((TH[o.k]&&TH[o.k].short)||D[o.k]||o.k)}</button>`).join('')).join('')}</nav>
   ${pages.map((pg,i)=>`<article class="dpage ${pg.length>1?'duo':''}" id="pg${i}">${pg.map(o=>defSheet(o,pg.length>1)).join('')}<footer class="pfoot"><span>Página ${i+1} de ${pages.length} · ${esc(M.title)}${M.author?' · '+esc(M.author):''}</span><span>${esc(revStr)}</span></footer></article>`).join('')}`;
@@ -4131,7 +4139,7 @@ function renderComp(){
   const list=(DATA.comp||[]).filter(c=>compFilter==='todos'||c.th===compFilter);
   const tKeys=['todos',...ORDER.filter(k=>(DATA.comp||[]).some(c=>c.th===k))];
   const filters=tKeys.length>2?`<div class="filters">${tKeys.map(k=>`<button type="button" class="chip" aria-pressed="${compFilter===k}" data-k="${k}">${k==='todos'?'Todos':esc((TH[k]&&TH[k].short)||D[k])}</button>`).join('')}</div>`:'';
-  app.innerHTML=`<div class="sec-h"><h2>Tabelas comparativas</h2><p class="muted small">A linha destacada é o critério que desempata. No celular, as colunas empilham automaticamente.</p></div>${filters}`+
+  app.innerHTML=`${secHead('Tabelas comparativas','A linha destacada é o critério que desempata. No celular, as colunas empilham automaticamente.')}${filters}`+
   list.map(c=>{
     const rows=c.rows.map(r=>Array.isArray(r[1])?r:[r[0],r.slice(1)]);
     const head=`<tr><th></th>${c.cols.map(x=>`<th>${esc(x)}</th>`).join('')}</tr>`;
@@ -4159,7 +4167,7 @@ function renderFeynman(){
       <div class="checklist" id="fc-${esc(id)}" hidden><p class="small">Marque as ideias que você cobriu:</p>${ideas}<p class="covered" id="fcv-${esc(id)}">0 de ${(F.ideas||[]).length}</p>${F.q?`<p class="small" data-gl><b>Pergunta final:</b> ${esc(F.q)}</p>`:''}${F.a?`<details class="ansd"><summary>Mostrar resposta</summary><p data-gl>${F.a}</p></details>`:''}</div></div>
     </div></article>`;
   }).join('');
-  app.innerHTML=`<div class="sec-h"><h2>Resumo F</h2><p class="muted small">Técnica de Feynman em 4 passos: explique simples, compare com uma analogia, ache onde trava e explique você mesmo.</p></div>${blocks}`;
+  app.innerHTML=`${secHead('Resumo F','Técnica de Feynman em 4 passos: explique simples, compare com uma analogia, ache onde trava e explique você mesmo.')}${blocks}`;
   app.querySelectorAll('[data-draft]').forEach(a=>a.oninput=()=>{feynDrafts[a.dataset.draft]=a.value;store('feyn',feynDrafts)});
   app.querySelectorAll('[data-cmp]').forEach(b=>b.onclick=()=>{const id=b.dataset.cmp,box=$('fc-'+id);box.hidden=!box.hidden;b.textContent=box.hidden?'Comparar':'Esconder checklist'});
   app.querySelectorAll('[data-fid]').forEach(c=>c.onchange=()=>{const id=c.dataset.fid,box=$('fc-'+id),n=box.querySelectorAll('input:checked').length,tot=box.querySelectorAll('input').length;$('fcv-'+id).textContent=`${n} de ${tot}${n===tot?' · completo':''}`});
@@ -4190,7 +4198,7 @@ function renderProvas(){
   const tKeys=['todos',...ORDER.filter(k=>listAll.some(q=>q.topic===k))];
   const sVals=[...new Set(listAll.map(q=>q.year||q.source).filter(Boolean))];
   const list=listAll.filter(q=>(provaFilter==='todos'||q.topic===provaFilter)&&(provaSrc==='todos'||(q.year||q.source)===provaSrc));
-  app.innerHTML=`<div class="sec-h"><h2>Provas antigas</h2><p class="muted small">Questões originais para conferir estilo de cobrança, gabarito e comentário.</p></div>
+  app.innerHTML=`${secHead('Provas antigas','Questões originais para conferir estilo de cobrança, gabarito e comentário.')}
   <div class="filters">${tKeys.map(k=>`<button type="button" class="chip" aria-pressed="${provaFilter===k}" data-pk="${k}">${k==='todos'?'Todas ('+listAll.length+')':esc(D[k]||k)}</button>`).join('')}</div>
   ${sVals.length>1?`<div class="filters">${['todos',...sVals].map(s=>`<button type="button" class="chip" aria-pressed="${provaSrc===s}" data-ps="${esc(s)}">${s==='todos'?'Todas as fontes':esc(s)}</button>`).join('')}</div>`:''}
   <section class="examlist">${list.map(q=>{const open=provaOpen.has(q.id),pk=provaPick[q.id];
@@ -4240,7 +4248,7 @@ function renderFlash(){
   }else{
     body=`<section class="panel" style="display:grid;gap:10px;max-width:42rem;margin:0 auto;width:100%"><h2 style="font-size:1.5rem;text-transform:uppercase">Tudo revisado por hoje</h2><p class="muted">Volte amanhã: os cards que você acertou reaparecem no prazo certo.</p>${DATA.flash&&DATA.flash.length?`<div><button type="button" class="btn ghost" id="fcreall">Revisar todos agora (${DATA.flash.length})</button></div>`:''}</section>`;
   }
-  app.innerHTML=`<div class="sec-h"><h2>Flashcards</h2><p class="muted small">Repetição espaçada: o que você erra volta logo; tópicos prioritários aparecem intercalados.</p></div>
+  app.innerHTML=`${secHead('Flashcards','Repetição espaçada: o que você erra volta logo; tópicos prioritários aparecem intercalados.')}
   <div class="filters">${tk.map(k=>`<button type="button" class="chip" aria-pressed="${flashTopic===k}" data-k="${k}">${k==='todos'?'Todos':esc((TH[k]&&TH[k].short)||D[k])}</button>`).join('')}</div>${body}`;
   app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{flashTopic=b.dataset.k;flashQueue=null;flashShow=false;renderFlash();gloss(app)});
   const s=$('show');if(s)s.onclick=()=>{flashShow=true;renderFlash();gloss(app)};
@@ -4257,7 +4265,7 @@ let glossQ='';
 function renderGloss(){
   const q=glossQ.toLowerCase();
   const items=GL_LIST.filter(g=>!q||(g.term+' '+g.def).toLowerCase().includes(q)).sort((a,b)=>a.term.localeCompare(b.term,'pt-BR'));
-  app.innerHTML=`<div class="sec-h"><h2>Glossário</h2><p class="muted small">Os termos listados aqui também exibem definição rápida ao tocar ou passar o cursor nos textos.</p></div>
+  app.innerHTML=`${secHead('Glossário','Os termos listados aqui também exibem definição rápida ao tocar ou passar o cursor nos textos.')}
   <div class="filters"><input id="gq" type="search" placeholder="Buscar termo…" value="${esc(glossQ)}" style="flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit"></div>
   <section class="sheet">${items.map(g=>`<div class="panel"><h3>${esc(g.term)}</h3><p>${g.def}</p>${g.topic?`<div class="tx">${esc(D[g.topic]||g.topic)}</div>`:''}</div>`).join('')||'<p class="muted">Nada encontrado.</p>'}</section>`;
   const i=$('gq');i.oninput=()=>{glossQ=i.value;const p=i.selectionStart;renderGloss();const n=$('gq');n.focus();n.setSelectionRange(p,p)};
@@ -4266,7 +4274,7 @@ function renderGloss(){
 /* ---------- ranking (aba) ---------- */
 function renderRanking(){
   const blk=rankBlock(true);
-  app.innerHTML=`<div class="sec-h"><h2>Ranking do que mais cai</h2><p class="muted small">Prioridade calculada a partir das provas e da ênfase em aula.</p></div>${blk||'<p class="muted">Nenhum ranking cadastrado para esta matéria.</p>'}`;
+  app.innerHTML=`${secHead('Ranking do que mais cai','Prioridade calculada a partir das provas e da ênfase em aula.')}${blk||'<p class="muted">Nenhum ranking cadastrado para esta matéria.</p>'}`;
 }
 
 /* ---------- roteamento ---------- */
@@ -4308,7 +4316,7 @@ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',
 }));
 window.addEventListener('hashchange',route);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(lb)lb.hidden=true;const hm=$('histmodal');if(hm)hm.hidden=true;hideTip()}});
-document.addEventListener('click',e=>{const t=e.target,g=t.closest&&t.closest('.gl');if(g){if(tipFor===g)hideTip();else showTip(g);return}if(!t.closest||!t.closest('#gltip'))hideTip()});
+document.addEventListener('click',e=>{const t=e.target,g=t.closest&&t.closest('.gl,.help-dot');if(g){if(tipFor===g)hideTip();else showTip(g);return}if(!t.closest||!t.closest('#gltip'))hideTip()});
 
 /* ---------- rodapé e exportar/importar ---------- */
 (function renderFooter(){
