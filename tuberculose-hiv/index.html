@@ -1,0 +1,1745 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Tuberculose e HIV/AIDS</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Great+Vibes&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: placa do item + cronômetro no topo, mídia à esquerda, enunciado e perguntas à direita; empilha no celular */
+:root{
+  --pamt:100%;
+  --bg:#EEF2F1; --surface:#FFFFFF; --sunk:#E3E9E7; --ink:#14201E; --muted:#56635F; --line:#CDD6D3;
+  --primary:#9E1B32; --primary-ink:#FFFFFF; --primary-soft:#FADCE1;
+  --alert:#B42318; --alert-soft:#FBE4E1; --ok:#1C7A3B; --ok-soft:#DDF1E3; --warn:#9A5800; --warn-soft:#FBEBD3;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1514; --surface:#162120; --sunk:#1D2A28; --ink:#E4EDEB; --muted:#93A39F; --line:#2B3936;
+  --primary:#F47B8E; --primary-ink:#2B080F; --primary-soft:#3D161E;
+  --alert:#F2705E; --alert-soft:#3D1D1A; --ok:#5DC48A; --ok-soft:#173623; --warn:#E6A24A; --warn-soft:#3A2A12; --pamt:20%; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1514; --surface:#162120; --sunk:#1D2A28; --ink:#E4EDEB; --muted:#93A39F; --line:#2B3936;
+  --primary:#F47B8E; --primary-ink:#2B080F; --primary-soft:#3D161E;
+  --alert:#F2705E; --alert-soft:#3D1D1A; --ok:#5DC48A; --ok-soft:#173623; --warn:#E6A24A; --warn-soft:#3A2A12; --pamt:20%; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0}
+button{font:inherit;color:inherit}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:18px}
+.brand h1{font-size:clamp(30px,5vw,44px);line-height:1;text-transform:uppercase}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:15px}
+.author{display:flex;align-items:baseline;gap:8px;margin-top:6px;color:var(--primary)}
+.author small{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.author span{font-family:"Great Vibes","Snell Roundhand","Apple Chancery",cursive;font-size:clamp(28px,4vw,36px);line-height:1}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--sunk);padding:4px;border-radius:14px}
+.tabs button{border:0;background:transparent;padding:8px 14px;border-radius:10px;font-weight:600;cursor:pointer;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.setup{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+@media (max-width:820px){.setup{grid-template-columns:1fr}}
+.setup h2{font-size:28px;text-transform:uppercase;margin-bottom:6px}
+.muted{color:var(--muted)}
+.field{margin-top:16px}
+.field label.l{display:block;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-variant-numeric:tabular-nums}
+.seg button[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.btn{border:0;background:var(--primary);color:var(--primary-ink);padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:16px}
+.btn.ghost{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.rules{margin:0;padding-left:18px;display:grid;gap:6px}
+.rules li::marker{color:var(--primary)}
+/* station */
+.stationbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.placard{font-family:var(--display);font-weight:700;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:6px 14px;border-radius:6px;font-size:22px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.progress{flex:1;min-width:140px;height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--primary);transition:width .3s}
+.timer{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;min-width:110px;justify-content:flex-end}
+.timer svg{width:38px;height:38px;transform:rotate(-90deg)}
+.timer circle{fill:none;stroke-width:5}
+.timer .bgc{stroke:var(--sunk)} .timer .fg{stroke:var(--primary);transition:stroke-dashoffset 1s linear,stroke .3s}
+.timer.low{color:var(--alert)} .timer.low .fg{stroke:var(--alert)}
+.station{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.station{grid-template-columns:1fr}}
+.gallery{display:grid;gap:8px;background:var(--sunk);padding:8px;border-radius:var(--r)}
+.gallery.two{grid-template-columns:1fr 1fr}
+.gallery figure{margin:0;position:relative}
+.gallery img{width:100%;max-height:440px;object-fit:contain;display:block;border-radius:6px;background:#000;cursor:zoom-in}
+.gallery.two img{max-height:300px}
+.labcard{background:var(--surface);border-radius:6px;padding:16px;font-variant-numeric:tabular-nums}
+.labcard h3{font-size:20px;text-transform:uppercase;margin-bottom:8px}
+.labcard table{width:100%;border-collapse:collapse;font-size:15px}
+.labcard td{padding:6px 4px;border-bottom:1px dashed var(--line)}
+.labcard td:last-child{text-align:right;color:var(--muted)}
+.labcard .flag{color:var(--alert);font-weight:700}
+.zoomhint{font-size:13px;color:var(--muted);margin:6px 2px 0}
+.case{display:grid;gap:14px;min-width:0}
+.case .who{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--primary)}
+.case .story{font-size:17px;margin:0}
+.q{border-top:1px solid var(--line);padding-top:12px}
+.q p{margin:0 0 8px;font-weight:700}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:var(--surface);padding:10px 12px;border-radius:8px;cursor:pointer;line-height:1.35}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--muted)}
+.opt:hover:not(:disabled){border-color:var(--primary)}
+.opt[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft)}
+.opt[aria-pressed="true"] .k{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)} .opt.right .k{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.opt.wrong{border-color:var(--alert);background:var(--alert-soft)} .opt.wrong .k{background:var(--alert);border-color:var(--alert);color:var(--surface)}
+.opt:disabled{cursor:default}
+.why{background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:15px;margin-top:8px}
+.why b{color:var(--primary)}
+.look{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 12px;border-radius:0 8px 8px 0;font-size:15px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:4px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:8px;font-weight:600;z-index:40}
+/* result */
+.score{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+.big{font-family:var(--display);font-size:72px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.verdict{flex:1;min-width:240px}
+.review{display:grid;gap:12px;margin-top:18px}
+.rv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--ok);border-radius:var(--r);padding:12px}
+.rv.bad{border-left-color:var(--alert)}
+.rv img{width:120px;height:100px;object-fit:cover;border-radius:6px}
+.rv h3{font-size:20px;text-transform:uppercase}
+.rv ul{margin:6px 0 0;padding-left:18px;font-size:15px}
+.rv .y{color:var(--alert)} .rv .c{color:var(--ok);font-weight:600}
+@media (max-width:520px){.rv{grid-template-columns:1fr}.rv img{width:100%;height:160px}}
+/* atlas */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;align-items:center}
+.chip{border:1px solid var(--line);background:var(--surface);padding:5px 12px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.atlas{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.card img{width:100%;height:190px;object-fit:cover;cursor:zoom-in;background:#000}
+.card .cb{padding:10px 12px;display:grid;gap:4px}
+.card .dz{font-family:var(--display);font-size:20px;font-weight:700;text-transform:uppercase}
+.card .cap{font-size:14px;color:var(--muted)}
+.card .reveal{border:1px dashed var(--primary);background:var(--primary-soft);color:var(--primary);border-radius:6px;padding:8px;font-weight:700;cursor:pointer}
+.switch{display:inline-flex;align-items:center;gap:8px;margin-left:auto;font-weight:600;font-size:14px;cursor:pointer}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:22px}
+.sheet .panel{padding:14px}
+.sheet h3{font-size:22px;text-transform:uppercase;margin-bottom:6px}
+.sheet ul{margin:0;padding-left:18px;font-size:15px;display:grid;gap:3px}
+.sheet .tx{margin-top:8px;font-size:14px;background:var(--sunk);padding:6px 8px;border-radius:6px}
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(5,10,9,.92);display:grid;place-items:center;z-index:50;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));cursor:zoom-out}
+.lb img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.lb button{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));background:#fff;color:#111;border:0;border-radius:6px;padding:8px 12px;font-weight:700;cursor:pointer}
+/* celular: barra do item fixa, cabeçalho compacto */
+.stationbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:8px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--bg)}
+.hist{display:grid;gap:6px;margin-top:10px;font-variant-numeric:tabular-nums}
+.hist .row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:4px 0;font-size:15px}
+.weak{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.weak span{background:var(--alert-soft);border-radius:999px;padding:3px 10px;font-size:14px;font-weight:600}
+.chip.err{border-color:var(--alert)}
+.linkbtn{background:none;border:0;color:var(--primary);font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
+@media (max-width:600px){
+  .brand h1{font-size:28px}.brand p{display:none}
+  .top{align-items:stretch;gap:10px;margin-bottom:14px}
+  .tabs{width:100%;padding:5px;gap:4px}
+  .tabs button{flex:1 1 auto;padding:7px 10px;font-size:14px;border-radius:9px;text-align:center}
+  .panel{padding:16px}
+  .placard{font-size:18px;padding:4px 10px}
+  .timer{font-size:26px;min-width:0;margin-left:auto}
+  .progress{display:none}
+  .stationbar{flex-wrap:nowrap;gap:10px}
+  .case .story{font-size:16px}
+  .opt{padding:12px}
+  .gallery img{max-height:300px}
+}
+/* 80/20 */
+.hy-intro{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;margin-bottom:14px}
+.hy-intro h2{font-size:clamp(30px,5vw,40px);text-transform:uppercase}
+.hy-sec{margin-top:26px}
+.hy-sec>h2{font-size:26px;text-transform:uppercase;margin-bottom:4px}
+.hy-sec>p{margin:0 0 12px}
+.rules20{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:r}
+.rules20 li{counter-increment:r;display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.rules20 li::before{content:counter(r,decimal-leading-zero);font-family:var(--display);font-weight:700;font-size:26px;line-height:1;color:var(--primary);font-variant-numeric:tabular-nums}
+.rules20 b{display:block;font-size:17px}
+.pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+@media (max-width:400px){.pairs{grid-template-columns:1fr}}
+.pair{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;min-width:0}
+.pair h3{font-size:20px;text-transform:uppercase;margin-bottom:8px}
+.pair .vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.pair .side{background:var(--sunk);border-radius:8px;padding:10px;font-size:14px}
+.pair .side strong{display:block;font-size:15px;margin-bottom:2px}
+.pair .key{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.pair .key b{color:var(--ink)}
+.dcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+@media (max-width:400px){.dcards{grid-template-columns:1fr}}
+.dcard .sig{font-weight:700;color:var(--alert)}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:grid;grid-template-columns:110px minmax(0,1fr)}
+.dcard img{width:110px;height:100%;min-height:150px;object-fit:cover;cursor:zoom-in;background:#000}
+.dcard .nolab{display:grid;place-items:center;text-align:center;background:var(--sunk);font-size:13px;font-weight:700;padding:8px;color:var(--muted)}
+.dcard .db{padding:10px 12px;display:grid;gap:4px;font-size:14px}
+.dcard h3{font-size:21px;text-transform:uppercase}
+.dcard .ag{color:var(--muted);font-size:13px}
+.dcard .tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:var(--alert);color:var(--surface);margin-right:4px}
+.dcard .tag.b{background:var(--primary);color:var(--primary-ink)}
+.dcard .cd{background:var(--sunk);border-radius:6px;padding:6px 8px;margin-top:2px}
+/* cards estilo nota de estudo, um tom pastel por doença */
+.notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;align-items:start}
+@media (max-width:400px){.notes{grid-template-columns:1fr}}
+.ncard{background:color-mix(in srgb,var(--p) var(--pamt),var(--surface));border:1px solid color-mix(in srgb,var(--d) 35%,transparent);border-radius:14px;padding:14px;display:grid;gap:8px;align-content:start;min-width:0}
+.ncard .nh{display:flex;gap:10px;align-items:center}
+.ncard .nh img{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;cursor:zoom-in;border:2px solid color-mix(in srgb,var(--d) 40%,transparent)}
+.ncard .nh .ph{width:58px;height:58px;border-radius:10px;flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;text-align:center;line-height:1.1;background:color-mix(in srgb,var(--d) 15%,transparent);color:var(--hd)}
+.ncard h3{font-size:25px;text-transform:uppercase;line-height:1;color:var(--hd)}
+.ncard dl{margin:0;display:grid;gap:6px}
+.ncard dt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--hd)}
+.ncard dd{margin:0;font-size:14.5px;line-height:1.35}
+.ncard .att{background:color-mix(in srgb,var(--surface) 70%,transparent);border-radius:8px;padding:7px 9px;font-size:14px;font-weight:600}
+.ncard .att::before{content:"Atenção  ";font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--alert)}
+.ncard{--hd:var(--d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ncard{--hd:var(--p)}}
+:root[data-theme="dark"] .ncard{--hd:var(--p)}
+.ddif{background:color-mix(in srgb,var(--p) calc(var(--pamt) * .5),var(--surface));border:1px solid color-mix(in srgb,var(--d) 30%,var(--line));border-radius:10px;padding:10px 12px}
+.ddif h4{font-family:var(--display);font-size:18px;text-transform:uppercase;margin:0 0 4px;color:var(--hd)}
+.ddif ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14.5px;line-height:1.4}
+.dbody{display:grid;gap:14px}
+.dbody[hidden],.dans[hidden]{display:none!important}
+.dans{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:10px;padding:14px}
+.dstudy{margin:0 0 12px;display:inline-flex}
+/* resumo definitivo: páginas */
+.dnav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.dpage{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:22px;scroll-margin-top:calc(12px + env(safe-area-inset-top,0px));display:grid;gap:16px}
+.dpage.duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.dpage.duo .dfoot{grid-column:1/-1}
+@media (max-width:820px){.dpage.duo{grid-template-columns:1fr}}
+.dsheet{display:grid;gap:14px;min-width:0}
+.dsheet.half+.dsheet.half{border-left:1px dashed var(--line);padding-left:16px}
+@media (max-width:820px){.dsheet.half+.dsheet.half{border-left:0;padding-left:0;border-top:1px dashed var(--line);padding-top:16px}}
+.dhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:color-mix(in srgb,var(--p) var(--pamt),var(--surface));border-radius:10px;padding:10px 14px}
+.dhead h3{font-size:clamp(28px,4vw,38px);text-transform:uppercase;line-height:1;color:var(--hd)}
+.dsheet{--hd:var(--d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dsheet{--hd:var(--p)}}
+:root[data-theme="dark"] .dsheet{--hd:var(--p)}
+.dimgs{display:grid;gap:10px}
+.dimgs.two{grid-template-columns:1fr 1fr}
+@media (max-width:520px){.dimgs.two{grid-template-columns:1fr}}
+.dimgs figure{margin:0;display:grid;gap:4px}
+.dimgs img{width:100%;height:260px;object-fit:cover;object-position:center 25%;border-radius:10px;background:#000;cursor:zoom-in}
+.dsheet.half .dimgs img{height:220px}
+.dimgs figcaption{font-size:13px;color:var(--muted)}
+.dlab{background:var(--sunk);border-radius:10px;padding:14px;font-variant-numeric:tabular-nums}
+.dlab table{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+.dlab td{padding:5px 2px;border-bottom:1px dashed var(--line)}
+.dlab td:last-child{text-align:right}
+.dlab .flag{color:var(--alert);font-weight:700}
+.dlab small{display:block;margin-top:8px;color:var(--muted)}
+.dcase{border:1px solid color-mix(in srgb,var(--d) 40%,var(--line));border-left:5px solid var(--hd);border-radius:10px;padding:12px 14px;background:color-mix(in srgb,var(--p) calc(var(--pamt) * .35),var(--surface))}
+.dcase .dl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--hd)}
+.dcase p{margin:6px 0 0;font-size:16px;line-height:1.5}
+.dcase .dq{font-size:15px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.dsheet.half .dgrid{grid-template-columns:1fr}
+.df{background:var(--sunk);border-radius:10px;padding:10px 12px;min-width:0}
+.df h4,.dprof h4{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.03em;margin:0 0 4px;color:var(--hd)}
+.df ul,.dprof ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14.5px;line-height:1.4}
+.dprof{background:var(--alert-soft);border:1px solid color-mix(in srgb,var(--alert) 35%,transparent);border-radius:10px;padding:10px 12px}
+.dprof h4{color:var(--alert)}
+.dfoot{font-size:12px;color:var(--muted);text-align:right;border-top:1px solid var(--line);padding-top:8px}
+.ta{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;resize:vertical;min-height:110px;line-height:1.4}
+.ta:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.ta[readonly]{background:var(--sunk)}
+.chk{display:grid;gap:6px;background:var(--sunk);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:15px}
+.chk p{margin:0}
+.chk label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.chk input{margin-top:4px;accent-color:var(--primary)}
+.rv .why{margin-top:6px}
+/* abas extras: provas antigas e discursivo */
+.examlist{display:grid;gap:14px}
+.examq{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:10px}
+.examq .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.examq .badge{background:var(--primary-soft);color:var(--primary);padding:2px 8px;border-radius:4px}
+.examq .hot{background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:4px}
+.examq h3{font-size:21px;text-transform:uppercase}
+.examq .enun{margin:0;white-space:pre-line;font-size:15.5px}
+.examq ul.altlist{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.examq ul.altlist li{padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-size:15px}
+.examq ul.altlist li.ans{border-color:var(--ok);background:var(--ok-soft);font-weight:600}
+.chklist{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.chklist label{display:flex;gap:10px;align-items:flex-start;background:var(--sunk);padding:9px 12px;border-radius:8px;cursor:pointer;font-size:15px}
+.chklist input{margin-top:4px;accent-color:var(--primary);width:17px;height:17px;flex:none}
+.discbox{width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;resize:vertical}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1 id="m-title"></h1>
+      <p id="m-sub"></p>
+      <div class="author" id="m-author"><small>por</small><span></span></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Modo" id="tabs"></nav>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* =====================================================================
+   DADOS — a skill preenche SOMENTE este bloco. Veja a seção 6 da skill
+   ===================================================================== */
+const DATA = {
+  meta:{
+    title:"TUBERCULOSE E HIV/AIDS",
+    subtitle:"Infectologia · Febre, Inflamação e Infecção · Aulas & N2 Institucional",
+    author:"",
+    storageKey:"infecto-tb-hiv-n2",
+    imgDir:"img", ext:"jpg",
+    itemLabel:"Questão", itemLabelPl:"questões",
+    caseLabel:"Caso clínico", lookLabel:"Ponto de prova",
+    condLabel:"Conduta", difLabel:"Diagnóstico diferencial",
+    timing:"total",
+    passRules:{hi:80, mid:60}
+  },
+  tabs:["prova","treino","resumo","cards","def","provas","discursivo","flash","glossario"],
+  topics:{
+    tb_base:{name:"TB: Microbiologia e Patogênese", p:"#F9D8D6", d:"#9E2A2B"},
+    tb_diag:{name:"TB: Diagnóstico e Imagem", p:"#FDE4CF", d:"#A84A00"},
+    tb_extra:{name:"TB Extrapulmonar", p:"#FBEEC1", d:"#8A6200"},
+    tb_trat:{name:"TB: Tratamento e Especiais", p:"#DCF2E3", d:"#1B6B3A"},
+    iltb:{name:"TB Latente (ILTB)", p:"#D6EEF2", d:"#0E6070"},
+    hiv_base:{name:"HIV: Patogênese, Fases e HAND", p:"#DCE6FA", d:"#1E40AF"},
+    hiv_diag:{name:"HIV: Diagnóstico e Circuito Rápido", p:"#E6DDFB", d:"#5B21B6"},
+    tarv:{name:"TARV, Toxicidades e Seguimento", p:"#F7DDF0", d:"#9D174D"},
+    io_siri:{name:"Oportunistas, Profilaxias e SIRI", p:"#E2E8F0", d:"#334155"}
+  },
+  questoes:[
+    {
+      id:"s1", topic:"tb_diag", imgs:[],
+      table:{
+        title:"Investigação Inicial — Sintomático Respiratório",
+        rows:[
+          ["Baciloscopia (BAAR) — 2 amostras","Negativa","Negativa",false],
+          ["TRM-TB (GeneXpert MTB/RIF)","MTB Detectado","Não detectado",true],
+          ["Resistência à Rifampicina (TRM-TB)","Não detectada","Ausente",false],
+          ["Teste Rápido HIV (2 fabricantes)","Reagente","Não reagente",true],
+          ["Rx de Tórax","Cavitações apicais bilaterais","Normal",true]
+        ],
+        note:"Homem, 42 anos, pedreiro, tabagista 20 anos-maço, tosse seca há 3 semanas, febre vespertina, sudorese noturna e perda ponderal."
+      },
+      case:"Paciente masculino, 42 anos, trabalhador da construção civil, procura atendimento por tosse há 3 semanas, febre vespertina, sudorese noturna, dor torácica e emagrecimento. Apresenta estertores em ápice direito e os exames ao lado.",
+      look:"Baciloscopia negativa NÃO exclui TB ativa. Em PVHA ou suspeita de TB, sempre coletar Cultura + TSA, mas iniciar RHZE imediatamente sem aguardar a cultura.",
+      qs:[
+        {
+          q:"Qual a conduta terapêutica e laboratorial imediata mais adequada?",
+          a:"Coletar cultura + TSA e iniciar esquema básico RHZE imediatamente, sem aguardar o resultado da cultura.",
+          opts:[
+            "Coletar cultura + TSA e iniciar esquema básico RHZE imediatamente, sem aguardar o resultado da cultura.",
+            "Aguardar o resultado da cultura micobacteriana (45 a 60 dias) antes de iniciar RHZE, pois a baciloscopia foi negativa.",
+            "Repetir mais duas baciloscopias e iniciar antibiótico empírico (levofloxacino) por 14 dias antes de notificar TB.",
+            "Iniciar apenas terapia antirretroviral (TARV) imediata e tratar TB somente se a cultura positivar."
+          ],
+          why:"O TRM-TB detecta DNA do bacilo em cerca de 1 hora e autoriza início imediato do RHZE. Nunca se atrasa o início do tratamento aguardando cultura, que serve para confirmação definitiva e Teste de Sensibilidade (TSA)."
+        },
+        {
+          q:"Quanto à cadeia de transmissão desse paciente, após quanto tempo de tratamento adequado ocorre queda expressiva da infectividade?",
+          a:"Após completar 2 semanas de tratamento efetivo (mantendo controle por baciloscopia em internados).",
+          opts:[
+            "Após completar 2 semanas de tratamento efetivo (mantendo controle por baciloscopia em internados).",
+            "Imediatamente após a primeira dose de rifampicina e isoniazida.",
+            "Somente após 6 meses completos de tratamento e negativação do TRM-TB.",
+            "Após 48 horas de isolamento de contato e higienização de roupas e talheres."
+          ],
+          why:"A transmissão aérea cai acentuadamente após ~2 semanas de terapia eficaz (embora em internados a retirada do isolamento exija baciloscopia negativa). Fômites não transmitem TB e o TRM-TB não é usado no seguimento."
+        }
+      ]
+    },
+    {
+      id:"s2", topic:"tb_diag", imgs:[],
+      table:{
+        title:"Monitoramento e Retorno Após Abandono",
+        rows:[
+          ["BAAR de controle (2º mês)","Negativa","Negativa",false],
+          ["TRM-TB solicitado no 2º mês","MTB Detectado","Não detectado",true],
+          ["Cultura (em andamento)","Aguardando","Negativa",false]
+        ],
+        note:"Paciente em tratamento regular de TB pulmonar cavitária no fim da fase intensiva (2º mês), assintomático e com ganho de peso."
+      },
+      case:"Durante consulta de acompanhamento no 2º mês de esquema RHZE, um residente solicita TRM-TB de controle junto à baciloscopia. O paciente está clinicamente bem, mas o TRM-TB retorna 'MTB Detectado' com BAAR negativo.",
+      look:"O TRM-TB amplifica DNA tanto de bacilos vivos quanto de bacilos mortos (podendo positivar por até 1 ano após tratamento). Nunca usar TRM-TB para controle de cura ou recidiva.",
+      qs:[
+        {
+          q:"Como interpretar esse resultado e qual ferramenta deve ser usada no seguimento?",
+          a:"Falso-positivo para atividade por DNA de bacilos mortos; manter tratamento e usar apenas baciloscopia (BAAR) no controle.",
+          opts:[
+            "Falso-positivo para atividade por DNA de bacilos mortos; manter tratamento e usar apenas baciloscopia (BAAR) no controle.",
+            "Falha terapêutica confirmada; suspender RHZE e iniciar esquema BPaL para TB multirresistente.",
+            "Reinfecção exógena aguda; reiniciar a fase intensiva de 2 meses de RHZE do zero.",
+            "Contaminação por Mycobacterium avium (MAC); associar claritromicina ao esquema atual."
+          ],
+          why:"O TRM-TB detecta fragmentos de DNA de micobactérias mortas por até 1 ano pós-tratamento, gerando falsos-positivos. O controle de clareamento bacilar é feito exclusivamente por baciloscopia (BAAR)."
+        }
+      ]
+    },
+    {
+      id:"s3", topic:"tb_diag", imgs:[],
+      table:{
+        title:"TRM-TB com Resistência Detectada",
+        rows:[
+          ["TRM-TB (1ª amostra)","MTB Detectado","Não detectado",true],
+          ["Perfil Rifampicina","Resistência detectada","Sensível",true],
+          ["HIV Teste Rápido","Não reagente","Não reagente",false]
+        ],
+        note:"Adulto de 38 anos, caso novo de TB pulmonar, sem tratamento prévio."
+      },
+      case:"Um paciente adulto sem história prévia de tratamento para tuberculose realiza TRM-TB, que aponta 'M. tuberculosis detectado com resistência à rifampicina'.",
+      look:"Diante de resistência à rifampicina no TRM-TB em caso novo: iniciar RHZE imediatamente, colher 2ª amostra para repetir TRM-TB, enviar Cultura + TSA e encaminhar à referência terciária.",
+      qs:[
+        {
+          q:"Segundo o protocolo nacional apresentado em aula, qual a conduta imediata?",
+          a:"Iniciar RHZE imediatamente, colher 2ª amostra para repetir TRM-TB, enviar cultura + TSA e encaminhar à referência terciária.",
+          opts:[
+            "Iniciar RHZE imediatamente, colher 2ª amostra para repetir TRM-TB, enviar cultura + TSA e encaminhar à referência terciária.",
+            "Não iniciar nenhum medicamento até o resultado do TSA em meio sólido (60 dias).",
+            "Prescrever apenas isoniazida, pirazinamida e etambutol (HZE) na atenção primária por 18 meses.",
+            "Repetir apenas a baciloscopia em 30 dias e orientar uso de máscara cirúrgica pelo médico."
+          ],
+          why:"A diretriz nacional determina não atrasar o tratamento: inicia-se o esquema básico (RHZE) enquanto se confirma o achado com 2ª amostra de TRM-TB, Cultura + TSA e encaminhamento ao centro de referência para ajuste definitivo."
+        }
+      ]
+    },
+    {
+      id:"s4", topic:"tb_extra", imgs:[],
+      table:{
+        title:"Toracocentese — Líquido Pleural",
+        rows:[
+          ["Proteína Pleural / Sérica","0,68 (> 0,5)","≤ 0,5",true],
+          ["DHL Pleural / Sérico","0,74 (> 0,6)","≤ 0,6",true],
+          ["Citologia diferencial","92% Linfomononucleares","—",true],
+          ["Adenosina Deaminase (ADA)","52 U/L","< 40 U/L",true],
+          ["BAAR e TRM-TB no líquido","Negativos","Negativos",false]
+        ],
+        note:"Homem, 36 anos, imunocompetente, dor torácica ventilatório-dependente há 3 semanas, febre vespertina, sudorese noturna e parábola de Damoiseau à direita."
+      },
+      case:"Paciente de 36 anos apresenta dor pleurítica à direita, febre vespertina e sudorese noturna. A radiografia evidencia derrame pleural moderado à direita. Os resultados da toracocentese estão na tabela ao lado.",
+      look:"TB pleural gera exsudato linfocítico (Critérios de Light) com ADA ≥ 40 U/L. BAAR e TRM-TB têm baixa sensibilidade no líquido pleural; a biópsia pleural aumenta a acurácia e sempre se deve investigar o pulmão.",
+      qs:[
+        {
+          q:"Qual a interpretação diagnóstica e a conduta indicada?",
+          a:"Exsudato linfocítico compatível com TB pleural; iniciar RHZE por 6 meses (2RHZE + 4RH) e investigar acometimento pulmonar concomitante.",
+          opts:[
+            "Exsudato linfocítico compatível com TB pleural; iniciar RHZE por 6 meses (2RHZE + 4RH) e investigar acometimento pulmonar concomitante.",
+            "Transudato por insuficiência cardíaca; iniciar furosemida e descartar tuberculose devido ao BAAR negativo.",
+            "Empiema pleural tuberculoso; drenar em selo d'água e tratar por 12 meses com corticoide.",
+            "Derrame parapneumônico simples; prescrever amoxicilina-clavulanato e repetir toracocentese em 48 horas."
+          ],
+          why:"Relação proteína > 0,5 e DHL > 0,6 definem exsudato pelos Critérios de Light. Predomínio linfocítico + ADA ≥ 40 U/L sustentam TB pleural (forma extrapulmonar mais comum em imunocompetentes), tratada por 6 meses, sempre rastreando TB pulmonar associada."
+        }
+      ]
+    },
+    {
+      id:"s5", topic:"tb_extra", imgs:[],
+      table:{
+        title:"Análise do Líquor (LCR) e Neuroimagem",
+        rows:[
+          ["Pressão de abertura","28 cmH2O (elevada)","8–20 cmH2O",true],
+          ["Aspecto","Límpido / levemente turvo","Límpido",false],
+          ["Celularidade","140 cél/mm³ (82% linfócitos)","≤ 4 cél/mm³",true],
+          ["Proteínas","165 mg/dL","15–45 mg/dL",true],
+          ["Glicose LCR / Glicemia","28 mg/dL (Sérica: 95 mg/dL)","≥ 2/3 da glicemia",true]
+        ],
+        note:"Mulher, 29 anos, indígena, cefaleia subaguda progressiva há 20 dias, febre vespertina, vômitos e paresia do nervo abducente (VI par) à esquerda. TC prévia afastou herniação."
+      },
+      case:"Mulher de 29 anos apresenta cefaleia há 3 semanas, febre vespertina, rigidez de nuca e estrabismo convergente por paresia do VI par craniano. Após TC de crânio normal, realizou punção lombar com os resultados ao lado.",
+      look:"TB meningoencefálica acomete a base do crânio ('véu de noiva'), lesa nervos cranianos (III, IV, VI, VII), exige tratamento estendido de 12 meses (2RHZE + 10RH) e corticoterapia adjuvante obrigatória com desmame.",
+      qs:[
+        {
+          q:"Qual o esquema terapêutico completo e a duração indicados para este caso?",
+          a:"RHZE por 2 meses + RH por 10 meses (total 12 meses), associado obrigatoriamente a corticoide (prednisona ou dexametasona) com desmame.",
+          opts:[
+            "RHZE por 2 meses + RH por 10 meses (total 12 meses), associado obrigatoriamente a corticoide (prednisona ou dexametasona) com desmame.",
+            "RHZE por 2 meses + RH por 4 meses (total 6 meses), sem corticoide pelo risco de disseminação bacilar.",
+            "Anfotericina B + Flucitosina por 14 dias, seguida de fluconazol por 10 semanas.",
+            "RHZE por 12 meses isoladamente, evitando corticoide devido à hipoglicorraquia."
+          ],
+          why:"Formas meningoencefálica e osteoarticular são as duas exceções tratadas por 12 meses (2RHZE + 10RH). Na TB meningoencefálica, o corticoide é obrigatório na fase intensiva para reduzir inflamação basal e hidrocefalia hipertensiva."
+        }
+      ]
+    },
+    {
+      id:"s6", topic:"tb_extra", imgs:[],
+      case:"Homem de 45 anos em tratamento de TB pulmonar há 3 semanas passa a referir dor lombar baixa persistente e progressiva em região toracolombar, com parestesia em membros inferiores e febre baixa. A ressonância magnética evidencia destruição de corpos vertebrais de T11–T12 com coleção paravertebral e compressão medular.",
+      look:"Mal de Pott (TB osteoarticular de coluna) acomete principalmente coluna torácica inferior e lombar. RM é o padrão-ouro e o tratamento dura 12 meses (2RHZE + 10RH).",
+      qs:[
+        {
+          q:"Qual o diagnóstico e o tempo total de tratamento medicamentoso recomendado?",
+          a:"Espondilite tuberculosa (Mal de Pott); estender o esquema para 12 meses (2RHZE + 10RH) e avaliar abordagem ortopédica/neurocirúrgica.",
+          opts:[
+            "Espondilite tuberculosa (Mal de Pott); estender o esquema para 12 meses (2RHZE + 10RH) e avaliar abordagem ortopédica/neurocirúrgica.",
+            "Metástase óssea pulmonar; suspender RHZE e iniciar radioterapia paliativa.",
+            "TB osteoarticular; manter o esquema padrão de 6 meses (2RHZE + 4RH) por já estar em tratamento.",
+            "Artrite reativa pós-infecciosa; associar apenas anti-inflamatório não esteroidal por 7 dias."
+          ],
+          why:"Dor axial em paciente com TB exige investigação precoce por RM. O Mal de Pott fragmenta corpos vertebrais com risco de paraplegia e requer 12 meses de terapia (2RHZE + 10RH) devido à baixa penetração óssea."
+        }
+      ]
+    },
+    {
+      id:"s7", topic:"tb_trat", imgs:[],
+      table:{
+        title:"Monitoramento Hepático — 3ª Semana de RHZE",
+        rows:[
+          ["TGO (AST)","295 U/L (7,3× LSN)","Até 40 U/L",true],
+          ["TGP (ALT)","340 U/L (8,5× LSN)","Até 40 U/L",true],
+          ["Bilirrubina Total","1,1 mg/dL","Até 1,2 mg/dL",false],
+          ["Sintomas clínicos","Assintomático","—",false]
+        ],
+        note:"Homem, 51 anos, etilista prévio, em uso de RHZE há 21 dias. Exames de rotina na consulta de retorno."
+      },
+      case:"Paciente de 51 anos, totalmente assintomático e anictérico, realiza exames laboratoriais de controle na 3ª semana de esquema RHZE, mostrando elevação de transaminases acima de 5 vezes o limite superior da normalidade.",
+      look:"Suspender RHZE se TGO/TGP > 5× LSN (mesmo assintomático) OU > 3× LSN com sintomas/icterícia/cirrose. Reintrodução sequencial após normalização: 1º R+E -> 2º H -> 3º Z.",
+      qs:[
+        {
+          q:"Qual a conduta imediata e a ordem correta de reintrodução após normalização enzimática?",
+          a:"Suspender RHZE; após normalização, reintroduzir sequencialmente: (1) Rifampicina + Etambutol, (2) Isoniazida e (3) Pirazinamida.",
+          opts:[
+            "Suspender RHZE; após normalização, reintroduzir sequencialmente: (1) Rifampicina + Etambutol, (2) Isoniazida e (3) Pirazinamida.",
+            "Manter RHZE e repetir exames em 30 dias, pois o paciente está assintomático e anictérico.",
+            "Suspender apenas o Etambutol, que é o fármaco de maior potencial hepatotóxico do esquema.",
+            "Suspender RHZE e reintroduzir primeiro Pirazinamida + Isoniazida e, por último, Rifampicina + Etambutol."
+          ],
+          why:"Elevação de TGO/TGP > 5× LSN exige suspensão imediata mesmo sem sintomas. Após normalizar, reintroduz-se a cada 7–10 dias: primeiro Rifampicina + Etambutol (R é essencial e E não é hepatotóxico), depois Isoniazida e por fim Pirazinamida."
+        }
+      ]
+    },
+    {
+      id:"s8", topic:"tb_trat", imgs:[],
+      case:"Mulher de 27 anos, gestante de 14 semanas, recebe diagnóstico confirmado de tuberculose pulmonar ativa (TRM-TB positivo, sensível à rifampicina). Nega comorbidades hepáticas ou renais.",
+      look:"Gestante com TB ativa DEVE ser tratada imediatamente com o esquema básico RHZE (6 meses) associado obrigatoriamente à Piridoxina (Vitamina B6) 50–100 mg/dia.",
+      qs:[
+        {
+          q:"Qual a conduta terapêutica recomendada para essa gestante?",
+          a:"Iniciar imediatamente esquema padrão RHZE por 6 meses associado à piridoxina (Vitamina B6) 50 a 100 mg/dia.",
+          opts:[
+            "Iniciar imediatamente esquema padrão RHZE por 6 meses associado à piridoxina (Vitamina B6) 50 a 100 mg/dia.",
+            "Adiar o tratamento da tuberculose ativa para após o parto devido à teratogenicidade da rifampicina.",
+            "Substituir rifampicina e isoniazida por levofloxacino e amicacina durante toda a gestação.",
+            "Tratar apenas com isoniazida em monoterapia até o terceiro trimestre."
+          ],
+          why:"Na gestação, TB ativa exige tratamento imediato com RHZE padrão para proteger mãe e feto, associando piridoxina (50–100 mg/dia) para prevenir neuropatia periférica materna e neurotoxicidade fetal induzidas pela isoniazida."
+        }
+      ]
+    },
+    {
+      id:"s9", topic:"tb_trat", imgs:[],
+      case:"Homem de 62 anos, portador de doença renal crônica dialítica (clearance de creatinina de 18 mL/min) e diabetes mellitus tipo 2 em uso de metformina e glibenclamida, é diagnosticado com TB pulmonar bacilífera.",
+      look:"TFG < 30 mL/min: ajustar RHZE para 3×/semana APÓS a hemodiálise. Rifampicina induz citocromo P450, reduzindo hipoglicemiantes orais (frequentemente exige insulina).",
+      qs:[
+        {
+          q:"Quais ajustes são necessários no manejo desse paciente?",
+          a:"Administrar RHZE 3×/semana após as sessões de hemodiálise e monitorar glicemia (ajustando hipoglicemiantes ou migrando para insulina).",
+          opts:[
+            "Administrar RHZE 3×/semana após as sessões de hemodiálise e monitorar glicemia (ajustando hipoglicemiantes ou migrando para insulina).",
+            "Administrar RHZE diariamente antes da hemodiálise e manter os hipoglicemiantes orais na mesma dose.",
+            "Contraindicar rifampicina pelo risco de hipoglicemia grave induzida por inibição do citocromo P450.",
+            "Reduzir o tratamento total para 2 meses devido à menor depuração renal dos fármacos."
+          ],
+          why:"Com ClCr < 30 mL/min, ajusta-se a frequência para 3×/semana sempre após a diálise (para não dialisar os fármacos). Além disso, a rifampicina é potente indutora do CYP450, acelerando o metabolismo de hipoglicemiantes orais e descompensando o diabetes."
+        }
+      ]
+    },
+    {
+      id:"s10", topic:"iltb", imgs:[],
+      table:{
+        title:"Rastreio de ILTB em Contato Ocupacional",
+        rows:[
+          ["PPD inicial","3 mm (não reator)","< 5 mm",false],
+          ["PPD repetido após 8 semanas","15 mm (incremento de 12 mm)","Incremento < 10 mm",true],
+          ["Sintomas respiratórios/sistêmicos","Ausentes","Ausentes",false],
+          ["Radiografia de tórax","Normal","Normal",false]
+        ],
+        note:"Enfermeira de 31 anos, hígida, HIV negativa, contactante domiciliar/ocupacional de caso-fonte bacilífero."
+      },
+      case:"Profissional de enfermagem de 31 anos, assintomática, teve contato próximo com paciente bacilífero. Seu primeiro PPD foi de 3 mm; repetido após 8 semanas, apresentou enduração de 15 mm, com radiografia de tórax normal.",
+      look:"Aumento ≥ 10 mm na segunda PT após ≥ 8 semanas caracteriza conversão tuberculínica (infecção recente). Esquema preferencial de ILTB: 3HP (Isoniazida + Rifapentina) semanal por 12 semanas.",
+      qs:[
+        {
+          q:"Qual o diagnóstico e o esquema terapêutico preferencial para esse caso?",
+          a:"Conversão tuberculínica (ILTB); tratar com esquema 3HP (isoniazida + rifapentina) em dose semanal por 12 semanas.",
+          opts:[
+            "Conversão tuberculínica (ILTB); tratar com esquema 3HP (isoniazida + rifapentina) em dose semanal por 12 semanas.",
+            "Efeito booster vacinal pela BCG; não tratar e repetir PPD anualmente.",
+            "Tuberculose pulmonar subclínica; iniciar esquema básico RHZE por 6 meses.",
+            "Imunidade esterilizante adquirida; dar alta sem necessidade de tratamento preventivo."
+          ],
+          why:"Incremento ≥ 10 mm após 8 semanas define conversão recente e indica tratamento de ILTB após excluir TB ativa (assintomática + Rx normal). O esquema 3HP (12 doses semanais) é o preferencial pela maior adesão e menor duração."
+        }
+      ]
+    },
+    {
+      id:"s11", topic:"iltb", imgs:[],
+      case:"Homem de 40 anos, vivendo com HIV em uso regular de TDF + 3TC + Dolutegravir, apresenta CD4 = 480 cél/mm³, carga viral indetectável, IGRA positivo, assintomático e radiografia de tórax normal. O médico pensa em prescrever monoterapia com rifampicina por 4 meses para ILTB.",
+      look:"Monoterapia com Rifampicina para ILTB é EXPRESSAMENTE CONTRAINDICADA em PVHA em uso de inibidores de integrase (Dolutegravir) ou protease devido à forte indução do CYP450.",
+      qs:[
+        {
+          q:"Por que a monoterapia com rifampicina deve ser evitada nesse paciente e qual esquema escolher?",
+          a:"Rifampicina reduz os níveis séricos do dolutegravir (contraindicada como monoterapia de ILTB); preferir 3HP (12 semanas) ou Isoniazida (6–9 meses).",
+          opts:[
+            "Rifampicina reduz os níveis séricos do dolutegravir (contraindicada como monoterapia de ILTB); preferir 3HP (12 semanas) ou Isoniazida (6–9 meses).",
+            "Rifampicina causa neurite óptica irreversível em PVHA com CD4 > 350; indicar apenas etambutol.",
+            "Com CD4 > 350 e IGRA positivo não há indicação de tratar ILTB em PVHA; apenas observar.",
+            "Rifampicina pode ser usada normalmente sem qualquer interação com dolutegravir."
+          ],
+          why:"Em PVHA usando DTG ou IP, a rifampicina diária é contraindicada no tratamento de ILTB pela intensa indução enzimática. O esquema 3HP (rifapentina + isoniazida por 12 semanas) ou isoniazida isolada (6 a 9 meses) são as opções indicadas."
+        }
+      ]
+    },
+    {
+      id:"s12", topic:"hiv_base", imgs:[],
+      case:"Jovem de 23 anos procura emergência com quadro há 10 dias de febre alta, faringite, linfadenopatia cervical generalizada, exantema maculopapular e, há 2 dias, fraqueza ascendente em membros inferiores. O líquor mostra dissociação citoalbuminológica (proteína elevada com celularidade normal), sugerindo Síndrome de Guillain-Barré.",
+      look:"A Síndrome Retroviral Aguda (SRA) mimetiza mononucleose e pode causar meningite asséptica, paralisia facial ou simular Síndrome de Guillain-Barré. Duração > 14 dias prediz latência mais curta.",
+      qs:[
+        {
+          q:"Qual correlação clínica fundamental deve ser lembrada neste cenário?",
+          a:"A Síndrome Retroviral Aguda pode precipitar neuropatias e simular Guillain-Barré; deve-se investigar HIV (antígeno p24 / carga viral).",
+          opts:[
+            "A Síndrome Retroviral Aguda pode precipitar neuropatias e simular Guillain-Barré; deve-se investigar HIV (antígeno p24 / carga viral).",
+            "A fase aguda do HIV nunca cursa com alterações neurológicas, ocorrendo apenas quando CD4 < 50.",
+            "A presença de anticorpos anti-gp120 nessa fase neutraliza o vírus e impede a progressão para AIDS.",
+            "Uma síndrome aguda prolongada (> 14 dias) indica resposta imune robusta e latência superior a 20 anos."
+          ],
+          why:"Na infecção aguda pelo HIV há intensa viremia e queda rápida de ~30% dos CD4, podendo manifestar-se como mononucleose-like e quadros neurológicos (meningite asséptica, Guillain-Barré). Quanto mais longa a SRA (> 14 dias), mais rápida a progressão."
+        }
+      ]
+    },
+    {
+      id:"s13", topic:"hiv_base", imgs:[],
+      case:"Homem de 58 anos, vivendo com HIV há 14 anos em uso regular de TARV com carga viral plasmática indetectável e CD4 = 620 cél/mm³, queixa-se de perda progressiva de memória recente, lentidão psicomotora e dificuldade de concentração nos últimos meses.",
+      look:"HAND (Transtorno Neurocognitivo Associado ao HIV) ocorre mesmo com TARV e CV plasmática controlada, por neuroinflamação crônica mediada por macrófagos/micróglia e astrócitos ativados no SNC.",
+      qs:[
+        {
+          q:"Qual o mecanismo e a abordagem diagnóstica adequada para esse quadro?",
+          a:"Neuroinflamação crônica no SNC (HAND) via 'Cavalo de Troia' (monócitos/macrófagos); avaliação multidisciplinar com neuropsicologia, RM e biomarcadores.",
+          opts:[
+            "Neuroinflamação crônica no SNC (HAND) via 'Cavalo de Troia' (monócitos/macrófagos); avaliação multidisciplinar com neuropsicologia, RM e biomarcadores.",
+            "Neurotoxoplasmose aguda; suspender TARV e iniciar sulfadiazina + pirimetamina imediatamente.",
+            "Cura funcional do HIV por fibrose linfonodal; suspender antirretrovirais.",
+            "Efeito adverso agudo exclusivo do tenofovir; substituir por efavirenz à noite."
+          ],
+          why:"O HAND resulta da persistência viral e ativação de micróglia/astrócitos no SNC (mesmo com CV controlada no sangue) e exige avaliação integrada (neurologia, testes neuropsicológicos, RM e biomarcadores como NfL, BDNF e beta-amiloide)."
+        }
+      ]
+    },
+    {
+      id:"s14", topic:"hiv_diag", imgs:[],
+      table:{
+        title:"Fluxograma de Testagem Rápida — HIV",
+        rows:[
+          ["Teste Rápido 1 (Bio-Manguinhos)","Reagente","Não reagente",true],
+          ["Teste Rápido 2 (Fabricante B)","Não reagente","Não reagente",false],
+          ["Teste Rápido 3 (Imediato)","Reagente","Não reagente",true]
+        ],
+        note:"Paciente de 26 anos procurou UBS após relação sexual desprotegida há 5 semanas."
+      },
+      case:"Durante testagem rápida por punção digital em UBS, o primeiro teste rápido (fabricante A) foi reagente e o segundo (fabricante B) foi não reagente. O profissional realizou imediatamente um terceiro teste rápido, que foi reagente.",
+      look:"Dois testes rápidos de fabricantes diferentes reagentes fecham o diagnóstico de HIV. Se o 3º teste fosse não reagente (discordante persistente), o paciente retornaria em 30 dias.",
+      qs:[
+        {
+          q:"Qual a conclusão diagnóstica e a conduta imediata segundo o protocolo do Ministério da Saúde?",
+          a:"Diagnóstico de HIV confirmado (2 testes reagentes de fabricantes distintos); acolher, notificar e iniciar TARV preferencialmente em até 7 dias.",
+          opts:[
+            "Diagnóstico de HIV confirmado (2 testes reagentes de fabricantes distintos); acolher, notificar e iniciar TARV preferencialmente em até 7 dias.",
+            "Amostra inconclusiva; liberar o paciente sem TARV e repetir testagem apenas após 60 dias.",
+            "Falso-positivo por reação cruzada; solicitar ELISA e aguardar resultado para notificar.",
+            "Diagnóstico confirmado apenas se o paciente apresentar CD4 < 350 ou sintomas oportunistas."
+          ],
+          why:"Com o 3º teste reagente, obtêm-se 2 resultados reagentes de fabricantes distintos, fechando o diagnóstico sem necessidade de sorologia adicional, permitindo iniciar o cuidado e a TARV (meta de até 7 dias)."
+        }
+      ]
+    },
+    {
+      id:"s15", topic:"hiv_diag", imgs:[],
+      table:{
+        title:"Triagem Circuito Rápido — Aids Avançada",
+        rows:[
+          ["Contagem de LT-CD4+","38 cél/mm³","500–1500 cél/mm³",true],
+          ["Hemoglobina / Leucócitos","8,4 g/dL / 2.600/mm³","Normal",true],
+          ["TB-LAM Urinário (25 min)","Reagente","Não reagente",true],
+          ["CrAg Sérico (Criptococo)","Não reagente","Não reagente",false],
+          ["Antígeno Urinário Histoplasma","Não reagente","Não reagente",false]
+        ],
+        note:"Mulher, 28 anos, abandono de TARV, febre há 3 semanas, perda de 9 kg, tosse, candidíase oral, FC 124 bpm, FR 28 irpm, sem sinais meníngeos."
+      },
+      case:"Mulher de 28 anos com diagnóstico prévio de HIV e abandono de tratamento apresenta perda de 9 kg, febre, tosse há 3 semanas, taquicardia (124 bpm), candidíase oral e ausência de sintomas neurológicos. Os exames do Circuito Rápido estão ao lado.",
+      look:"TB-LAM urinário detecta lipoarabinomanana na urina em 20–25 min com alta especificidade (98%) em CD4 < 200. Confirmando TB ativa sem sinais meníngeos, trata-se TB primeiro e inicia-se TARV em 7–14 dias (pois CD4 < 50).",
+      qs:[
+        {
+          q:"Qual a conduta terapêutica imediata mais adequada diante desses resultados?",
+          a:"Iniciar RHZE imediatamente, coletar 2 BAAR + TRM-TB + cultura/TSA para avaliar foco pulmonar e iniciar TARV em 7 a 14 dias (CD4 < 50).",
+          opts:[
+            "Iniciar RHZE imediatamente, coletar 2 BAAR + TRM-TB + cultura/TSA para avaliar foco pulmonar e iniciar TARV em 7 a 14 dias (CD4 < 50).",
+            "Iniciar apenas isoniazida para ILTB, pois o TB-LAM positivo não confirma tuberculose ativa.",
+            "Iniciar TARV hoje e adiar o tratamento de TB por 6 semanas devido ao risco de SIRI.",
+            "Iniciar anfotericina B + flucitosina empiricamente por 14 dias antes de tratar TB."
+          ],
+          why:"O TB-LAM reativo confirma TB ativa em PVHA com imunossupressão avançada, mas não define sítio nem sensibilidade; por isso inicia-se RHZE, coleta-se escarro (BAAR/TRM-TB/cultura) e inicia-se TARV precocemente (7–14 dias) por ter CD4 < 50 sem meningite."
+        }
+      ]
+    },
+    {
+      id:"s16", topic:"tarv", imgs:[],
+      case:"Homem de 39 anos, recém-diagnosticado com HIV e TB pulmonar ativa (sem sinais meníngeos), iniciará TARV após 2 semanas de esquema RHZE. Sua função renal e hepática são normais e o HBsAg é não reativo.",
+      look:"Na coinfecção TB-HIV, a rifampicina reduz a concentração sérica do Dolutegravir (DTG). Deve-se dobrar a dose do DTG para 50 mg de 12/12h (100 mg/dia) mantendo TDF + 3TC.",
+      qs:[
+        {
+          q:"Qual esquema antirretroviral e ajuste posológico devem ser prescritos?",
+          a:"Tenofovir (TDF) + Lamivudina (3TC) + Dolutegravir (DTG) dobrado para 50 mg de 12/12h (100 mg/dia).",
+          opts:[
+            "Tenofovir (TDF) + Lamivudina (3TC) + Dolutegravir (DTG) dobrado para 50 mg de 12/12h (100 mg/dia).",
+            "Tenofovir (TDF) + Lamivudina (3TC) + Dolutegravir 50 mg em dose única diária padrão.",
+            "Lamivudina (3TC) + Dolutegravir (DTG) em terapia dupla simplificada.",
+            "Tenofovir (TDF) + Lamivudina (3TC) + Darunavir/Ritonavir em dose padrão."
+          ],
+          why:"A rifampicina induz o metabolismo do dolutegravir, reduzindo seus níveis plasmáticos. O protocolo recomenda manter TDF + 3TC e dobrar o DTG para 50 mg 2×/dia (ou substituir DTG por Efavirenz em caso de intolerância)."
+        }
+      ]
+    },
+    {
+      id:"s17", topic:"tarv", imgs:[],
+      table:{
+        title:"Avaliação Pré-TARV e Seguimento",
+        rows:[
+          ["Taxa de Filtração Glomerular","46 mL/min (< 60)","≥ 60 mL/min",true],
+          ["HBsAg (Hepatite B)","Reagente","Não reagente",true],
+          ["Anti-HBs","Não reagente","≥ 10 mUI/mL",false],
+          ["Hemoglobina","12,8 g/dL","13–17 g/dL",false]
+        ],
+        note:"Homem, 47 anos, diagnóstico recente de HIV, assintomático, sem TB ativa."
+      },
+      case:"Paciente de 47 anos inicia acompanhamento para HIV e apresenta clearance de creatinina de 46 mL/min associado a coinfecção por Hepatite B crônica (HBsAg reagente).",
+      look:"TDF é contraindicado se TFG < 60 mL/min (nefrotoxicidade tubular). Quando há coinfecção com Hepatite B + disfunção renal, prioriza-se Tenofovir Alafenamida (TAF) + 3TC + DTG.",
+      qs:[
+        {
+          q:"Qual a melhor escolha de esquema antirretroviral para esse paciente?",
+          a:"Tenofovir Alafenamida (TAF) + Lamivudina (3TC) + Dolutegravir (DTG).",
+          opts:[
+            "Tenofovir Alafenamida (TAF) + Lamivudina (3TC) + Dolutegravir (DTG).",
+            "Tenofovir Desoproxila (TDF) + Lamivudina (3TC) + Dolutegravir (DTG).",
+            "Abacavir (ABC) + Lamivudina (3TC) + Dolutegravir (DTG), sem nenhum análogo de tenofovir.",
+            "Zidovudina (AZT) + Lamivudina (3TC) + Efavirenz (EFV)."
+          ],
+          why:"O TDF padrão deve ser evitado com TFG < 60 mL/min. Como o paciente tem Hepatite B concomitante, o TAF é a escolha ideal porque suprime o HBV sem a toxicidade tubular renal do TDF."
+        }
+      ]
+    },
+    {
+      id:"s18", topic:"tarv", imgs:[],
+      case:"Homem de 44 anos, vivendo com HIV em uso de TARV há 9 meses, comparece ao retorno com carga viral de 1.850 cópias/mL (há 3 meses era 920 cópias/mL). Relata uso irregular dos comprimidos nos fins de semana e possui histórico de depressão não tratada.",
+      look:"Falha virológica = CV > 200 cópias após ≥ 6 meses de TARV. Investigar adesão, interações farmacológicas (ex: rifampicina sem dobrar DTG) e solicitar genotipagem antes de trocar esquema.",
+      qs:[
+        {
+          q:"Como se define o quadro e qual a conduta indicada?",
+          a:"Falha virológica confirmada (CV > 200 após ≥ 6 meses); abordar adesão/barreiras psicossociais e solicitar genotipagem para orientar ajuste.",
+          opts:[
+            "Falha virológica confirmada (CV > 200 após ≥ 6 meses); abordar adesão/barreiras psicossociais e solicitar genotipagem para orientar ajuste.",
+            "Supressão viral adequada (critério I=I), mantendo o esquema atual sem exames adicionais.",
+            "Elegível para simplificação com terapia dupla (3TC + DTG) para melhorar a adesão.",
+            "Suspender todos os antirretrovirais por 30 dias para eliminar cepas mutantes."
+          ],
+          why:"CV > 200 cópias após 6 meses de TARV define falha virológica. A principal causa é má adesão, mas deve-se solicitar genotipagem para detectar mutações de resistência antes de modificar o esquema."
+        }
+      ]
+    },
+    {
+      id:"s19", topic:"io_siri", imgs:[],
+      table:{
+        title:"Punção Lombar — Cefaleia Subaguda em PVHA",
+        rows:[
+          ["Pressão de abertura","34 cmH2O (muito elevada)","8–20 cmH2O",true],
+          ["Celularidade","180 cél/mm³ (85% linfócitos)","≤ 4 cél/mm³",true],
+          ["Glicose / Proteína","30 mg/dL / 120 mg/dL","Normal",true],
+          ["CrAg (LCR e Sérico)","Reagente (1:1024)","Não reagente",true],
+          ["Contagem de CD4+","68 cél/mm³","500–1500 cél/mm³",true]
+        ],
+        note:"Homem, 33 anos, HIV sem tratamento, cefaleia holocraniana intensa há 10 dias, vômitos e turvação visual, sem déficits focais e TC normal."
+      },
+      case:"Homem de 33 anos, recém-diagnosticado com HIV (CD4 = 68 cél/mm³), apresenta cefaleia intensa progressiva, vômitos e visão turva. A análise do líquor confirma meningite criptocócica.",
+      look:"Na meningite criptocócica: indução de 14 dias com Anfotericina B + Flucitosina e ADIAR TARV por 4 a 6 semanas (até 8 semanas) para evitar SIRI intracraniana fatal.",
+      qs:[
+        {
+          q:"Qual o tratamento de indução e o momento correto para iniciar a TARV?",
+          a:"Anfotericina B + Flucitosina por 14 dias (seguida de fluconazol) e adiar o início da TARV por 4 a 6 semanas.",
+          opts:[
+            "Anfotericina B + Flucitosina por 14 dias (seguida de fluconazol) e adiar o início da TARV por 4 a 6 semanas.",
+            "Fluconazol oral isolado por 14 dias e iniciar TARV hoje mesmo por ter CD4 < 100.",
+            "RHZE + Dexametasona por 12 meses e iniciar TARV em 7 dias.",
+            "Sulfadiazina + Pirimetamina por 6 semanas e iniciar TARV em 14 dias."
+          ],
+          why:"A meningite criptocócica exige indução com Anfotericina B + Flucitosina por 14 dias e adiamento obrigatório da TARV por 4 a 6 semanas para prevenir hipertensão intracraniana grave e óbito por SIRI no SNC."
+        }
+      ]
+    },
+    {
+      id:"s20", topic:"io_siri", imgs:[],
+      table:{
+        title:"Gasometria e Laboratório — Dispneia Progressiva",
+        rows:[
+          ["PaO2 em ar ambiente","58 mmHg (< 70 mmHg)","80–100 mmHg",true],
+          ["SatO2","88%","≥ 95%",true],
+          ["Contagem de CD4+","115 cél/mm³","500–1500 cél/mm³",true],
+          ["Rx de Tórax","Infiltrado intersticial bilateral peri-hilar","Normal",true]
+        ],
+        note:"Mulher, 37 anos, PVHA sem TARV, tosse seca, febre baixa e dispneia progressiva aos esforços há 2 semanas, candidíase esofágica associada."
+      },
+      case:"Mulher de 37 anos com HIV avançado (CD4 = 115 cél/mm³) apresenta tosse seca, dispneia progressiva e hipoxemia importante (PaO2 = 58 mmHg), compatíveis com pneumocistose (PCP).",
+      look:"PCP ocorre tipicamente com CD4 < 200. Tratamento: Sulfametoxazol-Trimetoprima (SMX-TMP) por 21 dias + CORTICOIDE se PaO2 < 70 mmHg + início precoce da TARV + profilaxia secundária até CD4 > 200 por ≥ 6 meses.",
+      qs:[
+        {
+          q:"Qual a conduta terapêutica indicada para essa paciente?",
+          a:"Sulfametoxazol-Trimetoprima (21 dias) associado a corticoide sistêmico (pois PaO2 < 70 mmHg) e início precoce de TARV.",
+          opts:[
+            "Sulfametoxazol-Trimetoprima (21 dias) associado a corticoide sistêmico (pois PaO2 < 70 mmHg) e início precoce de TARV.",
+            "Sulfametoxazol-Trimetoprima isolado (contraindicado corticoide na hipoxemia) e adiar TARV por 6 semanas.",
+            "Anfotericina B venosa por 14 dias seguida de itraconazol oral.",
+            "Clindamicina + primaquina como primeira escolha em pacientes sem alergia à sulfa."
+          ],
+          why:"Na pneumocistose moderada a grave com PaO2 < 70 mmHg, a associação de corticoide ao SMX-TMP reduz a inflamação alveolar e a mortalidade. Diferente das meningites fúngica/TB, na PCP a TARV deve ser iniciada precocemente."
+        }
+      ]
+    },
+    {
+      id:"s21", topic:"io_siri", imgs:[],
+      case:"Homem de 35 anos, PVHA com CD4 = 62 cél/mm³, apresenta hemiparesia direita subaguda, cefaleia e convulsão focal. A RM de crânio mostra múltiplas lesões hipodensas com realce anelar e edema perilesional em núcleos da base. Após 14 dias de sulfadiazina, pirimetamina e ácido folínico, há melhora clínica e radiológica.",
+      look:"Neurotoxoplasmose ocorre tipicamente com CD4 < 100, simula AVC e tem como principal diagnóstico diferencial o Linfoma Primário do SNC (que não responde à terapia anti-toxoplasma em 14 dias).",
+      qs:[
+        {
+          q:"Qual o principal diagnóstico diferencial e o critério para suspender a profilaxia secundária após o tratamento?",
+          a:"Linfoma Primário do SNC; manter profilaxia secundária até recuperação imune com CD4 > 200 cél/mm³ por pelo menos 6 meses.",
+          opts:[
+            "Linfoma Primário do SNC; manter profilaxia secundária até recuperação imune com CD4 > 200 cél/mm³ por pelo menos 6 meses.",
+            "Meningite meningocócica; suspender qualquer profilaxia imediatamente após o 14º dia.",
+            "Histoplasmose cerebral; suspender profilaxia secundária assim que a carga viral ficar abaixo de 200.",
+            "Distúrbio HAND; manter sulfadiazina por toda a vida independentemente do CD4."
+          ],
+          why:"O Linfoma Primário do SNC também ocorre em imunossupressão grave e gera lesões expansivas semelhantes. A profilaxia secundária das infecções oportunistas só é suspensa quando a TARV sustenta CD4 > 200 cél/mm³ por ≥ 6 meses."
+        }
+      ]
+    },
+    {
+      id:"s22", topic:"io_siri", imgs:[],
+      case:"Homem de 31 anos, PVHA com CD4 = 48 cél/mm³ e lesões cutâneas violáceas compatíveis com Sarcoma de Kaposi, inicia TARV. Três semanas depois, desenvolve edema local intenso, febre e piora inflamatória das lesões cutâneas e pulmonares do Sarcoma de Kaposi, com queda da carga viral do HIV.",
+      look:"Regra crítica de SIRI: na SIRI associada ao Sarcoma de Kaposi, CORTICOIDES SÃO CONTRAINDICADOS porque aceleram a proliferação e disseminação do tumor vascular!",
+      qs:[
+        {
+          q:"Qual a conduta correta diante da SIRI neste paciente?",
+          a:"Manter a TARV e o tratamento oncológico/suporte, MAS NÃO administrar corticosteroides devido ao risco de progressão do Sarcoma de Kaposi.",
+          opts:[
+            "Manter a TARV e o tratamento oncológico/suporte, MAS NÃO administrar corticosteroides devido ao risco de progressão do Sarcoma de Kaposi.",
+            "Administrar prednisona 1,5 mg/kg/dia por 2 semanas ou metilprednisolona IV imediatamente.",
+            "Suspender a TARV definitivamente até regressão completa das lesões violáceas.",
+            "Iniciar esquema RHZE empírico associando dexametasona em altas doses."
+          ],
+          why:"Embora corticoides sejam a base do tratamento da SIRI grave na TB e em outras IOs, no Sarcoma de Kaposi eles são proibidos por estimularem o crescimento e a disseminação tumoral."
+        }
+      ]
+    }
+  ],
+  atlas:[],
+  sheet:[
+    ["tb_base",["Transmissão estritamente aérea: núcleos de Wells (< 10 µm, ~2 bacilos)","Fontes bacilíferas: apenas TB pulmonar e TB laríngea (extrapulmonar pura não transmite)","História natural: 90% ILTB · 5% ativa primária (≤ 2 anos) · 5% reativação tardia","Risco relativo: Rua 56× · Carcerária e HIV 28× · Enfermagem 20× · Patologia 11×"],"Fômites NÃO transmitem. Quebra da cadeia após ~2 semanas de tratamento eficaz."],
+    ["tb_diag",["Sintomático Respiratório (SR): tosse ≥ 2–3 semanas (qualquer característica)","Caso novo: 2 BAAR + 1 TRM-TB + Cultura/TSA (não atrasar RHZE aguardando cultura)","TRM-TB: DNA + resistência à rifampicina em ~1h (PROIBIDO no seguimento/recidiva)","Retratamento: BAAR + TRM-TB + Cultura/TSA (BAAR+ e TRM-TB- sugere MNT)"],"Rifampicina resistente no TRM-TB: iniciar RHZE + 2ª amostra TRM-TB + Cultura/TSA + referência."],
+    ["tb_extra",["TB Pleural: exsudato linfocítico (Light) + ADA ≥ 40 U/L; biópsia aumenta acurácia","Empiema tuberculoso: ruptura de caverna; pus com BAAR positivo","TB Ganglionar: comum no HIV, cadeia cervical ('pescoço de touro'), fistuliza","TB Meningoencefálica e Óssea (Mal de Pott): tratamento estendido de 12 meses"],"TB meníngea exige TC antes da PL e corticoide adjuvante obrigatório (2RHZE + 10RH)."],
+    ["tb_trat",["Esquema padrão (6m): 2RHZE (intensiva) + 4RH (manutenção) em jejum","Peso RHZE: 20–35 kg (2 cp) · 36–50 kg (3 cp) · 51–70 kg (4 cp) · > 70 kg (5 cp)","Suspender se TGO/TGP > 5× LSN (assintomático) ou > 3× LSN (sintomático/ictérico/cirrótico)","Reintrodução sequencial: 1º R+E → 2º H → 3º Z (intervalo de 7–10 dias)"],"Gestante: RHZE + Piridoxina 50–100 mg/dia. ClCr < 30: 3×/semana pós-diálise."],
+    ["iltb",["Sempre excluir TB ativa antes (sintomas + Rx tórax ± escarro) — erro médico não descartar","Sem PT/IGRA: RN coabitante, PVHA contato de TB, PVHA com CD4 ≤ 350 ou cicatriz no Rx","PT ≥ 5 mm: contatos, PVHA CD4 > 350, fibrose sequelar, anti-TNF, corticoide (>15 mg/d >1m)","PT ≥ 10 mm: silicose, neoplasia, diálise, DM, baixo peso, tabagismo >1 maço/d, conversão (≥10 mm)"],"Preferencial: 3HP (12 doses semanais). Rifampicina 4m é contraindicada com DTG/IP."],
+    ["hiv_base",["Retrovírus RNA envelopado; GP120/GP41 ligam CD4 + correceptor CCR5 ou CXCR4","SRA (14d–6m): queda de ~30% CD4, mononucleose-like, meningite asséptica / Guillain-Barré","Latência: ~10 anos (CD4 350–500); linfadenopatia persistente; replicação contínua","HAND: neuroinflamação crônica (Cavalo de Troia / micróglia), mesmo com CV suprimida"],"Quanto mais longa a síndrome aguda (> 14 dias), menor o tempo até AIDS."],
+    ["hiv_diag",["2 Testes Rápidos de fabricantes distintos reagentes = diagnóstico fechado","1º reagente + 2º não reagente -> fazer 3º TR imediato (se persistir discordante, repetir em 30d)","Circuito Rápido: CD4 < 200, estágio 3/4 ou sinais graves (FC > 120, FR > 30, sarcopenia)","Triagem rápida IO: CrAg sérico, TB-LAM urinário (25 min, CD4 < 200) e antígeno Histoplasma"],"Meta: iniciar TARV em até 7 dias (exceto TB ativa ou infecções graves do SNC)."],
+    ["tarv",["1ª linha: TDF + 3TC + DTG (dose única diária, independente de CD4)","Coinfecção TB: dobrar DTG para 50 mg 12/12h (100 mg/d) devido à rifampicina","TFG < 60: trocar TDF por ABC ou AZT (se Hb ≥ 10); se Hepatite B associada, usar TAF","Falha virológica: CV > 200 após ≥ 6m -> checar adesão/interações e pedir genotipagem"],"I=I: CV < 200 cópias por ≥ 6 meses elimina transmissão sexual (não elimina outras ISTs)."],
+    ["io_siri",["CD4 < 350: TB · < 200: PCP e candidíase esofágica · < 100: Neurotoxo · < 50: CMV e MAC","TB-HIV: tratar TB primeiro; TARV em 7–14d (se CD4 < 50) ou 4–8 sem (se CD4 ≥ 50 ou meníngea)","Meningite criptocócica: Anfo B + Flucitosina (14d) e adiar TARV por 4–6 semanas","SIRI: piora paradoxal após TARV; manter TARV + antimicrobiano e associar corticoide"],"Exceção: NÃO usar corticoide na SIRI do Sarcoma de Kaposi (acelera tumor)."]
+  ],
+  rules:[
+    ["Nunca usar TRM-TB para controle de cura ou recidiva.","O TRM-TB detecta DNA de bacilos mortos por até 1 ano pós-tratamento, gerando falsos-positivos. O seguimento é feito exclusivamente por baciloscopia (BAAR)."],
+    ["Baciloscopia negativa não exclui tuberculose ativa.","Em paucibacilares e PVHA, a BAAR frequentemente é negativa e o Rx pode não ter cavitação. Sempre associar TRM-TB, Cultura + TSA e, se CD4 < 200, TB-LAM urinário."],
+    ["Obrigatório descartar TB ativa antes de tratar ILTB.","Iniciar isoniazida ou 3HP em paciente com TB ativa subclínica induz resistência medicamentosa e constitui erro médico monitorado pelo Ministério da Saúde."],
+    ["Coinfecção TB-HIV exige dobrar a dose de Dolutegravir.","A rifampicina induz o metabolismo do DTG; prescrever DTG 50 mg de 12/12h (100 mg/dia) mantendo TDF + 3TC (ou substituir DTG por Efavirenz)."],
+    ["Monoterapia com Rifampicina na ILTB é proibida com DTG ou IP.","Para tratar ILTB em PVHA usando Dolutegravir ou inibidor de protease, escolher 3HP (12 semanas) ou Isoniazida (6 a 9 meses)."],
+    ["Timing da TARV na coinfecção depende do CD4 e do acometimento do SNC.","Tratar TB primeiro: se CD4 < 50 (sem meningite), iniciar TARV em 7–14 dias; se CD4 ≥ 50, iniciar em 4–8 semanas; na TB meníngea ou meningite criptocócica, adiar 4–8 semanas."],
+    ["TB meningoencefálica e osteoarticular duram 12 meses.","Diferente do esquema padrão de 6 meses (2RHZE + 4RH), formas do SNC e ósseas (Mal de Pott) exigem 2RHZE + 10RH. Na meníngea, corticoide é obrigatório."],
+    ["Hepatotoxicidade: limiares de 5× (assintomático) e 3× (sintomático).","Suspender RHZE se TGO/TGP > 5× LSN sem sintomas ou > 3× LSN com sintomas/icterícia/cirrose. Reintroduzir após normalização na ordem: 1º R+E → 2º H → 3º Z."],
+    ["Gestante com TB ativa trata imediatamente com RHZE + Piridoxina.","Associar Vitamina B6 (50–100 mg/dia) previne neuropatia periférica materna e neurotoxicidade fetal pela isoniazida. ILTB em gestante HIV- é adiada para o pós-parto."],
+    ["Dois testes rápidos de fabricantes distintos fecham diagnóstico de HIV.","Se o 1º e o 2º discordarem, fazer o 3º imediatamente. Persistindo discordância (2 negativos e 1 positivo), repetir em 30 dias para afastar janela imunológica."],
+    ["SIRI não é motivo para suspender a TARV nem o antimicrobiano.","A piora paradoxal decorre da recuperação imune. Manter os esquemas e associar corticoide nos casos moderados/graves — EXCETO no Sarcoma de Kaposi."],
+    ["Vacinas de vírus vivos atenuados são contraindicadas com CD4 < 200.","BCG, febre amarela, tríplice viral e varicela são proibidas com CD4 < 200 (a aula da Márcia orienta CD4 > 350 para segurança plena). Hepatite B exige 4 doses."],
+    ["Indetectável = Intransmissível (I=I) exige estabilidade de 6 meses.","Carga viral < 200 cópias mantida por ≥ 6 meses elimina transmissão sexual do HIV, mas não protege contra outras ISTs nem contra compartilhamento de seringas."],
+    ["Profilaxia secundária só suspende após CD4 > 200 por ≥ 6 meses.","Após tratar pneumocistose, neurotoxoplasmose ou histoplasmose, manter profilaxia secundária até recuperação sustentada de CD4 > 200 por no mínimo 6 meses."]
+  ],
+  pairs:[
+    {
+      t:"Candidíase Oral × Leucoplasia Pilosa",
+      a:["Candidíase Oral","Placas brancas removíveis com espátula; causada por Candida sp."],
+      b:["Leucoplasia Pilosa","Lesões brancas filiformes nas bordas laterais da língua, aderidas (não saem à raspagem); causada pelo vírus Epstein-Barr (EBV)."],
+      k:"<b>Desempate:</b> Passou a espátula e saiu = Candidíase; ficou aderida na borda lateral da língua = Leucoplasia pilosa."
+    },
+    {
+      t:"TB Pleural × Empiema Tuberculoso",
+      a:["TB Pleural","Reação inflamatória exsudativa linfocítica com ADA ≥ 40 U/L; BAAR e TRM-TB quase sempre negativos no líquido (biópsia pleural tem maior rendimento)."],
+      b:["Empiema Tuberculoso","Ruptura de caverna subpleural para o espaço pleural; líquido purulento rico em bacilos com BAAR frequentemente positivo."],
+      k:"<b>Desempate:</b> Líquido serofibrinoso linfocítico com BAAR negativo e ADA ≥ 40 = TB pleural; pus franco com BAAR positivo = Empiema."
+    },
+    {
+      t:"Meningite Tuberculosa × Meningite Criptocócica",
+      a:["Meningite Tuberculosa","Subaguda (semanas), acomete base do crânio (pares cranianos III, IV, VI, VII), LCR linfomonocitário, hipoglicorraquia. Trata com RHZE (12m) + Corticoide."],
+      b:["Meningite Criptocócica","Cefaleia intensa e hipertensão intracraniana grave (pressão de abertura muito alta), LCR linfomonocitário, CrAg positivo. Trata com Anfo B + Flucitosina (14d)."],
+      k:"<b>Desempate:</b> CrAg reagente no sangue/LCR fecha Criptococose; paralisia de pares cranianos + sintomas constitucionais prévios + ADA/TRM apontam TB meníngea."
+    },
+    {
+      t:"Neurotoxoplasmose × Linfoma Primário do SNC",
+      a:["Neurotoxoplasmose","CD4 < 100; múltiplas lesões com realce anelar e edema; responde clínica e radiologicamente em 14 dias de Sulfadiazina + Pirimetamina + Ácido Folínico."],
+      b:["Linfoma Primário do SNC","CD4 < 50; lesão expansiva única ou múltipla associada ao EBV que simula neurotoxoplasmose, mas não responde à terapia antiparasitária."],
+      k:"<b>Desempate:</b> Prova terapêutica por 14 dias — melhora = Neurotoxoplasmose; falha terapêutica = investigar Linfoma do SNC."
+    },
+    {
+      t:"PPD (Prova Tuberculínica) × IGRA",
+      a:["PPD (PT)","Intradérmico, leitura em 72h (até 96h); sofre efeito booster e interferência de BCG recente; não repetir antes de 8 semanas."],
+      b:["IGRA","Exame de sangue (interferon-gama); não sofre efeito booster nem sofre interferência da vacina BCG; pode ser repetido se indeterminado."],
+      k:"<b>Desempate:</b> Nenhum dos dois diagnostica TB ativa em adultos; ambos medem apenas memória imune Th1 para rastreio de ILTB."
+    },
+    {
+      t:"SIRI Paradoxal × Falha Terapêutica / TB-MDR",
+      a:["SIRI Paradoxal","Piora clínica/inflamatória 2–8 semanas após iniciar TARV, acompanhada de queda da carga viral, subida do CD4 e escassez de bacilos viáveis."],
+      b:["Falha / TB-MDR","Piora clínica por má adesão, subdosagem (ex: rifampicina sem dobrar DTG) ou resistência bacteriana, com persistência de bacilos viáveis e falha virológica."],
+      k:"<b>Desempate:</b> Sucesso laboratorial do HIV (CV caindo, CD4 subindo) + boa adesão + BAAR negativo = SIRI (manter esquemas e dar corticoide)."
+    },
+    {
+      t:"Rifampicina + DTG (TB Ativa) × Rifampicina (ILTB)",
+      a:["TB Ativa + TARV","Mantém-se o esquema RHZE e dobra-se a dose do Dolutegravir para 50 mg de 12/12h (100 mg/dia) para compensar a indução enzimática."],
+      b:["ILTB em PVHA com DTG","A monoterapia com Rifampicina (4 meses) é CONTRAINDICADA; usa-se 3HP (12 semanas) ou Isoniazida (6–9 meses)."],
+      k:"<b>Desempate:</b> Na TB ativa a rifampicina é insubstituível (dobra-se o DTG); na ILTB há alternativas seguras sem precisar mexer na TARV."
+    },
+    {
+      t:"Esquema TB Padrão (6m) × Esquema Estendido (12m)",
+      a:["Padrão (6 meses)","2 meses de RHZE + 4 meses de RH. Usado na TB pulmonar, pleural, ganglionar, pericárdica e na maioria das formas extrapulmonares."],
+      b:["Estendido (12 meses)","2 meses de RHZE + 10 meses de RH. Usado exclusivamente na TB meningoencefálica e na TB osteoarticular (Mal de Pott)."],
+      k:"<b>Desempate:</b> Só SNC e Osso/Articulação duram 12 meses; todas as demais formas duram 6 meses."
+    }
+  ],
+  snaps:[
+    ["tb_base",null,"Mycobacterium tuberculosis (Bacilo de Koch)",["Aeróbio estrito","BAAR","Núcleos de Wells"],"Parede rica em lipídios, ácido micólico e arabinogalactano (alvo do TB-LAM). Infecta macrófagos alveolares e forma granuloma caseoso via resposta Th1.","Transmissão exclusivamente aérea por casos pulmonares/laríngeos; cessa após ~2 semanas de terapia eficaz."],
+    ["tb_diag",null,"Tosse ≥ 2–3 semanas = Sintomático Respiratório",["2 BAAR","1 TRM-TB","Cultura + TSA"],"TRM-TB detecta DNA e resistência à rifampicina em ~1h. Cultura + TSA são padrão-ouro (45–60d), mas nunca devem atrasar o início do tratamento.","Nunca usar TRM-TB no seguimento (detecta bacilos mortos); usar apenas baciloscopia."],
+    ["tb_extra",null,"Formas não bacilíferas (investigar pulmão associado)",["ADA ≥ 40 U/L","Véu de noiva","Mal de Pott"],"Pleural (exsudato linfocítico), ganglionar ('pescoço de touro' em HIV), meningoencefálica (pares cranianos + hidrocefalia), pericárdica e vertebral (T10–L5).","6 meses na maioria; 12 meses (2RHZE + 10RH) apenas na meningoencefálica (com corticoide) e osteoarticular."],
+    ["tb_trat",null,"Esquema poliquimioterápico por nichos metabólicos",["2RHZE + 4RH","Jejum","Hepatotoxicidade"],"R (bactericida/esterilizante), H (bactericida), Z (meio ácido intracelular) e E (caseoso). Suspender se TGO/TGP > 5× LSN ou > 3× com sintomas.","Reintroduzir após normalização: 1º R+E → 2º H → 3º Z. Gestante: associar piridoxina 50–100 mg/dia."],
+    ["iltb",null,"Bacilo contido em granuloma (assintomático e não transmissor)",["PPD / IGRA","Excluir TB ativa","Esquema 3HP"],"Rastreio com PPD (leitura 72h) ou IGRA. Tratar sem teste se PVHA com CD4 ≤ 350, contato de TB ou RN coabitante, sempre após excluir TB ativa.","Preferencial: 3HP (12 doses semanais). Tratar ILTB apenas uma vez na vida."],
+    ["hiv_base",null,"Retrovírus de RNA envelopado (HIV-1 dominante)",["GP120 / CCR5","SRA","HAND"],"Transcriptase reversa converte RNA em DNA proviral integrado ao genoma humano. Latência ~10 anos com fibrose linfonodal; cronicidade gera HAND no SNC.","Síndrome aguda > 14 dias prediz progressão rápida; redução da carga viral contém neuroinflamação."],
+    ["hiv_diag",null,"Algoritmo de Duplo Teste Rápido + Circuito Rápido",["2 TR distintos","TB-LAM","CrAg / Histoplasma"],"Dois TRs de fabricantes diferentes fecham diagnóstico. Em CD4 < 200 ou sinais graves, triar CrAg sérico, TB-LAM urinário (25 min) e antígeno de histoplasma.","Meta de iniciar TARV em até 7 dias (adiar se TB ativa ou meningite fúngica/TB)."],
+    ["tarv",null,"Esquema 1ª Linha: TDF + 3TC + DTG",["DTG 100 mg na TB","TAF no HBV","I=I (< 200)"],"Dose única diária independente de CD4. TFG < 60: trocar TDF por ABC ou AZT (ou TAF se Hepatite B). Falha virológica: CV > 200 após ≥ 6m.","Na TB ativa, dobrar DTG para 50 mg 12/12h. Vacinas vivas proibidas se CD4 < 200."],
+    ["io_siri",null,"Estratificação pelo CD4 e Reconstituição Imune",["CD4 < 350 TB","CD4 < 200 PCP","SIRI"],"CD4 < 350 (TB), < 200 (PCP, candidíase esofágica), < 100 (Neurotoxo), < 50 (CMV, MAC). SIRI é piora paradoxal após TARV com melhora virológica.","Manter TARV + tratamento da IO na SIRI e associar corticoide (exceto no Sarcoma de Kaposi)."]
+  ],
+  noteLabels:["Agente / Fisiopatologia","Quadro / Marcadores","Diagnóstico","Conduta / Esquema","Pegadinha de Prova"],
+  notes:[
+    [
+      "tb_base",null,
+      ["<i>Mycobacterium tuberculosis</i> (BAAR), aeróbio estrito (ápices pulmonares). Parede rica em lipídios, ácido micólico e arabinogalactano.",
+       "Núcleos de Wells (< 10 µm) suspensos no ar por horas em ambientes fechados. 90% viram ILTB; 5% adoecem em 2 anos; 5% reativam.",
+       "Imunidade celular Th1 forma granuloma com necrose caseosa. Imunodeprimidos fazem padrões miliares/intersticiais sem cavitação.",
+       "Fontes transmissoras: TB pulmonar e laríngea. Isolamento respiratório (PFF2/N95 no profissional, máscara cirúrgica no paciente) e ventilação/sol.",
+       "Fômites (roupas, talheres) NÃO transmitem TB. A infectividade cai drasticamente após 2 semanas de tratamento eficaz."],
+      "População em situação de rua tem risco 56× maior; carcerária e PVHA têm risco 28× maior."
+    ],
+    [
+      "tb_diag",null,
+      ["Investigação de sintomático respiratório (tosse ≥ 2–3 semanas, independente do aspecto) e grupos vulneráveis.",
+       "Febre vespertina, sudorese noturna, emagrecimento e astenia; exame físico pode ser normal.",
+       "Caso novo: 2 BAAR + 1 TRM-TB (GeneXpert, ~1h) + Cultura e TSA (padrão-ouro, 45–60 dias).",
+       "Iniciar RHZE imediatamente após TRM-TB positivo, sem aguardar cultura. Em crianças < 10 anos sem escarro: lavado gástrico + Escore Pediátrico (≥ 30 trata).",
+       "TRM-TB é PROIBIDO para controle de cura ou diagnóstico de recidiva (amplifica DNA de bacilos mortos por até 1 ano)."],
+      "No retratamento com BAAR positivo e TRM-TB não detectado, suspeitar de Micobactéria Não Tuberculosa (MNT)."
+    ],
+    [
+      "tb_extra",null,
+      ["Disseminação linfática ou hematogênica a partir do foco primário; comum em PVHA e crianças.",
+       "Pleural (dor pleurítica), Ganglionar (cadeia cervical 'pescoço de touro' com fístula), Meningoencefálica (pares cranianos + HIC), Pericárdica (constrição) e Mal de Pott (coluna T10–L5).",
+       "Pleural: Critérios de Light (exsudato linfocítico) + ADA ≥ 40 U/L + biópsia pleural. Meningoencefálica: TC antes da PL + LCR linfomonocitário com glicose baixa.",
+       "6 meses (2RHZE + 4RH) na maioria; 12 meses (2RHZE + 10RH) na TB meningoencefálica (com corticoide obrigatório) e osteoarticular.",
+       "Mesmo em TB extrapulmonar exclusiva, é obrigatório investigar o pulmão para descartar transmissibilidade."],
+      "Empiema tuberculoso (ruptura de caverna) tem pus e BAAR positivo; pleurite tuberculosa comum tem BAAR negativo no líquido."
+    ],
+    [
+      "tb_trat",null,
+      ["Ação combinada: Rifampicina (bactericida/esterilizante), Isoniazida (bactericida), Pirazinamida (meio ácido intracelular) e Etambutol (necrose caseosa).",
+       "Doses por peso (20–35 kg: 2 cp; 36–50 kg: 3 cp; 51–70 kg: 4 cp; > 70 kg: 5 cp) em jejum matinal.",
+       "Monitorar TGO/TGP basal e na evolução; suspensão se > 5× LSN (assintomático) ou > 3× LSN (sintomático/ictérico/cirrótico).",
+       "Reintrodução sequencial após normalizar enzimas (a cada 7–10 dias): 1º R+E → 2º H → 3º Z. Se não normalizar em 4 semanas: esquema CEL na referência.",
+       "Etambutol não é hepatotóxico (causa neurite óptica/ototoxicidade). Rifampicina induz CYP450 e descompensa diabetes em uso de hipoglicemiantes orais."],
+      "Gestante com TB ativa usa RHZE padrão + Piridoxina (Vitamina B6) 50–100 mg/dia."
+    ],
+    [
+      "iltb",null,
+      ["Bacilo viável contido em granuloma; indivíduo assintomático e não transmissor.",
+       "Ausência total de sintomas e radiografia de tórax normal.",
+       "PPD (intradérmico, leitura em 72h, não repetir antes de 8 semanas pelo efeito booster) ou IGRA (sanguíneo, sem booster).",
+       "Preferencial: 3HP (Isoniazida 900 mg + Rifapentina 900 mg, 1×/semana por 12 semanas). Alternativas: Isoniazida 6–9m ou Rifampicina 4m.",
+       "NUNCA tratar ILTB sem excluir TB ativa. Monoterapia com Rifampicina é contraindicada em PVHA usando DTG ou IP."],
+      "PVHA com CD4 ≤ 350 ou contato de TB pulmonar trata ILTB mesmo sem teste PPD/IGRA (após excluir doença ativa)."
+    ],
+    [
+      "hiv_base",null,
+      ["Retrovírus de RNA envelopado (HIV-1 dominante); GP120/GP41 ligam CD4 + correceptores CCR5/CXCR4; integração proviral no genoma humano.",
+       "SRA (14d–6m): queda de ~30% CD4, mononucleose-like, Guillain-Barré; Latência (~10 anos): CD4 350–500, linfadenopatia; AIDS: CD4 < 200.",
+       "Carga viral (PCR-RNA) e contagem de CD4 são inversamente proporcionais; HAND avaliado com neuropsicologia, RM e biomarcadores (NfL, BDNF).",
+       "Supressão viral contínua interrompe destruição de CD4, fibrose linfonodal e progressão neurodegenerativa.",
+       "Anticorpos anti-GP120 não curam a infecção pois atuam no sangue enquanto o provírus permanece integrado nos linfócitos teciduais."],
+      "Homozigose para mutação delta-32 no CCR5 confere resistência à entrada viral (paradigma do Paciente de Berlim)."
+    ],
+    [
+      "hiv_diag",null,
+      ["Detecção precoce do antígeno p24 (ELISA 4ª geração e testes rápidos imunocromatográficos) reduz janela imunológica (~30 dias).",
+       "Sinais sentinela: diarreia crônica (placas de Peyer), candidíase oral, leucoplasia pilosa, herpes-zóster multidermatômico e pneumonias de repetição.",
+       "2 Testes Rápidos de fabricantes distintos reagentes confirmam o diagnóstico. Discordância -> 3º TR imediato -> repetir em 30 dias.",
+       "Circuito Rápido (CD4 < 200 ou sinais graves): solicitar CrAg sérico, TB-LAM urinário (25 min) e antígeno urinário de histoplasma.",
+       "Teste de fluido oral é apenas triagem e não entra no fluxo oficial de confirmação diagnóstica."],
+      "A falta de resultado de CD4 não impede incluir paciente grave no Circuito Rápido e iniciar profilaxia primária."
+    ],
+    [
+      "tarv",null,
+      ["Bloqueio combinado do ciclo viral: ITRN (TDF, 3TC, ABC, AZT), Inibidores de Integrase (DTG) e Inibidores de Protease (DRV/r).",
+       "Meta terapêutica: carga viral indetectável (< 40 cópias) e recuperação imunológica de CD4.",
+       "Painel basal: hemograma, renal, hepática, VDRL, hepatites B/C, PPD/IGRA. Genotipagem pré-TARV em gestantes, crianças, falha de PrEP e TB-HIV.",
+       "1ª linha: TDF + 3TC + DTG 1×/dia (meta início ≤ 7 dias). TFG < 60: ABC ou AZT (ou TAF se HBV). TB ativa: dobrar DTG para 50 mg 12/12h.",
+       "Efavirenz causa sintomas neuropsiquiátricos/ideação suicida; TDF causa nefrotoxicidade e osteopenia; IP causa síndrome metabólica."],
+      "Terapia dupla (3TC + DTG) é apenas para manutenção de pacientes estáveis/suprimidos, nunca para virgens de tratamento."
+    ],
+    [
+      "io_siri",null,
+      ["Colapso da imunidade celular (CD4) permite reativação de patógenos intracelulares latentes e neoplasias virais.",
+       "CD4 < 350: TB · < 200: PCP e candidíase esofágica · < 100: Neurotoxoplasmose · < 50: CMV, MAC e Linfoma SNC.",
+       "PCP: SMX-TMP 21d (+ corticoide se PaO2 < 70); Neurotoxo: Sulfadiazina + Pirimetamina + Ácido Folínico; Cripto: Anfo B + Flucitosina (14d).",
+       "Profilaxia primária com SMX-TMP se CD4 < 200 (cobre PCP e toxoplasmose). SIRI: manter TARV + terapia da IO e usar corticoide.",
+       "Adiar TARV 4–6 semanas na meningite criptocócica e 4–8 semanas na TB meníngea para evitar edema cerebral/HIC fatal."],
+      "Na SIRI associada ao Sarcoma de Kaposi, corticoides são PROIBIDOS pelo risco de acelerar o tumor."
+    ]
+  ],
+  def:[
+    {
+      k:"tb_base", practice:false,
+      case:"Homem, 42 anos, pedreiro, vive em moradia sem ventilação com 8 familiares, apresenta tosse produtiva há 4 semanas, febre vespertina e emagrecimento.",
+      question:"Quais formas clínicas são transmissoras, como ocorre a transmissão e por que imunodeprimidos não costumam formar cavitações?",
+      sections:[
+        ["Microbiologia e Parede Celular",["<b>Mycobacterium tuberculosis</b> (Bacilo de Koch): bacilo fino, curvo, aeróbio estrito (predileção pelos ápices pulmonares).","Parede celular rica em <b>lipídios</b>, <b>ácidos micólicos</b> (propriedade BAAR) e <b>arabinogalactano</b> (biomarcador do teste urinário TB-LAM).","Sobrevive dentro de macrófagos ao inibir a fusão fagolisossômica."]],
+        ["Transmissão e Hierarquia de Infectividade",["Via <b>estritamente aérea</b> por gotículas de Flügge que evaporam em <b>núcleos de Wells</b> (< 10 µm, ~2 bacilos), permanecendo em suspensão por horas.","<b>Bacilíferos (transmissores):</b> apenas TB pulmonar e TB laríngea. Formas extrapulmonares puras têm infectividade nula.","<b>Fômites não transmitem</b>. Um caso-fonte infecta 10–15 pessoas/ano; a cadeia quebra após ~2 semanas de tratamento eficaz."]],
+        ["História Natural e Imunologia",["<b>90%</b> controlam via resposta celular <b>Th1</b> formando <b>granuloma com necrose caseosa</b> (ILTB).","<b>5%</b> adoecem em até 2 anos (TB primária, comum em crianças/idosos) e <b>5%</b> reativam tardiamente.","A cavitação exige resposta imune adaptativa; pacientes com HIV avançado fazem formas paucibacilares (miliar/reticulonodular)."]]
+      ],
+      dif:[["M. bovis","Transmissão digestiva/ocupacional (leite não pasteurizado/rebanho); causa principalmente TB ganglionar."],["Micobactérias Não Tuberculosas (MNT)","Ex.: <i>M. avium</i> e <i>M. abscessus</i> (surtos pós-cirúrgicos por reuso de trocartes); TRM-TB é não detectado e não respondem ao RHZE."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["Risco relativo comparado à população geral: situação de rua (56×), carcerária e HIV (28×), enfermagem (20×), patologia (11×), estudantes de saúde (8×).","Biossegurança: profissional usa respirador <b>PFF2/N95</b>; paciente usa <b>máscara cirúrgica</b> (barreira de fonte); ambiente com ventilação cruzada e luz solar."]
+    },
+    {
+      k:"tb_diag", practice:false,
+      table:{
+        title:"Exemplo de Resultado Discordante no Diagnóstico",
+        rows:[
+          ["Baciloscopia (2 amostras)","Negativa","Negativa",false],
+          ["TRM-TB (GeneXpert)","MTB Detectado (Sensível à R)","Não detectado",true],
+          ["Cultura + TSA","Em andamento (45–60 dias)","Negativa",false]
+        ],
+        note:"Caso clínico da aula: pedreiro de 42 anos com cavitação apical e BAAR negativa."
+      },
+      case:"Paciente sintomático respiratório com tosse há 3 semanas realiza 2 baciloscopias negativas e 1 TRM-TB positivo (sensível à rifampicina).",
+      question:"Por que iniciar RHZE antes da cultura e por que o TRM-TB não pode ser usado no retorno do 2º mês?",
+      sections:[
+        ["Triagem e Protocolo Diagnóstico",["<b>Sintomático Respiratório (SR):</b> tosse por <b>≥ 2 a 3 semanas</b> (independentemente de ser seca ou produtiva).","<b>Casos novos:</b> 2 baciloscopias (BAAR) + 1 TRM-TB; solicitar Cultura + TSA sem atrasar início do RHZE.","<b>PVHA:</b> sempre solicitar TRM-TB + Cultura + TSA em conjunto; se CD4 < 200, associar <b>TB-LAM urinário</b>."]],
+        ["Ferramentas Laboratoriais",["<b>TRM-TB (GeneXpert MTB/RIF):</b> amplifica DNA e detecta resistência à rifampicina em ~1 hora (sensibilidade ~90%).","<b>Cultura + TSA:</b> padrão-ouro (45d meio líquido / 60d meio sólido); identifica espécie e perfil completo de resistência.","<b>Radiologia:</b> Rx mostra cavitações apicais (pós-primária) ou padrão miliar (imunodeprimidos); TC mostra árvore em brotamento."]],
+        ["Diagnóstico em Crianças (< 10 anos)",["Dificuldade de expectoração: usar <b>lavado gástrico</b> (aumenta rendimento em 40%).","<b>Escore Pediátrico:</b> integra clínica, Rx, contato, estado nutricional e PPD/IGRA (BCG recente invalida PPD). Escore ≥ 30: tratamento provável; > 40: certeza diagnóstica."]]
+      ],
+      dif:[["Pneumonia Necrosante / Câncer de Pulmão","Escavações parenquimatosas em tabagistas exigem investigar neoplasia e TB, evitando cursos empíricos repetidos de quinolonas."],["Histoplasmose Pulmonar","Simula padrão miliar e febre prolongada em imunodeprimidos."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["<b>PROIBIDO</b> usar TRM-TB para controle de tratamento ou recidiva/abandono (detecta DNA de bacilos mortos por até 1 ano). O controle é feito com baciloscopia.","Se TRM-TB detectar resistência à rifampicina: iniciar RHZE imediatamente, colher 2ª amostra para repetir TRM-TB, enviar Cultura + TSA e encaminhar à referência terciária."]
+    },
+    {
+      k:"tb_extra", practice:false,
+      case:"Homem, 50 anos, fumante, tosse > 2 semanas e dor pleurítica; líquido pleural com proteína L/S = 0,68, DHL L/S = 0,74, 90% linfócitos, ADA = 60 U/L e BAAR negativo.",
+      question:"Qual exame confirma melhor esse diagnóstico e quais formas extrapulmonares exigem 12 meses de tratamento?",
+      sections:[
+        ["TB Pleural (Mais comum em imunocompetentes)",["Dor pleurítica, febre vespertina e perda ponderal; murmúrio vesicular e frêmito abolidos.","<b>Critérios de Light (Exsudato ≥ 1 critério):</b> Proteína L/S > 0,5; DHL L/S > 0,6; DHL pleural > 2/3 LSN sérico.","<b>ADA ≥ 40 U/L</b> em exsudato linfocítico tem alto valor preditivo. BAAR/TRM têm baixa sensibilidade no líquido; <b>biópsia pleural</b> aumenta confirmação."]],
+        ["TB Ganglionar e Pericárdica",["<b>Ganglionar:</b> mais comum em PVHA; cadeia cervical anterior coalesce ('pescoço de touro'), necrosa e fistuliza (secreção rica em bacilos).","<b>Pericárdica:</b> espessamento pericárdico levando a <b>pericardite constritiva</b> e insuficiência cardíaca diastólica."]],
+        ["TB Meningoencefálica e Osteoarticular (12 Meses)",["<b>Meningoencefálica:</b> acomete base do crânio ('véu de noiva'), lesa nervos cranianos (III, IV, VI, VII) e causa hidrocefalia. Realizar <b>TC de crânio antes da PL</b>. Tratamento: 2RHZE + 10RH + <b>corticoide obrigatório</b>.","<b>Osteoarticular (Mal de Pott):</b> vértebras torácicas inferiores (T10–T12) e lombares; risco de colapso e paraplegia. RM é padrão-ouro; tratamento 2RHZE + 10RH."]]
+      ],
+      dif:[["Empiema Pleural Tuberculoso","Ruptura de caverna para a pleura gerando pus com alta carga bacilar e BAAR positivo (diferente da pleurite tuberculosa comum)."],["AVC / Tumor Cerebral","TB meníngea subaguda e tuberculomas simulam lesões expansivas ou isquêmicas."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["Em toda TB extrapulmonar, <b>investigar obrigatoriamente o foco pulmonar</b> para definir se o paciente é bacilífero.","Nunca realizar punção lombar sem neuroimagem prévia quando houver suspeita de hipertensão intracraniana (risco de herniação)."]
+    },
+    {
+      k:"tb_trat", practice:false,
+      case:"Paciente em 3ª semana de RHZE apresenta TGO = 310 U/L (7,7× LSN) e TGP = 360 U/L (9× LSN), assintomático e anictérico.",
+      question:"Qual a conduta imediata e a sequência exata de reintrodução após normalização das enzimas?",
+      sections:[
+        ["Bases Farmacológicas e Posologia",["<b>Rifampicina (R):</b> bactericida e esterilizante (previne resistência). <b>Isoniazida (H):</b> bactericida. <b>Pirazinamida (Z):</b> esterilizante em pH ácido intracelular. <b>Etambutol (E):</b> atua na necrose caseosa.","<b>Dose Fixa Combinada (jejum):</b> 20–35 kg (2 cp) · 36–50 kg (3 cp) · 51–70 kg (4 cp) · > 70 kg (5 cp).","<b>Duração:</b> 6 meses (2RHZE + 4RH) no padrão; 12 meses (2RHZE + 10RH) na meningoencefálica e osteoarticular; 4 meses em crianças (3m–16a) com formas leves."]],
+        ["Manejo da Hepatotoxicidade",["<b>Hierarquia de toxicidade:</b> Rifampicina > Isoniazida > Pirazinamida (Etambutol tem zero hepatotoxicidade; causa ototoxicidade/neurite óptica).","<b>Critério de suspensão:</b> TGO/TGP <b>> 5× LSN</b> (assintomático) ou <b>> 3× LSN</b> (com sintomas, icterícia ou cirrose).","<b>Reintrodução sequencial (após normalizar):</b> 1º Rifampicina + Etambutol → aguardar 7–10d → 2º Isoniazida → aguardar 7–10d → 3º Pirazinamida. Se não normalizar em 4 sem: esquema CEL na referência."]],
+        ["Populações Especiais",["<b>Gestantes/Lactantes:</b> RHZE padrão + <b>Piridoxina (Vitamina B6) 50–100 mg/dia</b>.","<b>Diabetes Mellitus:</b> rifampicina induz CYP450 e acelera metabolismo de hipoglicemiantes orais (ajustar dose ou migrar para insulina).","<b>Doença Renal Crônica (ClCr < 30):</b> administrar 3×/semana <b>após a hemodiálise</b>."]]
+      ],
+      dif:[["Intolerância Gástrica Leve","Náuseas sem elevação enzimática: orientar tomada 1 hora após café da manhã leve, sem suspender o esquema."],["TB Multirresistente (MDR)","Encaminhar à referência terciária para esquemas como BPaL conforme TSA."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["Corticoterapia na TB meningoencefálica: prednisona 1–2 mg/kg/dia VO ou dexametasona 0,3–0,4 mg/kg/dia IV com desmame gradual a partir da 3ª–4ª semana para evitar insuficiência adrenal."]
+    },
+    {
+      k:"iltb", practice:false,
+      case:"Homem, 34 anos, PVHA com CD4 = 350 cél/mm³, CV indetectável, Rx de tórax normal, PPD = 12 mm e sem sintomas.",
+      question:"Como excluir TB ativa e qual esquema prescrever para ILTB?",
+      sections:[
+        ["Conceito e Exclusão Obrigatória de TB Ativa",["<b>ILTB:</b> bacilo latente em granuloma; assintomático e não transmissor.","Antes de tratar ILTB, é <b>obrigatório descartar TB ativa</b> por anamnese (tosse ≥ 2–3 sem, febre, sudorese, perda de peso), exame físico, radiografia de tórax e escarro (BAAR/TRM-TB) se houver qualquer sintoma.","Trata-se ILTB apenas <b>uma vez na vida</b>."]],
+        ["Indicações de Tratamento (PPD vs. IGRA)",["<b>Sem teste (PPD/IGRA):</b> RN coabitante de caso-fonte; PVHA contato de TB pulmonar; PVHA com <b>CD4 ≤ 350</b>; PVHA com cicatriz radiológica sem tratamento prévio.","<b>PPD ≥ 5 mm ou IGRA+:</b> contatos adultos/crianças, PVHA com CD4 > 350, fibrose sequelar, candidatos a transplante, anti-TNF ou corticoide (> 15 mg/d prednisona por > 1 mês).","<b>PPD ≥ 10 mm ou IGRA+:</b> silicose, neoplasias, diálise, diabetes, baixo peso (< 85%), tabagismo > 1 maço/d, conversão tuberculínica (aumento ≥ 10 mm após ≥ 8 semanas)."]],
+        ["Esquemas Terapêuticos",["<b>3HP (Preferencial):</b> Isoniazida 900 mg + Rifapentina 900 mg, 1 dose semanal por <b>12 semanas</b> (3 meses).","<b>Isoniazida isolada:</b> 5–10 mg/kg/dia (máx. 300 mg/dia) por 6 meses (180 doses) ou 9 meses (270 doses).","<b>Rifampicina isolada:</b> 10 mg/kg/dia (máx. 600 mg/dia) por 4 meses (120 doses) — <b>CONTRAINDICADA</b> com inibidores de integrase (DTG) ou protease."]]
+      ],
+      dif:[["Efeito Booster do PPD","Reativação de memória imune antiga em 1–3 semanas; por isso nunca repetir PPD antes de 8 semanas."],["Gestante com ILTB","HIV negativa: adiar ILTB para o pós-parto. HIV positiva: iniciar após o 3º mês de gestação com piridoxina."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["<b>Divergência entre aulas:</b> <i>Marcia HIV</i> cita rastreio/tratamento de ILTB em PVHA com CD4 < 350; <i>Marcia TB 2</i> detalha que PVHA com CD4 ≤ 350 tratam mesmo sem teste, e com CD4 > 350 tratam se PPD ≥ 5 mm ou IGRA+."]
+    },
+    {
+      k:"hiv_base", practice:false,
+      case:"Paciente apresenta síndrome semelhante à mononucleose há 3 semanas, seguida de paraparesia ascendente e dissociação citoalbuminológica no líquor.",
+      question:"Qual a dinâmica viral na infecção aguda e como o HIV causa dano crônico no SNC (HAND)?",
+      sections:[
+        ["Biologia Viral e Evasão Imune",["Retrovírus de RNA envelopado (<b>HIV-1</b> dominante globalmente; HIV-2 menos transmissível).","<b>Entrada:</b> GP120/GP41 ligam-se ao receptor <b>CD4</b> e aos correceptores <b>CCR5</b> ou <b>CXCR4</b>. Homozigose CCR5-negativa confere imunidade (caso do Paciente de Berlim).","<b>Enzimas (região pol):</b> transcriptase reversa (RNA → DNA proviral), integrase (insere no genoma) e protease. VPU e NEF reduzem CD4 e MHC na superfície celular, evadindo células NK e CD8."]],
+        ["História Natural e Fases Clínicas",["<b>Infecção Aguda (14d–6m):</b> viremia intensa, queda abrupta de ~30% dos CD4, febre, faringite, exantema, úlceras, meningite asséptica ou Guillain-Barré. Duração > 14 dias encurta a latência.","<b>Latência Clínica (~10 anos):</b> vírus estabiliza no <i>set point</i> mas segue replicando; fibrose progressiva de linfonodos e placas de Peyer (GALT); linfadenopatia persistente.","<b>Fase Sintomática & AIDS:</b> CD4 < 200 ou infecções oportunistas/neoplasias definidoras (Sarcoma de Kaposi, linfomas, câncer de colo uterino)."]],
+        ["Epidemiologia e HAND",["Transição de 'grupo de risco' para <b>comportamento de risco / vulnerabilidades</b>. Aumento de detecções em jovens (15–29a) e idosos (> 60a). Transmissão vertical zerada no Brasil em gestantes tratadas (Portaria 2025).","<b>HAND:</b> vírus entra no SNC via 'Cavalo de Troia' (monócitos/macrófagos), ativando micróglia e astrócitos. Avaliação multidisciplinar com neuropsicologia, RM e biomarcadores (NfL, BDNF, beta-amiloide)."]]
+      ],
+      dif:[["Mononucleose Infecciosa (EBV)","Quadro idêntico à Síndrome Retroviral Aguda; investigar HIV em toda síndrome mono-like com exposição de risco."],["Doenças Linfoproliferativas","Linfadenopatia persistente na latência exige diferencial com linfomas e TB ganglionar."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["Na latência clínica (sem TARV), a carga viral <b>não</b> fica indetectável — ela estabiliza no <i>set point</i> mantendo replicação contínua (pegadinha clássica da Q12 da N2!)."]
+    },
+    {
+      k:"hiv_diag", practice:false,
+      case:"Paciente chega ao pronto-atendimento com perda de 20% do peso, candidíase oral, febre e FC = 126 bpm, sem resultado prévio de CD4.",
+      question:"Como fechar o diagnóstico de HIV no SUS e quais exames compõem o Circuito Rápido?",
+      sections:[
+        ["Algoritmo Diagnóstico (Portaria MS 2013)",["<b>Duplo Teste Rápido:</b> dois testes rápidos (punção digital, detecção de anticorpos + antígeno <b>p24</b>) de <b>fabricantes diferentes</b>. Dois reagentes fecham o diagnóstico.","<b>Discordância:</b> realizar 3º TR imediato. Se reagente -> confirma. Se não reagente -> amostra discordante, repetir em <b>30 dias</b> (janela imunológica).","<b>Período de eclipse:</b> primeiros dias pós-exposição em que nenhum marcador sorológico ou antígeno p24 é detectável, apenas o RNA viral (PCR)."]],
+        ["Avaliação Inicial e Estadiamento Clínico",["História completa, exame físico (incluindo fundo de olho para retinite por CMV), hemograma, função renal/hepática, VDRL, hepatites B e C, PPD/IGRA.","<b>Estimativa clínica de CD4:</b> TB (< 350); PCP, candidíase esofágica, histoplasmose (< 200); Neurotoxoplasmose, isosporíase (< 100); CMV, MAC, linfoma SNC (< 50)."]],
+        ["Circuito Rápido (Aids Avançada)",["<b>Critérios:</b> CD4 < 200, estágio 3/4 ou sinais clínicos de gravidade (FC > 120 bpm, FR > 30 irpm, T > 39 °C, sarcopenia, incapacidade de deambular).","<b>Triagem imediata:</b> Antígeno criptocócico sérico (<b>CrAg</b>), <b>TB-LAM urinário</b> (resultado em 20–25 min) e antígeno urinário de <b>histoplasma</b>."]]
+      ],
+      dif:[["Teste de Fluido Oral","Serve apenas para triagem; resultado positivo exige confirmação por punção digital no serviço de saúde."],["ELISA 1ª/2ª vs. 4ª Geração","4ª geração detecta antígeno p24 + anticorpos, encurtando a janela diagnóstica para ~15–30 dias."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["Risco ocupacional percutâneo (perfurocortante): ~0,3% para HIV (bem menor que Hepatite B e C). Exige PEP por 28 dias iniciada idealmente nas primeiras horas."]
+    },
+    {
+      k:"tarv", practice:false,
+      case:"Homem, 45 anos, HIV+ e TB pulmonar ativa, inicia TARV com TDF + 3TC + DTG. Após 8 meses, apresenta carga viral de 1.200 cópias/mL.",
+      question:"Como ajustar o DTG na TB, quais as principais toxicidades da TARV e como abordar falha virológica?",
+      sections:[
+        ["Esquemas de 1ª Linha e Adaptações",["<b>Padrão (dose única diária):</b> Tenofovir (TDF) + Lamivudina (3TC) + Dolutegravir (DTG). Meta de início: <b>até 7 dias</b> (regra de ouro).","<b>Coinfecção TB:</b> manter TDF + 3TC e <b>dobrar DTG para 50 mg de 12/12h</b> (100 mg/dia) devido à indução da rifampicina (alternativa: Efavirenz).","<b>TFG < 60 mL/min:</b> substituir TDF por Abacavir (ABC, checar alergia) ou Zidovudina (AZT, se Hb ≥ 10). Se <b>Hepatite B</b> associada: usar <b>TAF</b> + 3TC + DTG.","<b>Gestação:</b> TDF + 3TC + DTG seguro em todos os trimestres (+ ácido fólico no 1º trimestre)."]],
+        ["Toxicidades e Falha Virológica",["<b>TDF:</b> tubulopatia renal e osteopenia/osteoporose (> 40 anos). <b>EFV:</b> neuropsiquiátrica/suicídio. <b>AZT:</b> anemia e lipodistrofia. <b>IP (DRV/r):</b> síndrome metabólica/dislipidemia. <b>DTG:</b> ganho de peso.","<b>Falha Virológica:</b> CV <b>> 200 cópias</b> após ≥ 6 meses de TARV. Avaliar adesão, interações e solicitar <b>genotipagem</b>.","<b>Terapia Dupla (3TC + DTG):</b> apenas para manutenção de pacientes suprimidos (< 50 cópias por 6–12m), sem HBV, TB, gestação ou disfunção renal."]],
+        ["Prevenção Combinada, Vacinas e Oncologia",["<b>Vacinas:</b> Hepatite B em <b>4 doses</b> (verificar anti-HBs ≥ 10); pneumococo, meningococo, hemófilo, hepatite A, HPV, mpox, influenza e COVID anuais. Vacinas vivas proibidas se CD4 < 200.","<b>Rastreio Oncológico:</b> Papanicolau anual (semestral se alterado); toque retal/anoscopia anual (HPV/intercurso anal); USG abdômen + alfa-fetoproteína semestral se HBV/HCV."]]
+      ],
+      dif:[["Genotipagem Pré-TARV","Indicado antes de iniciar TARV em gestantes, crianças, falha de PrEP, coinfectados com TB e parceiros de pacientes em TARV (coletar no dia 1 sem atrasar início)."],["Meta Laboratorial vs. I=I","Meta clínica: CV < 40–50 cópias; critério epidemiológico I=I: CV < 200 cópias mantida por ≥ 6 meses."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["<b>Divergência entre aulas:</b> <i>Marcia HIV</i> cita meta de CV < 40 cópias e vacinas vivas apenas com CD4 > 350; <i>HIV.md</i> cita CV < 50 para terapia dupla, < 200 para I=I e contraindicação absoluta de vacinas vivas com CD4 < 200."]
+    },
+    {
+      k:"io_siri", practice:false,
+      case:"Homem, 34 anos, HIV (CD4 = 45 cél/mm³) e TB ganglionar/pulmonar. Duas semanas após iniciar RIPE, inicia TARV. Quatro semanas depois, retorna com febre alta, piora respiratória e aumento doloroso dos linfonodos cervicais com BAAR negativo.",
+      question:"Qual o diagnóstico, a conduta com a TARV/RIPE e o timing correto da TARV nas principais oportunistas?",
+      sections:[
+        ["Infecções Oportunistas por Faixa de CD4",["<b>CD4 < 350:</b> Tuberculose (pode ocorrer em qualquer faixa).","<b>CD4 < 200:</b> Pneumocistose (PCP: SMX-TMP 21d + corticoide se PaO2 < 70) e Candidíase esofágica.","<b>CD4 < 100:</b> Neurotoxoplasmose (Sulfadiazina + Pirimetamina + Ácido Folínico) e Tripanossomíase.","<b>CD4 < 50:</b> Citomegalovírus (retinite/úlceras), Micobactérias não tuberculosas (MAC) e Histoplasmose disseminada (pancitopenia; tratar com Anfotericina B → Itraconazol)."]],
+        ["Timing de Início da TARV e Profilaxias",["<b>TB ativa não meníngea:</b> tratar TB primeiro; iniciar TARV em <b>7–14 dias</b> se CD4 < 50 ou em <b>4–8 semanas</b> se CD4 ≥ 50.","<b>TB meningoencefálica:</b> adiar TARV por <b>4 a 8 semanas</b> (risco de SIRI grave no SNC).","<b>Meningite criptocócica:</b> Anfotericina B + Flucitosina (14d) e adiar TARV por <b>4 a 6 semanas</b>.","<b>Profilaxia primária:</b> SMX-TMP se CD4 < 200 (protege contra PCP e toxoplasmose). <b>Secundária:</b> manter até CD4 > 200 por ≥ 6 meses."]],
+        ["Síndrome Inflamatória de Reconstituição Imune (SIRI)",["Piora paradoxal de infecção tratada (SIRI paradoxal) ou desmascaramento de infecção oculta <b>2 a 8 semanas</b> após início da TARV, com queda da CV e subida do CD4.","<b>Conduta:</b> <b>NÃO suspender</b> a TARV nem o tratamento da IO. Associar <b>corticoide</b> (prednisona 0,5–1,5 mg/kg/d por 2 semanas ou dexametasona/metilprednisolona IV em casos graves)."]]
+      ],
+      dif:[["SIRI no Sarcoma de Kaposi","Única situação em que <b>corticoides são proibidos</b> na SIRI, pois aceleram a proliferação do tumor vascular."],["Falha Terapêutica","Na SIRI há melhora virológica/imunológica e ausência de novos patógenos ou resistência."]],
+      alertsTitle:"Pontos de atenção",
+      alerts:["<b>Divergência entre aulas:</b> <i>Marcia TB 2</i> e <i>Tuberculose.md</i> padronizam TARV em 7–14d (CD4 < 50) e 4–8 sem (CD4 ≥ 50 ou TB meníngea). <i>HIV.md</i> menciona início imediato da TARV se CD4 < 50 mesmo na TB meníngea."]
+    }
+  ],
+  provas:[
+    {
+      id:"n2_q1", topic:"iltb", source:"N2 Institucional · Infectologia/Patologia", hot:true, type:"Discursiva (1,0)",
+      title:"Questão 01 — Rastreio e Tratamento de ILTB em PVHA",
+      enun:"Homem, 34 anos, diagnóstico recente de HIV, já em uso regular de TARV, vem ao ambulatório sem queixas portando resultados de exames iniciais que demonstram: Contagem de linfócitos T-CD4 350 cél/mm³; Carga Viral do HIV: Indetectável; Radiografia de tórax: Sem alterações; Prova Tuberculínica (PPD) 12 mm.\na) Qual a avaliação necessária para excluir TB ativa? (0,5)\nb) Qual a conduta após exclusão da TB ativa? (especifique drogas, dose e tempo de tratamento) (0,5)",
+      opts:[],
+      ans:"a) Anamnese dirigida para sintomas de TB ativa (tosse ≥ 2–3 semanas, febre vespertina, sudorese noturna, emagrecimento), exame físico minucioso (incluindo cadeias ganglionares) e, caso surja qualquer sintoma respiratório ou sistêmico, solicitação de 2 baciloscopias de escarro + TRM-TB + cultura/TSA (somados à radiografia de tórax já normal).\nb) Indicar tratamento de ILTB (PPD ≥ 5 mm em PVHA): esquema preferencial 3HP — Isoniazida 900 mg + Rifapentina 900 mg em dose única semanal por 12 semanas (3 meses / 12 doses, preferencialmente em TDO). Alternativa: Isoniazida 5 a 10 mg/kg/dia (máx. 300 mg/dia) por 6 meses (180 doses) ou 9 meses (270 doses). Evitar rifampicina isolada por 4 meses se o paciente usar Dolutegravir ou inibidor de protease.",
+      why:"Questão clássica cobrando os dois passos obrigatórios da ILTB: (1) descartar TB ativa antes de iniciar qualquer esquema preventivo e (2) prescrever droga, dose e duração exatas compatíveis com a TARV."
+    },
+    {
+      id:"n2_q3", topic:"io_siri", source:"N2 Institucional · Infectologia/Patologia", hot:true, type:"Discursiva (1,0)",
+      title:"Questão 03 — Mecanismo Imunológico Pós-Início de TARV",
+      enun:"Uma mulher de 34 anos com HIV apresenta contagem de CD4+ de 41 células/mm³ e diagnóstico recente de tuberculose ganglionar disseminada. Após oito semanas de tratamento antituberculose é iniciada terapia antirretroviral. Dois meses depois, apesar da redução da carga viral e melhora laboratorial global, desenvolve aumento volumoso de linfonodos previamente regressivos, febre persistente e novas áreas de necrose ganglionar. Biópsia dos linfonodos demonstra escassez de bacilos viáveis, porém intenso infiltrado de linfócitos T CD4+, macrófagos ativados e elevadas concentrações de IFN-γ.\nPergunta: Qual evento imunológico é mais diretamente responsável pelo quadro?",
+      opts:[],
+      ans:"Síndrome Inflamatória de Reconstituição Imune (SIRI / IRIS) — forma paradoxal, decorrente da rápida restauração quantitativa e funcional dos linfócitos T CD4+ após o início da TARV, gerando uma resposta imune celular Th1 exacerbada (com intensa produção de IFN-γ e ativação de macrófagos) dirigida contra antígenos residuais de Mycobacterium tuberculosis mortos/fragmentados.",
+      why:"A pista diagnóstica está na dissociação entre sucesso laboratorial (queda de CV, infiltrado de CD4+ e escassez de bacilos viáveis) e piora inflamatória local."
+    },
+    {
+      id:"n2_q5", topic:"tb_extra", source:"N2 Institucional · Infectologia/Patologia", hot:true, type:"Objetiva (0,25)",
+      title:"Questão 05 — Derrame Pleural Exsudativo com ADA Elevada",
+      enun:"Homem, 50 anos, negro, fumante 60 maços-ano, com tosse há mais de 2 semanas, perda de peso. Análise do líquido pleural: DHL = 450 mg/dl e proteínas = 4,5 g/dl. Citológico diferencial: predomínio de linfócitos. Adenosina deaminase = 60 U. Dentre as alternativas abaixo assinale a que terá mais probabilidade de confirmar o diagnóstico:",
+      opts:[
+        "A. Derrame parapneumônico - biópsia de pleura",
+        "B. Derrame neoplásico - pesquisa de células malignas no líquido pleural",
+        "C. Derrame tuberculoso - biópsia de pleura com pesquisa de bacilos álcool ácido resistentes, TRM-Tb",
+        "D. Derrame tuberculoso - pesquisa de bacilos álcool ácido resistentes e TRM-Tb no líquido pleural"
+      ],
+      ans:"C. Derrame tuberculoso - biópsia de pleura com pesquisa de bacilos álcool ácido resistentes, TRM-Tb",
+      why:"Exsudato linfocítico com ADA ≥ 40 U/L indica derrame pleural tuberculoso. Como a baciloscopia e o TRM-TB diretamente no líquido pleural têm sensibilidade muito baixa, a biópsia pleural oferece maior probabilidade de confirmação."
+    },
+    {
+      id:"n2_q7", topic:"tb_extra", source:"N2 Institucional · Infectologia/Patologia", hot:true, type:"Objetiva (0,25)",
+      title:"Questão 07 — Meningite Subaguda com Paresia de VI Par em PVHA",
+      enun:"Paciente do sexo masculino, 34 anos, PVHIV e em uso irregular de TARV, procura a UPA com quadro de cefaleia holocraniana de intensidade progressiva, febre baixa vespertina, sudorese noturna e perda de peso há 3 semanas. Relata também episódios de confusão mental e turvação visual há 2 dias. Ao exame: rigidez de nuca, sinal de Brudzinski positivo e paresia do nervo abducente (VI par) à direita. CD4+ de 35 células/mm³. LCR límpido, pressão de abertura aumentada, pleocitose (120 células, com 80% de linfomononucleares), hiperproteinorraquia e hipoglicorraquia moderada. Qual é a conduta terapêutica medicamentosa inicial mais adequada e mandatória?",
+      opts:[
+        "A. Ceftriaxona associada a Vancomicina e Aciclovir.",
+        "B. Anfotericina B lipossomal associada a Flucitosina.",
+        "C. Rifampicina, Isoniazida, Pirazinamida e Etambutol (RHZE) associados a Dexametasona.",
+        "D. Penicilina G cristalina associada a corticoterapia em altas doses."
+      ],
+      ans:"C. Rifampicina, Isoniazida, Pirazinamida e Etambutol (RHZE) associados a Dexametasona.",
+      why:"Sintomas constitucionais por 3 semanas + comprometimento de nervo craniano da base (VI par) + LCR linfomonocitário com hipoglicorraquia e hiperproteinorraquia caracterizam TB meningoencefálica, exigindo RHZE (por 12 meses) + corticoide adjuvante obrigatório."
+    },
+    {
+      id:"n2_q8", topic:"io_siri", source:"N2 Institucional · Infectologia/Patologia", hot:true, type:"Objetiva (0,25)",
+      title:"Questão 08 — Piora Linfonodal e Respiratória 4 Semanas Após TARV",
+      enun:"Paciente de 34 anos, masculino, com TB ganglionar e pulmonar iniciou esquema RIPE. Teste rápido de HIV positivo (CD4+ 45 células/mm³). A TARV foi introduzida após 2 semanas de tratamento para TB (TDF + 3TC + DTG). Após 4 semanas de uso da TARV, retornou ao pronto-socorro com piora expressiva do quadro respiratório, febre alta diária e aumento exuberante e doloroso dos linfonodos cervicais, apresentando fistulização e drenagem de secreção purulenta espessa. Baciloscopia da secreção negativa, sem má adesão ou nova infecção oportunista. Diante disso, a principal hipótese diagnóstica e a conduta correta são:",
+      opts:[
+        "A. Tuberculose multirresistente (TB-MDR); suspender o esquema RIPE e solicitar teste rápido molecular para Rifampicina.",
+        "B. Síndrome Inflamatória da Reconstituição Imune (SIRI); manter a TARV e o esquema para tuberculose, associando corticoterapia sistêmica nos casos sintomáticos graves.",
+        "C. Hepatotoxicidade medicamentosa pelos fármacos da tuberculose; suspender imediatamente Rifampicina e Isoniazida.",
+        "D. Falha terapêutica da TARV associada à infecção pelo Mycobacterium avium; adicionar claritromicina e etambutol."
+      ],
+      ans:"B. Síndrome Inflamatória da Reconstituição Imune (SIRI); manter a TARV e o esquema para tuberculose, associando corticoterapia sistêmica nos casos sintomáticos graves.",
+      why:"Quadro clássico de SIRI paradoxal (4 semanas após início da TARV em paciente com CD4 < 50 e BAAR negativo na secreção). Nunca suspender TARV nem RIPE; associar corticoide nos casos sintomáticos graves."
+    },
+    {
+      id:"n2_q11", topic:"iltb", source:"N2 Institucional · Infectologia/Patologia", hot:true, type:"Objetiva (0,5)",
+      title:"Questão 11 — Indicações e Manejo da ILTB (V ou F)",
+      enun:"Analise as afirmativas sobre indicação e manejo do tratamento da ILTB:\nI. Pacientes convivendo com HIV/AIDS com contagem de LT-CD4+ menor que 350 células/mm³ têm indicação de tratamento para ILTB independentemente do resultado da Prova Tuberculínica (PT) ou IGRA.\nII. Para crianças menores de 10 anos contatantes de casos de tuberculose pulmonar bacilífera, o tratamento da ILTB está contraindicado devido à imaturidade do sistema imunológico.\nIII. Indivíduos que iniciarão terapia com medicamentos imunobiológicos ou imunossupressores, como inibidores de TNF-alpha, possuem indicação de rastreio e tratamento da ILTB antes do início da medicação.\nIV. A confirmação de contato domiciliar ou frequente com paciente bacilífero é uma indicação para investigação da ILTB, mas o tratamento só deve ser iniciado após a exclusão rigorosa de tuberculose ativa.",
+      opts:[
+        "A. V - F - V - V",
+        "B. V - V - F - V",
+        "C. F - V - V - F",
+        "D. F - F - V - V"
+      ],
+      ans:"A. V - F - V - V",
+      why:"A afirmativa II é falsa porque crianças menores de 10 anos contatantes de casos bacilíferos são grupo prioritário para tratamento de ILTB (não há contraindicação)."
+    },
+    {
+      id:"n2_q12", topic:"hiv_base", source:"N2 Institucional · Infectologia/Patologia", hot:false, type:"Objetiva (0,5)",
+      title:"Questão 12 — História Natural e Fases Clínicas do HIV",
+      enun:"Considerando as características clínicas e imunológicas que definem a progressão da infecção pelo HIV, avalie as afirmativas:\nI. Na fase de infecção aguda, ocorre intensa replicação viral acompanhada por queda abrupta na contagem de células CD4+, sendo comum o surgimento de sintomas semelhantes a síndrome gripal ou mononucleose.\nII. A fase de latência clínica é caracterizada pelo controle parcial da replicação do vírus pelo sistema imune. Nesse período, a carga viral mantém-se em níveis muito baixos ou indetectáveis, e o paciente permanece assintomático.\nIII. Na fase sintomática inicial, há redução progressiva dos linfócitos T CD4+ (podendo atingir valores próximos a 200 células/mm³) e surgimento de manifestações como febre prolongada, diarreia crônica e perda de peso.\nIV. O diagnóstico da fase de AIDS é confirmado quando o indivíduo, além da soropositividade, apresenta sintomas constitucionais graves ou desenvolvimento de infecções oportunistas e neoplasias.",
+      opts:[
+        "A. I, II e III, apenas.",
+        "B. I, III e IV, apenas.",
+        "C. II, III e IV, apenas.",
+        "D. I, II, III e IV."
+      ],
+      ans:"B. I, III e IV, apenas.",
+      why:"A afirmativa II é falsa porque, durante a latência clínica sem tratamento, o vírus continua se multiplicando em ritmo estabilizado (set point) e a carga viral NÃO fica indetectável."
+    },
+    {
+      id:"n2_q13", topic:"hiv_base", source:"N2 Institucional · Infectologia/Patologia", hot:false, type:"Objetiva (0,5)",
+      title:"Questão 13 — Papel dos Linfócitos T CD8+ na Fase Aguda",
+      enun:"Um pesquisador acompanha dois grupos de indivíduos durante a fase inicial da infecção pelo HIV. O primeiro grupo desenvolve resposta robusta de linfócitos T CD8+ específicos contra epítopos virais nas primeiras semanas de infecção. O segundo grupo apresenta resposta citotóxica tardia e pouco eficiente. Após seis meses, o primeiro grupo apresenta carga viral significativamente menor e set point viral mais baixo. Qual mecanismo explica melhor esse fenômeno?",
+      opts:[
+        "A. Os CD8+ eliminam completamente os reservatórios virais durante a fase aguda.",
+        "B. Os CD8+ reduzem a replicação viral e contribuem para o declínio da viremia após o pico inicial.",
+        "C. Os CD8+ impedem a integração do DNA viral ao genoma celular.",
+        "D. Os CD8+ bloqueiam a utilização dos correceptores CCR5 e CXCR4."
+      ],
+      ans:"B. Os CD8+ reduzem a replicação viral e contribuem para o declínio da viremia após o pico inicial.",
+      why:"Os linfócitos T CD8+ citotóxicos reconhecem peptídeos virais via MHC-I, lisam células infectadas e reduzem o pico inicial de viremia, determinando um set point viral mais baixo (embora não erradiquem os reservatórios latentes)."
+    },
+    {
+      id:"n2_q14", topic:"iltb", source:"N2 Institucional · Infectologia/Patologia", hot:false, type:"Objetiva (0,5)",
+      title:"Questão 14 — Mecanismo Imunológico do Teste Tuberculínico (PPD)",
+      enun:"Acadêmica de medicina de 24 anos realiza investigação após exposição ocupacional a paciente com tuberculose pulmonar cavitária. O IGRA é positivo e o PPD apresenta enduração de 18 mm. A radiografia de tórax é normal e a paciente permanece assintomática. O mecanismo imunológico responsável pela reação observada no teste tuberculínico corresponde a:",
+      opts:[
+        "A. Ativação direta da cascata do complemento.",
+        "B. Hipersensibilidade tipo II mediada por anticorpos citotóxicos.",
+        "C. Hipersensibilidade tipo III mediada por imunocomplexos.",
+        "D. Hipersensibilidade tipo IV mediada por linfócitos T previamente sensibilizados."
+      ],
+      ans:"D. Hipersensibilidade tipo IV mediada por linfócitos T previamente sensibilizados.",
+      why:"A reação intradérmica ao PPD (enduração lida em 72h) é o protótipo da hipersensibilidade tardia (Tipo IV), mediada por linfócitos T CD4+ Th1 previamente sensibilizados que liberam IFN-γ e recrutam macrófagos."
+    },
+    {
+      id:"n2_q15", topic:"io_siri", source:"N2 Institucional · Infectologia/Patologia", hot:false, type:"Objetiva (0,5)",
+      title:"Questão 15 — Fisiopatologia da Coinfecção TB-HIV",
+      enun:"Um homem de 38 anos com HIV apresenta tuberculose pulmonar ativa e carga viral elevada. Durante investigação imunológica, identifica-se aumento persistente de marcadores inflamatórios sistêmicos, incluindo IL-6, TNF-α e proteína C reativa. Qual consequência fisiopatológica da coinfecção está mais associada a esse estado inflamatório persistente?",
+      opts:[
+        "A. Redução da ativação linfocitária.",
+        "B. Diminuição da replicação viral.",
+        "C. Formação de granulomas mais eficientes.",
+        "D. Exaustão imunológica e aceleração da progressão da doença pelo HIV."
+      ],
+      ans:"D. Exaustão imunológica e aceleração da progressão da doença pelo HIV.",
+      why:"A ativação imune crônica e tempestade inflamatória induzidas pela TB (IL-6, TNF-α) ativam linfócitos T CD4+, fornecendo mais células-alvo para o HIV, acelerando a replicação viral, a exaustão imune e a progressão da AIDS."
+    }
+  ],
+  discursivo:[
+    {
+      id:"d1", topic:"iltb",
+      title:"Caso 1 (N2) — Exclusão de TB Ativa e Prescrição de ILTB em PVHA",
+      case:"Homem, 34 anos, diagnóstico recente de HIV, em uso regular de TARV (TDF + 3TC + DTG), assintomático, traz CD4 = 350 cél/mm³, Carga Viral indetectável, Radiografia de tórax sem alterações e PPD = 12 mm.",
+      prompt:"a) Qual a avaliação necessária para excluir TB ativa?\nb) Qual a conduta após exclusão da TB ativa (especifique drogas, dose e tempo de tratamento)?",
+      checklist:[
+        "Investigar sintomas cardinais de TB ativa (tosse ≥ 2–3 semanas, febre vespertina, sudorese noturna, emagrecimento) e exame físico completo.",
+        "Associar a radiografia de tórax normal à ausência de sintomas (e solicitar 2 BAAR + TRM-TB + cultura/TSA caso exista qualquer sintoma).",
+        "Prescrever esquema preferencial 3HP: Isoniazida 900 mg + Rifapentina 900 mg, 1×/semana por 12 semanas (3 meses / 12 doses).",
+        "Citar como alternativa Isoniazida 5–10 mg/kg/dia (máx. 300 mg/dia) por 6 meses (180 doses) ou 9 meses (270 doses).",
+        "Mencionar que monoterapia com Rifampicina por 4 meses é contraindicada pelo uso de Dolutegravir."
+      ],
+      model:"<b>a) Exclusão de TB ativa:</b> Realizar anamnese dirigida buscando sintomas cardinais (tosse ≥ 2–3 semanas, febre vespertina, sudorese noturna e perda de peso) e exame físico (incluindo linfonodos). Como o paciente está totalmente assintomático e apresenta radiografia de tórax normal, a TB ativa está excluída (caso apresentasse sintomas, seria obrigatório coletar 2 baciloscopias + TRM-TB + cultura/TSA).<br><br><b>b) Tratamento da ILTB:</b> Indicação confirmada (PPD ≥ 5 mm em PVHA). Prescrever preferencialmente o esquema <b>3HP</b>: <b>Isoniazida 900 mg + Rifapentina 900 mg</b> em dose única semanal por <b>12 semanas</b> (3 meses / 12 doses, preferencialmente em TDO). Como alternativa, <b>Isoniazida 5 a 10 mg/kg/dia (máx. 300 mg/dia)</b> por 6 meses (180 doses) ou 9 meses (270 doses). Não utilizar rifampicina isolada por 4 meses devido à interação com o dolutegravir."
+    },
+    {
+      id:"d2", topic:"io_siri",
+      title:"Caso 2 (N2) — Piora Linfonodal Paradoxal Após TARV",
+      case:"Mulher de 34 anos com HIV apresenta CD4+ de 41 células/mm³ e TB ganglionar disseminada. Após 8 semanas de RHZE, inicia TARV. Dois meses depois, apesar da queda da carga viral e melhora laboratorial, desenvolve aumento volumoso dos linfonodos previamente regressivos, febre e novas áreas de necrose ganglionar. Biópsia mostra escassez de bacilos viáveis e intenso infiltrado de LT CD4+, macrófagos ativados e IFN-γ elevado.",
+      prompt:"Identifique o evento imunológico responsável, explique sua fisiopatologia e descreva a conduta terapêutica.",
+      checklist:[
+        "Nomear a Síndrome Inflamatória de Reconstituição Imune (SIRI / IRIS) — forma paradoxal.",
+        "Explicar que a recuperação quantitativa e funcional dos LT CD4+ após a TARV gera resposta Th1 exacerbada (IFN-γ e macrófagos) contra antígenos bacilares mortos/residuais.",
+        "Destacar a dissociação entre melhora virológica/imunológica (queda de CV, escassez de bacilos viáveis) e piora inflamatória clínica.",
+        "Indicar manutenção obrigatória da TARV e do esquema anti-TB (RHZE/RH), associando corticoterapia sistêmica (ex.: prednisona por até 2 semanas) nos casos sintomáticos graves."
+      ],
+      model:"<b>Evento:</b> Síndrome Inflamatória de Reconstituição Imune (<b>SIRI</b>) na forma paradoxal.<br><b>Fisiopatologia:</b> Com a supressão viral induzida pela TARV, ocorre recuperação rápida de linfócitos T CD4+ funcionais que reconhecem antígenos residuais de <i>M. tuberculosis</i> mortos/fragmentados, desencadeando resposta inflamatória Th1 exacerbada com intensa liberação de IFN-γ e ativação macrofágica.<br><b>Conduta:</b> <b>Manter</b> tanto a TARV quanto o tratamento para tuberculose, associando <b>corticosteroide</b> (ex.: prednisona 0,5–1,5 mg/kg/dia por ~2 semanas com desmame) para controlar a resposta inflamatória."
+    },
+    {
+      id:"d3", topic:"tb_trat",
+      title:"Caso 3 — Hepatotoxicidade Medicamentosa pelo Esquema RHZE",
+      case:"Homem de 54 anos, cirrótico compensado (Child A), em uso de esquema RHZE há 18 dias para TB pulmonar bacilífera, procura consulta com náuseas, dor em hipocôndrio direito e icterícia leve. Exames: TGO = 165 U/L (4,1× LSN) e TGP = 180 U/L (4,5× LSN).",
+      prompt:"Qual a conduta imediata quanto ao esquema anti-TB, por que o limiar de suspensão foi atingido e como proceder após a normalização das enzimas?",
+      checklist:[
+        "Indicar suspensão imediata de todo o esquema RHZE.",
+        "Justificar que em pacientes sintomáticos, ictéricos ou cirróticos o limiar de suspensão é TGO/TGP > 3× o limite superior da normalidade (LSN).",
+        "Aguardar normalização completa das transaminases (até 4 semanas).",
+        "Descrever a reintrodução sequencial com formulações separadas a cada 7–10 dias: 1º Rifampicina + Etambutol → 2º Isoniazida → 3º Pirazinamida.",
+        "Citar o esquema alternativo CEL (Capreomicina/Amicacina + Etambutol + Levofloxacino) em centro de referência caso não normalize em 4 semanas."
+      ],
+      model:"<b>Conduta imediata:</b> Suspender imediatamente o esquema RHZE, pois em pacientes sintomáticos, ictéricos ou cirróticos o corte para suspensão é <b>TGO/TGP > 3× LSN</b> (diferente dos assintomáticos sem hepatopatia, cujo corte é > 5× LSN).<br><b>Reintrodução:</b> Após normalização enzimática completa, reintroduzir sequencialmente monitorando transaminases a cada 7–10 dias: <b>1º Rifampicina + Etambutol</b> (E não é hepatotóxico e previne resistência) → <b>2º Isoniazida</b> → <b>3º Pirazinamida</b>. Caso não normalize após 4 semanas, encaminhar à referência terciária para esquema alternativo <b>CEL</b>."
+    },
+    {
+      id:"d4", topic:"tarv",
+      title:"Caso 4 — Coinfecção TB-HIV: Timing de Início e Ajuste da TARV",
+      case:"Homem de 36 anos, virgem de tratamento (naïve), recebe diagnóstico simultâneo de HIV (CD4 = 42 cél/mm³) e tuberculose pulmonar bacilífera (TRM-TB positivo, sensível à rifampicina), sem sinais neurológicos ou meningismo. Função renal e hepática normais.",
+      prompt:"Qual doença deve ser tratada primeiro, quando iniciar a TARV e qual ajuste obrigatório deve ser feito no esquema antirretroviral?",
+      checklist:[
+        "Iniciar imediatamente o tratamento da tuberculose (esquema básico RHZE por 6 meses).",
+        "Iniciar a TARV precocemente entre 7 e 14 dias após o início do RHZE, pois o paciente tem CD4 < 50 cél/mm³ e não possui meningite tuberculosa.",
+        "Prescrever Tenofovir (TDF) + Lamivudina (3TC) + Dolutegravir (DTG) em dose dobrada de 50 mg de 12/12h (100 mg/dia).",
+        "Justificar que a rifampicina é potente indutora enzimática e reduz a concentração sérica do dolutegravir (alternativa: Efavirenz)."
+      ],
+      model:"<b>Prioridade e Timing:</b> Tratar a <b>tuberculose primeiro</b> (RHZE imediato). Como o paciente apresenta imunossupressão grave (<b>CD4 < 50 cél/mm³</b>) e não tem acometimento meníngeo, a TARV deve ser iniciada precocemente entre <b>7 e 14 dias</b>.<br><b>Esquema e Ajuste:</b> Prescrever <b>TDF + 3TC + Dolutegravir 50 mg de 12/12h (100 mg/dia)</b>. A rifampicina reduz os níveis plasmáticos do DTG por indução enzimática, exigindo dobrar a dose diária (ou substituir DTG por Efavirenz em caso de intolerância)."
+    },
+    {
+      id:"d5", topic:"hiv_diag",
+      title:"Caso 5 — Circuito Rápido na Aids Avançada",
+      case:"Mulher de 29 anos, sem tratamento prévio, chega ao pronto-atendimento com perda ponderal de 11 kg, sarcopenia, candidíase oral, tosse seca há 3 semanas, febre diária e FR = 32 irpm. Ainda não há resultado de CD4.",
+      prompt:"Por que ela é elegível ao Circuito Rápido mesmo sem CD4, quais três testes rápidos oportunistas devem ser solicitados imediatamente e qual profilaxia primária iniciar?",
+      checklist:[
+        "Justificar elegibilidade clínica ao Circuito Rápido pela presença de sinais graves (FR > 30 irpm, sarcopenia/perda grave de peso e candidíase oral sugerindo CD4 < 200), dispensando espera pelo CD4.",
+        "Solicitar os três testes rápidos prioritários: Antígeno criptocócico sérico (CrAg), TB-LAM urinário (resultado em 20–25 min) e Antígeno urinário de Histoplasma.",
+        "Iniciar profilaxia primária com Sulfametoxazol-Trimetoprima (SMX-TMP) após excluir PCP/infecção aguda ou tratar conforme resultados."
+      ],
+      model:"<b>Elegibilidade:</b> O Circuito Rápido não exige resultado prévio de CD4 quando há critérios clínicos de doença avançada/gravidade (FR > 30 irpm, perda importante de peso/sarcopenia e candidíase oral).<br><b>Triagem Rápida Imediata:</b> Solicitar <b>CrAg sérico</b> (criptococose), <b>TB-LAM urinário</b> (tuberculose em CD4 < 200) e <b>antígeno urinário de histoplasma</b>, além de escarro (BAAR/TRM-TB/cultura).<br><b>Profilaxia:</b> Tratar eventuais infecções positivas e oferecer profilaxia primária com <b>Sulfametoxazol-Trimetoprima (SMX-TMP)</b> (cobre pneumocistose e toxoplasmose)."
+    },
+    {
+      id:"d6", topic:"tb_extra",
+      title:"Caso 6 — TB Meningoencefálica: Conduta Diagnóstica e Terapêutica",
+      case:"Paciente indígena de 26 anos apresenta cefaleia holocraniana progressiva há 3 semanas, febre vespertina, vômitos, rigidez de nuca e paralisia facial periférica (VII par) à direita.",
+      prompt:"Qual exame é obrigatório antes da punção lombar, qual o padrão esperado no líquor e qual o esquema completo de tratamento (drogas, duração e adjuvante)?",
+      checklist:[
+        "Exigir Tomografia Computadorizada (TC) de crânio antes da punção lombar para descartar hipertensão intracraniana/efeito de massa e prevenir herniação.",
+        "Descrever LCR típico: pressão de abertura elevada, pleocitose moderada com predomínio linfomonocitário, hiperproteinorraquia e hipoglicorraquia.",
+        "Prescrever esquema estendido de 12 meses: 2 meses de RHZE + 10 meses de RH.",
+        "Incluir corticoterapia adjuvante obrigatória (prednisona 1–2 mg/kg/dia VO ou dexametasona IV) com desmame gradual para prevenir hidrocefalia hipertensiva."
+      ],
+      model:"<b>Pré-requisito diagnóstico:</b> Realizar <b>TC de crânio antes da punção lombar</b> devido ao risco de herniação cerebral.<br><b>Líquor esperado:</b> Pressão de abertura aumentada, pleocitose moderada com predomínio de linfomononucleares, hiperproteinorraquia e hipoglicorraquia.<br><b>Tratamento:</b> Esquema estendido de <b>12 meses</b> (<b>2 meses de RHZE + 10 meses de RH</b>) associado obrigatoriamente a <b>corticosteroide</b> (prednisona 1–2 mg/kg/dia VO ou dexametasona IV) com desmame progressivo a partir da 3ª–4ª semana."
+    }
+  ],
+  flash:[
+    {topic:"tb_base", front:"Quais formas clínicas da tuberculose são bacilíferas e transmitem por via aérea?", back:"Apenas a <b>TB pulmonar</b> e a <b>TB laríngea</b>. Formas extrapulmonares exclusivas têm infectividade nula, mas exigem investigar foco pulmonar associado."},
+    {topic:"tb_base", front:"Qual a história natural após a inalação do Mycobacterium tuberculosis?", back:"<b>90%</b> controlam a infecção e permanecem em ILTB; <b>5%</b> adoecem nos primeiros 2 anos (TB primária); <b>5%</b> reativam ao longo da vida (TB pós-primária)."},
+    {topic:"tb_base", front:"Após quanto tempo de tratamento eficaz um paciente bacilífero deixa de transmitir TB?", back:"Após completar cerca de <b>2 semanas</b> de tratamento efetivo (em internados, a retirada do isolamento exige baciloscopia negativa)."},
+    {topic:"tb_diag", front:"Por que o TRM-TB (GeneXpert) NÃO deve ser usado para controle de tratamento ou recidiva?", back:"Porque amplifica o <b>DNA de bacilos mortos</b> por até 1 ano após o tratamento, gerando resultados falso-positivos. O controle é feito apenas com <b>baciloscopia (BAAR)</b>."},
+    {topic:"tb_diag", front:"Qual a conduta quando o TRM-TB de um caso novo detecta resistência à rifampicina?", back:"Iniciar <b>RHZE</b> imediatamente, colher <b>2ª amostra</b> para repetir TRM-TB, enviar <b>Cultura + TSA</b> e encaminhar à referência terciária."},
+    {topic:"tb_diag", front:"Qual o ponto de corte do Escore Diagnóstico Pediátrico para TB?", back:"<b>&lt; 25:</b> baixa probabilidade; <b>30–35:</b> indicação de tratamento provável; <b>&gt; 40:</b> alta probabilidade / certeza diagnóstica (BCG recente invalida o PPD no escore)."},
+    {topic:"tb_extra", front:"Quais os Critérios de Light e o valor de ADA na TB pleural?", back:"Exsudato (≥ 1): Proteína L/S &gt; 0,5; DHL L/S &gt; 0,6; DHL pleural &gt; 2/3 LSN. Predomínio linfocítico + <b>ADA ≥ 40 U/L</b> sugere fortemente TB pleural."},
+    {topic:"tb_extra", front:"Quais são as ÚNICAS formas de TB tratadas por 12 meses (2RHZE + 10RH)?", back:"<b>TB meningoencefálica</b> (com corticoide obrigatório) e <b>TB osteoarticular</b> (Mal de Pott). Todas as outras formas duram 6 meses."},
+    {topic:"tb_extra", front:"Qual a diferença entre TB pleural comum e empiema pleural tuberculoso?", back:"A TB pleural é reação inflamatória linfocítica com <b>BAAR negativo</b> no líquido; o empiema decorre da ruptura de caverna subpleural, gerando pus com <b>BAAR positivo</b>."},
+    {topic:"tb_trat", front:"Quais os limiares de TGO/TGP para suspender o esquema RHZE por hepatotoxicidade?", back:"<b>&gt; 5× LSN</b> em pacientes assintomáticos OU <b>&gt; 3× LSN</b> em pacientes sintomáticos, ictéricos ou cirróticos."},
+    {topic:"tb_trat", front:"Qual a ordem correta de reintrodução sequencial após hepatotoxicidade pelo RHZE?", back:"Após normalização das enzimas (intervalo de 7–10 dias): <b>1º Rifampicina + Etambutol</b> → <b>2º Isoniazida</b> → <b>3º Pirazinamida</b>."},
+    {topic:"tb_trat", front:"Qual suplementação é obrigatória na gestante em tratamento de TB ativa?", back:"<b>Piridoxina (Vitamina B6) 50 a 100 mg/dia</b> associada ao esquema padrão RHZE (6 meses), prevenindo neuropatia periférica materna e neurotoxicidade fetal."},
+    {topic:"iltb", front:"Quais grupos de PVHA devem tratar ILTB mesmo SEM realizar PPD ou IGRA (após excluir TB ativa)?", back:"PVHA com <b>CD4 ≤ 350 cél/mm³</b>, PVHA contatos de TB pulmonar, PVHA com cicatriz radiológica sem tratamento prévio e RN coabitantes de caso-fonte."},
+    {topic:"iltb", front:"Qual o esquema preferencial para ILTB e qual esquema é contraindicado com Dolutegravir?", back:"Preferencial: <b>3HP</b> (Isoniazida 900 mg + Rifapentina 900 mg, 1×/semana por 12 semanas). Contraindicada com DTG/IP: <b>monoterapia com Rifampicina</b> (4 meses)."},
+    {topic:"iltb", front:"Por que não se deve repetir o PPD antes de 8 semanas se o primeiro foi negativo?", back:"Para evitar o <b>efeito booster</b> (reativação de memória imune prévia). Um aumento ≥ 10 mm após ≥ 8 semanas caracteriza conversão tuberculínica."},
+    {topic:"hiv_base", front:"Quais receptores o HIV utiliza para entrar no linfócito T CD4+?", back:"A glicoproteína viral <b>GP120</b> liga-se ao receptor <b>CD4</b> e depois a um correceptor: <b>CCR5</b> ou <b>CXCR4</b>."},
+    {topic:"hiv_base", front:"Qual o significado prognóstico de uma Síndrome Retroviral Aguda com duração &gt; 14 dias?", back:"Indica replicação viral mais agressiva e prediz uma <b>fase de latência mais curta</b>, com evolução mais precoce para AIDS avançada."},
+    {topic:"hiv_base", front:"Como o vírus atinge o SNC para causar HAND e quais exames apoiam o diagnóstico?", back:"Pelo mecanismo de <b>'Cavalo de Troia'</b> (monócitos/macrófagos cruzando a BHE). Avaliação com testes neuropsicológicos, RM e biomarcadores (<b>NfL, BDNF, beta-amiloide</b>)."},
+    {topic:"hiv_diag", front:"Como se fecha o diagnóstico de HIV no fluxo de testagem rápida do SUS?", back:"Com <b>dois testes rápidos reagentes de fabricantes diferentes</b>. Se discordarem, faz-se o 3º TR imediato; se persistir discordância, repetir em <b>30 dias</b>."},
+    {topic:"hiv_diag", front:"Quais são os três testes rápidos do Circuito Rápido na Aids avançada?", back:"<b>Antígeno criptocócico sérico (CrAg)</b>, <b>TB-LAM urinário</b> (resultado em 20–25 min) e <b>antígeno urinário de histoplasma</b>."},
+    {topic:"hiv_diag", front:"Como diferenciar clinicamente candidíase oral de leucoplasia pilosa?", back:"A <b>candidíase oral</b> sai à raspagem com espátula; a <b>leucoplasia pilosa</b> (causada pelo EBV nas bordas laterais da língua) não sai à raspagem."},
+    {topic:"tarv", front:"Qual o esquema de 1ª linha da TARV e como ajustá-lo na coinfecção com TB?", back:"Esquema padrão: <b>TDF + 3TC + DTG</b>. Na TB ativa com rifampicina, dobrar DTG para <b>50 mg de 12/12h (100 mg/dia)</b>."},
+    {topic:"tarv", front:"Qual a conduta se o paciente tiver TFG &lt; 60 mL/min e coinfecção por Hepatite B?", back:"Suspender TDF (nefrotoxicidade tubular) e priorizar <b>Tenofovir Alafenamida (TAF) + 3TC + DTG</b>."},
+    {topic:"tarv", front:"O que define falha virológica e o que significa I=I?", back:"<b>Falha virológica:</b> CV &gt; 200 cópias após ≥ 6 meses de TARV. <b>I=I:</b> CV &lt; 200 cópias mantida por ≥ 6 meses elimina transmissão sexual."},
+    {topic:"io_siri", front:"Quais as principais infecções oportunistas para CD4 &lt; 350, &lt; 200, &lt; 100 e &lt; 50?", back:"<b>&lt; 350:</b> TB · <b>&lt; 200:</b> PCP e candidíase esofágica · <b>&lt; 100:</b> Neurotoxoplasmose · <b>&lt; 50:</b> CMV, MAC e Linfoma SNC."},
+    {topic:"io_siri", front:"Quando iniciar a TARV na coinfecção TB-HIV e na meningite criptocócica?", back:"TB com CD4 &lt; 50: <b>7–14 dias</b>; TB com CD4 ≥ 50 ou TB meníngea: <b>4–8 semanas</b>; Meningite criptocócica: <b>4–6 semanas</b>."},
+    {topic:"io_siri", front:"Qual a conduta na SIRI e qual a única exceção ao uso de corticoide?", back:"<b>Manter TARV e antimicrobiano</b> e associar corticoide. Exceção: <b>Sarcoma de Kaposi</b> (corticoide é proibido pois acelera o tumor)."}
+  ],
+  glossary:[
+    {term:"ADA (Adenosina Deaminase)", def:"Enzima produzida por linfócitos T ativados; valores ≥ 40 U/L em exsudato pleural linfocítico sugerem fortemente tuberculose pleural.", topic:"tb_extra"},
+    {term:"BAAR", def:"Bacilo Álcool-Ácido Resistente; propriedade tintorial conferida pelos ácidos micólicos da parede celular do Mycobacterium tuberculosis.", topic:"tb_base"},
+    {term:"Cavalo de Troia (HIV)", def:"Mecanismo pelo qual monócitos e macrófagos infectados atravessam a barreira hematoencefálica, levando o HIV ao SNC.", topic:"hiv_base"},
+    {term:"CCR5 / CXCR4", def:"Correceptores celulares necessários, após ligação ao CD4, para a fusão do envelope do HIV com a membrana do linfócito.", topic:"hiv_base"},
+    {term:"Circuito Rápido", def:"Fluxo prioritário para PVHA com Aids avançada (CD4 < 200, estágio 3/4 ou sinais graves) com triagem rápida para criptococo, TB-LAM e histoplasma.", topic:"hiv_diag"},
+    {term:"Conversão Tuberculínica", def:"Aumento ≥ 10 mm na enduração do PPD na segunda aplicação realizada após ≥ 8 semanas, indicando infecção recente pelo M. tuberculosis.", topic:"iltb"},
+    {term:"CrAg", def:"Antígeno criptocócico pesquisado no sangue periférico ou líquor para diagnóstico rápido de criptococose/meningite criptocócica.", topic:"hiv_diag"},
+    {term:"Critérios de Light", def:"Parâmetros bioquímicos para identificar exsudato pleural: Proteína L/S > 0,5; DHL L/S > 0,6; ou DHL pleural > 2/3 do LSN sérico.", topic:"tb_extra"},
+    {term:"Efeito Booster", def:"Reativação da memória imunológica em pessoas com infecção antiga por micobactérias ou BCG ao repetir o PPD em curto intervalo (< 8 semanas).", topic:"iltb"},
+    {term:"Esquema 3HP", def:"Regime preferencial para ILTB composto por Isoniazida (900 mg) + Rifapentina (900 mg) em 12 doses semanais (3 meses).", topic:"iltb"},
+    {term:"Esquema CEL", def:"Esquema alternativo para hepatotoxicidade grave/persistente composto por Capreomicina (ou Amicacina), Etambutol e Levofloxacino.", topic:"tb_trat"},
+    {term:"Falha Virológica", def:"Detecção de carga viral do HIV > 200 cópias/mL após pelo menos 6 meses de terapia antirretroviral.", topic:"tarv"},
+    {term:"HAND", def:"Transtorno Neurocognitivo Associado ao HIV; espectro de neurodegeneração por neuroinflamação crônica mesmo em pacientes sob TARV.", topic:"hiv_base"},
+    {term:"I=I (Indetectável = Intransmissível)", def:"Conceito que estabelece risco zero de transmissão sexual do HIV quando a carga viral permanece < 200 cópias/mL por pelo menos 6 meses.", topic:"tarv"},
+    {term:"IGRA", def:"Ensaio de Liberação de Interferon-Gama; exame sanguíneo para rastreio de ILTB sem interferência da vacina BCG ou efeito booster.", topic:"iltb"},
+    {term:"ILTB", def:"Infecção Latente pelo Mycobacterium tuberculosis; bacilos viáveis contidos em granulomas, sem sintomas e sem transmissibilidade.", topic:"iltb"},
+    {term:"Mal de Pott", def:"Tuberculose osteoarticular da coluna vertebral (predomínio toracolombar), diagnosticada por RM e tratada por 12 meses.", topic:"tb_extra"},
+    {term:"Núcleos de Wells", def:"Partículas secas < 10 micras formadas pela evaporação das gotículas de Flügge, contendo 1–2 bacilos que permanecem em suspensão aérea.", topic:"tb_base"},
+    {term:"Período de Eclipse", def:"Fase inicial após exposição ao HIV em que nenhum marcador sorológico ou antígeno p24 é detectável, apenas o RNA viral (PCR).", topic:"hiv_diag"},
+    {term:"Proteína p24", def:"Proteína estrutural do core do HIV detectada precocemente pelos testes ELISA de 4ª geração e testes rápidos imunocromatográficos.", topic:"hiv_diag"},
+    {term:"Sintomático Respiratório (SR)", def:"Indivíduo com tosse por ≥ 2 a 3 semanas (seca ou produtiva), gatilho clínico obrigatório para investigação de tuberculose.", topic:"tb_diag"},
+    {term:"SIRI / IRIS", def:"Síndrome Inflamatória de Reconstituição Imune; piora inflamatória paradoxal após início da TARV apesar da melhora virológica/imunológica.", topic:"io_siri"},
+    {term:"TB-LAM (LF-LAM)", def:"Teste rápido imunocromatográfico na urina que detecta lipoarabinomanana da parede micobacteriana em 20–25 min (indicado em PVHA com CD4 < 200).", topic:"hiv_diag"},
+    {term:"TRM-TB (GeneXpert MTB/RIF)", def:"Teste molecular rápido que detecta DNA do M. tuberculosis e resistência à rifampicina em ~1 hora; proibido para controle de cura.", topic:"tb_diag"}
+  ]
+};
+/* ========================== FIM DOS DADOS ========================== */
+
+const M=Object.assign({itemLabel:'Questão',itemLabelPl:'questões',caseLabel:'Enunciado',lookLabel:'Comentário',condLabel:'Em resumo',difLabel:'Diferencial (parecidos)',timing:'item',passRules:{hi:80,mid:60}},DATA.meta), D=Object.fromEntries(Object.entries(DATA.topics).map(([k,v])=>[k,v.name]));
+const S=DATA.questoes||DATA.stations||[];
+const IMG=n=>(typeof IMGDATA!=='undefined'&&IMGDATA[n])||`${M.imgDir}/${n}.${M.ext}`; // IMGDATA (opcional) é inserido como na seção 7 da skill
+const TABNAMES={prova:"Prova",treino:"Treino",atlas:"Atlas",resumo:"80/20",cards:"Cards",def:"Definitivo",provas:"Provas antigas",discursivo:"Discursivo",flash:"Flashcards",glossario:"Glossário"};
+const SK=k=>`${M.storageKey}-${k}`;
+const $=id=>document.getElementById(id);
+const app=$('app');
+let tab=DATA.tabs[0], cfg={n:Math.min(10,S.length||10), t:60, tt:1800, mode:M.timing}, run=null, tick=null;
+let atlasFilter='todos', hideNames=false, revealed=new Set(), treinoFilter='todos';
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const load=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(SK(k))||'null');return v??d}catch(e){return d}};
+const store=(k,v)=>{try{localStorage.setItem(SK(k),JSON.stringify(v))}catch(e){}};
+cfg=Object.assign({},cfg,load('cfg',{}));if(!cfg.t)cfg.t=60;if(!cfg.tt)cfg.tt=1800;if(!['item','total','none'].includes(cfg.mode))cfg.mode=M.timing;
+let history=load('hist',[]), wrongIds=new Set(load('wrong',[]));
+const saveCfg=()=>store('cfg',cfg);
+let actx=null;
+function beep(f=880,d=.15){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
+document.addEventListener('pointerdown',()=>{try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume&&actx.resume()}catch(e){}},{once:true});
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1800)}
+function lightbox(src){const d=document.createElement('div');d.className='lb';d.innerHTML=`<img src="${src}" alt="Imagem ampliada"><button type="button">Fechar</button>`;
+  const close=()=>{d.remove();document.removeEventListener('keydown',k)};const k=e=>{if(e.key==='Escape')close()};d.addEventListener('click',close);document.addEventListener('keydown',k);document.body.appendChild(d)}
+document.addEventListener('click',e=>{const z=e.target.closest('[data-zoom]');if(z)lightbox(z.getAttribute('src'))});
+const tagImg=(n,alt,extra='')=>`<img src="${IMG(n)}" alt="${esc(alt)}" data-zoom ${extra} onerror="this.style.display='none'">`;
+
+/* cabeçalho */
+$('m-title').textContent=M.title; $('m-sub').textContent=M.subtitle; document.title=M.title;
+if(M.author&&M.author.trim()) $('m-author').querySelector('span').textContent=M.author; else $('m-author').remove();   // sem autor: não aparece o "por"
+$('tabs').innerHTML=DATA.tabs.map((t,i)=>`<button role="tab" id="tab-${t}" aria-selected="${i===0}" data-tab="${t}">${TABNAMES[t]||t}</button>`).join('');
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  stopTimer();tab=b.dataset.tab;run=null;
+  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));render()}));
+
+/* ---------- prova / treino ---------- */
+const isD=q=>q.type==='disc';
+const chkList=q=>q.check&&q.check.length?q.check:['Minha resposta cobre o essencial da resposta-modelo'];
+const qScore=q=>isD(q)?chkList(q).filter((_,i)=>q.self[i]).length/chkList(q).length:(q.pick===q.a?1:0);
+const qOK=q=>qScore(q)>=(isD(q)?M.passRules.mid/100:1);
+const answered=q=>isD(q)||!!q.pick;
+const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1).replace('.',',');
+const IL=()=>M.itemLabel.toLowerCase();
+function buildRun(mode,pool){
+  let list;
+  if(mode==='prova'){
+    const n=Math.min(cfg.n,pool.length);
+    list=shuffle(pool).slice(0,n);
+  } else list=shuffle(pool);
+  return {mode,i:0,stations:list.map(s=>({s,qs:s.qs.map(q=>({...q,order:isD(q)?[]:(q.fixed?[...q.opts]:shuffle(q.opts)),pick:null,text:'',self:[]}))})),left:(mode==='prova'&&cfg.mode==='total'?cfg.tt:cfg.t),locked:false,checked:false};
+}
+function stopTimer(){if(tick){clearInterval(tick);tick=null}}
+function render(){
+  if(tab==='atlas')return renderAtlas();
+  if(tab==='resumo')return renderResumo();
+  if(tab==='cards')return renderCards();
+  if(tab==='def')return renderDef();
+  if(tab==='provas')return renderProvas();
+  if(tab==='discursivo')return renderDiscursivo();
+  if(tab==='flash')return renderFlash();
+  if(tab==='glossario')return renderGloss();
+  if(!run)return tab==='prova'?renderSetup():renderTreinoSetup();
+  if(run.done)return renderResult();
+  renderStation();
+}
+function histHTML(){
+  const h2='<h2 style="font-size:22px;text-transform:uppercase;margin-top:18px">Histórico</h2>';
+  if(!history.length)return h2+'<p class="muted" style="margin:4px 0 0">Suas notas aparecem aqui depois da primeira prova. Ficam salvas só neste aparelho.</p>';
+  const cnt={};history.forEach(r=>(r.wrong||[]).forEach(d=>cnt[d]=(cnt[d]||0)+1));
+  const weak=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  return `${h2}<div class="hist">${history.slice(-6).reverse().map(r=>{const d=new Date(r.t);return `<div class="row"><span>${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span><span>${fmt(r.pts)+'/'+r.max}</span></div>`}).join('')}</div>
+  ${weak.length?`<p class="muted" style="margin:10px 0 0">Onde você mais erra:</p><div class="weak">${weak.map(([d,n])=>`<span>${esc(D[d]||d)} · ${n}×</span>`).join('')}</div>`:''}
+  <p style="margin:10px 0 0"><button type="button" class="linkbtn" id="clr">Apagar histórico</button></p>`;
+}
+function renderSetup(){
+  const ns=[...new Set([6,10,15,20,S.length].filter(n=>n<=S.length&&n>0))];
+  const il=IL(), hasD=S.some(s=>s.qs.some(isD));
+  const tOpts=cfg.mode==='item'?[[60,'1 min'],[90,'1 min 30'],[120,'2 min'],[180,'3 min'],[300,'5 min']]:cfg.mode==='total'?[[900,'15 min'],[1800,'30 min'],[3600,'1 h'],[7200,'2 h']]:[];
+  const tk=cfg.mode==='total'?'tt':'t';
+  const timeRule=cfg.mode==='item'?`Quando o tempo acaba, o item fecha e você passa para o próximo. Pergunta em branco conta como erro.`:cfg.mode==='total'?'Quando o tempo total acaba, a prova é encerrada. O que estiver em branco conta como erro.':'Sem cronômetro: vá no seu ritmo.';
+  app.innerHTML=`<section class="setup"><div class="panel"><h2>Simulado</h2>
+    <p class="muted">Cada ${il} traz o enunciado (com imagem ou tabela, se houver) e as perguntas. O resultado só aparece no final, como na prova.${hasD?' Nas perguntas discursivas você escreve a resposta e se autoavalia no final.':''}</p>
+    <div class="field"><label class="l">Número de ${esc(M.itemLabelPl)}</label><div class="seg" id="segN">${ns.map(n=>`<button type="button" aria-pressed="${cfg.n===n}" data-n="${n}">${n===S.length?'Todas ('+n+')':n}</button>`).join('')}</div></div>
+    <div class="field"><label class="l">Cronômetro</label><div class="seg" id="segM">${[['item','Por '+il],['total','Tempo total'],['none','Sem tempo']].map(([m,l])=>`<button type="button" aria-pressed="${cfg.mode===m}" data-m="${m}">${l}</button>`).join('')}</div></div>
+    ${tOpts.length?`<div class="field"><label class="l">${cfg.mode==='total'?'Duração da prova':'Tempo por '+il}</label><div class="seg" id="segT">${tOpts.map(([t,l])=>`<button type="button" aria-pressed="${cfg[tk]===t}" data-t="${t}">${l}</button>`).join('')}</div></div>`:''}
+    <div class="field"><button class="btn" id="go" type="button" ${S.length?'':'disabled'}>Começar a prova</button></div></div>
+    <div class="panel"><h2>Como funciona</h2><ul class="rules">
+      <li>${timeRule}</li>
+      <li>Toque na imagem para ampliar.</li>
+      <li>No modo <b>Treino</b> a correção aparece na hora.</li></ul>${histHTML()}</div></section>`;
+  app.querySelectorAll('#segN button').forEach(b=>b.onclick=()=>{cfg.n=+b.dataset.n;saveCfg();renderSetup()});
+  app.querySelectorAll('#segM button').forEach(b=>b.onclick=()=>{cfg.mode=b.dataset.m;saveCfg();renderSetup()});
+  app.querySelectorAll('#segT button').forEach(b=>b.onclick=()=>{cfg[tk]=+b.dataset.t;saveCfg();renderSetup()});
+  app.querySelector('#go').onclick=()=>{run=buildRun('prova',S);startStation()};
+  const c=app.querySelector('#clr');if(c)c.onclick=()=>{history=[];wrongIds=new Set();store('hist',[]);store('wrong',[]);renderSetup()};
+}
+function renderTreinoSetup(){
+  const keys=['todos',...(wrongIds.size?['erros']:[]),...Object.keys(D)];
+  if(treinoFilter==='erros'&&!wrongIds.size)treinoFilter='todos';
+  const pick=k=>k==='todos'?S:k==='erros'?S.filter(s=>wrongIds.has(s.id)):S.filter(s=>s.topic===k);
+  const pool=pick(treinoFilter);
+  app.innerHTML=`<section class="panel"><h2 style="font-size:28px;text-transform:uppercase">Treino por tópico</h2>
+    <p class="muted">Sem cronômetro. Responda e veja na hora o porquê da resposta.</p>
+    <div class="filters">${keys.map(k=>`<button type="button" class="chip ${k==='erros'?'err':''}" aria-pressed="${treinoFilter===k}" data-k="${k}">${k==='todos'?'Todas':k==='erros'?'Meus erros':esc(D[k])} <span class="muted">${pick(k).length}</span></button>`).join('')}</div>
+    <button class="btn" id="go" type="button" ${pool.length?'':'disabled'}>Treinar ${pool.length} ${pool.length>1?esc(M.itemLabelPl):esc(IL())}</button></section>`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{treinoFilter=b.dataset.k;renderTreinoSetup()});
+  app.querySelector('#go').onclick=()=>{run=buildRun('treino',pool);startStation()};
+}
+const timed=()=>run&&run.mode==='prova'&&cfg.mode!=='none';
+function startTimer(){
+  stopTimer();if(!timed())return;
+  tick=setInterval(()=>{run.left--;updateTimer();if(run.left===10)beep(660);if(run.left<=0)beep(440,.4);
+    if(run.left<=0){stopTimer();run.locked=true;
+      if(cfg.mode==='total'){toast('Tempo esgotado: prova encerrada');setTimeout(finish,1200)}
+      else{toast('Tempo esgotado: próximo item');setTimeout(next,1200)}}},1000);
+}
+function startStation(){
+  const keep=timed()&&cfg.mode==='total'&&run.i>0;   // no tempo total o relógio não reinicia a cada item
+  if(!keep)stopTimer();
+  run.locked=false;run.checked=false;
+  if(!(run.mode==='prova'&&cfg.mode==='total'))run.left=cfg.t;
+  render();window.scrollTo({top:0});
+  if(timed()&&!keep)startTimer();
+}
+function updateTimer(){
+  const el=$('timer');if(!el)return;const tot=cfg.mode==='total'?cfg.tt:cfg.t,t=Math.max(0,run.left),m=Math.floor(t/60),s=String(t%60).padStart(2,'0');
+  el.querySelector('span').textContent=`${m}:${s}`;const C=2*Math.PI*16;el.querySelector('.fg').style.strokeDashoffset=C*(1-t/tot);el.classList.toggle('low',t<=10);
+}
+function finish(){stopTimer();run.done=true;render();window.scrollTo({top:0})}
+function next(){if(run.i<run.stations.length-1){run.i++;startStation()}else finish()}
+function tableHTML(t){return `<div class="gallery"><div class="labcard"><h3>${esc(t.title)}</h3><table>${t.rows.map(r=>`<tr><td>${esc(r[0])}</td><td ${r[3]?'class="flag"':''}>${esc(r[1])}</td><td>${esc(r[2]||'')}</td></tr>`).join('')}</table>${t.note?`<p class="zoomhint">${esc(t.note)}</p>`:''}</div></div>`}
+function stationMedia(s){
+  let h='';
+  if(s.table)h+=tableHTML(s.table);
+  if(s.imgs&&s.imgs.length){const two=s.imgs.length>1;h+=`<div class="gallery ${two?'two':''}">${s.imgs.map((n,k)=>`<figure>${tagImg(n,'Imagem '+(k+1)+' do item','loading="eager"')}</figure>`).join('')}</div><p class="zoomhint">Toque na imagem para ampliar.</p>`}
+  return h;
+}
+function discFb(q,qi){
+  return `<div class="why"><b>Resposta-modelo:</b> ${q.model||''}</div><div class="chk"><p class="muted">Marque o que a sua resposta trouxe:</p>${chkList(q).map((c,i)=>`<label><input type="checkbox" data-sq="${qi}" data-ci="${i}" ${q.self[i]?'checked':''}> <span>${esc(c)}</span></label>`).join('')}</div>`;
+}
+function renderStation(){
+  const st=run.stations[run.i],s=st.s,prova=run.mode==='prova',total=run.stations.length,showFb=!prova&&run.checked;
+  const media=stationMedia(s), timer=prova&&cfg.mode!=='none';
+  const qHTML=(q,qi)=>isD(q)
+    ?`<div class="q"><p>${qi+1}. ${esc(q.q)} <span class="muted" style="font-weight:400">(discursiva)</span></p>
+      <textarea class="ta" data-q="${qi}" rows="${q.rows||5}" placeholder="Escreva sua resposta…" aria-label="Resposta da pergunta ${qi+1}" ${showFb||run.locked?'readonly':''}>${esc(q.text||'')}</textarea>${showFb?discFb(q,qi):''}</div>`
+    :`<div class="q"><p>${qi+1}. ${esc(q.q)}</p><div class="opts">${q.order.map((o,oi)=>{let cls='';if(showFb){if(o===q.a)cls='right';else if(o===q.pick)cls='wrong'}
+      return `<button type="button" class="opt ${cls}" data-q="${qi}" data-o="${oi}" aria-pressed="${q.pick===o}" ${run.locked||showFb?'disabled':''}><span class="k">${'ABCDE'[oi]}</span><span>${esc(o)}</span></button>`}).join('')}</div>
+      ${showFb?`<div class="why"><b>${q.pick===q.a?'Certo.':'Errado.'}</b> ${esc(q.why||'')}</div>`:''}</div>`;
+  app.innerHTML=`<div class="stationbar"><span class="placard">${esc(M.itemLabel)} ${String(run.i+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}</span>
+    <div class="progress" aria-hidden="true"><i style="width:${run.i/total*100}%"></i></div>
+    ${timer?`<div class="timer" id="timer" role="timer"><svg viewBox="0 0 38 38"><circle class="bgc" cx="19" cy="19" r="16"/><circle class="fg" cx="19" cy="19" r="16" stroke-dasharray="${2*Math.PI*16}" stroke-dashoffset="0"/></svg><span>0:00</span></div>`:''}</div>
+  <section class="station" ${media?'':'style="grid-template-columns:1fr"'}>${media?`<div>${media}</div>`:''}
+    <div class="case">${s.case||showFb?`<div class="who">${esc(M.caseLabel)} ${showFb?'· '+esc(D[s.topic]||''):''}</div>`:''}${s.case?`<p class="story">${esc(s.case)}</p>`:''}
+    ${st.qs.map(qHTML).join('')}
+    ${showFb&&s.look?`<div class="look"><b>${esc(M.lookLabel)}:</b> ${esc(s.look)}</div>`:''}
+    <div class="actions">${prova?`<button class="btn" id="nx" type="button">${run.i<total-1?'Próximo item':'Entregar prova'}</button>`
+      :showFb?`<button class="btn" id="nx" type="button">${run.i<total-1?'Próximo item':'Ver resumo'}</button>`
+      :`<button class="btn" id="ck" type="button" ${st.qs.every(answered)?'':'disabled'}>Corrigir</button>`}</div></div></section>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const q=st.qs[+b.dataset.q];q.pick=q.order[+b.dataset.o];
+    app.querySelectorAll(`.opt[data-q="${b.dataset.q}"]`).forEach(x=>x.setAttribute('aria-pressed',x===b));
+    const ck=$('ck');if(ck)ck.disabled=!st.qs.every(answered)});
+  app.querySelectorAll('.ta').forEach(a=>a.oninput=()=>{st.qs[+a.dataset.q].text=a.value});
+  app.querySelectorAll('[data-sq]').forEach(c=>c.onchange=()=>{st.qs[+c.dataset.sq].self[+c.dataset.ci]=c.checked});
+  const nx=$('nx');if(nx)nx.onclick=next;
+  const ck=$('ck');if(ck)ck.onclick=()=>{run.checked=true;renderStation()};
+  if(timer)updateTimer();
+}
+function calc(){
+  let pts=0,max=0;
+  run.stations.forEach(st=>st.qs.forEach(q=>{max++;pts+=qScore(q)}));
+  return {pts,max};
+}
+function renderResult(){
+  const y=window.scrollY,{pts,max}=calc();
+  const prova=run.mode==='prova',pct=Math.round(pts/max*100);
+  run.stations.forEach(st=>{if(st.qs.every(qOK))wrongIds.delete(st.s.id);else wrongIds.add(st.s.id)});store('wrong',[...wrongIds]);
+  if(prova){
+    const rec={t:run.t0||(run.t0=Date.now()),pts,max,wrong:[...new Set(run.stations.filter(st=>!st.qs.every(qOK)).map(st=>st.s.topic))]};
+    if(run.hidx==null){history.push(rec);history=history.slice(-50);run.hidx=history.length-1}else history[run.hidx]=rec;
+    store('hist',history)}
+  const hasD=run.stations.some(st=>st.qs.some(isD));
+  const hi=M.passRules.hi,mid=M.passRules.mid;
+  const rvQ=(q,si,qi)=>isD(q)
+    ?`<li>${esc(q.q)} <span class="muted">(discursiva · ${Math.round(qScore(q)*100)}%)</span>
+      <div class="why"><b>Sua resposta:</b> ${q.text?esc(q.text).replace(/\n/g,'<br>'):'<i>em branco</i>'}</div>
+      <div class="why"><b>Resposta-modelo:</b> ${q.model||''}</div>
+      <div class="chk">${chkList(q).map((c,i)=>`<label><input type="checkbox" data-si="${si}" data-qi="${qi}" data-ci="${i}" ${q.self[i]?'checked':''}> <span>${esc(c)}</span></label>`).join('')}</div></li>`
+    :`<li>${esc(q.q)} ${q.pick===q.a?`<span class="c">✓ ${esc(q.a)}</span>`:`<span class="y">✗ ${q.pick?esc(q.pick):'em branco'}</span><br><span class="c">Correta: ${esc(q.a)}</span>`}</li>`;
+  app.innerHTML=`<section class="panel"><div class="score"><div class="big">${fmt(pts)}<span class="muted" style="font-size:36px">/${max}</span></div>
+    <div class="verdict"><h2 style="font-size:30px;text-transform:uppercase">${pct>=hi?'Pronto para a prova':pct>=mid?'Quase lá':'Volte ao material'}</h2><p class="muted" style="margin:4px 0 0">${pct}% de acerto. Abaixo, cada ${esc(IL())} com a resposta e o que observar.${hasD?' Nas discursivas, marque a checklist: a nota atualiza na hora.':''}</p></div>
+    <div class="actions"><button class="btn" id="again" type="button">Nova ${prova?'prova':'rodada'}</button>${wrongIds.size?`<button class="btn ghost" id="rev" type="button">Treinar meus erros (${wrongIds.size})</button>`:''}</div></div></section>
+  <section class="review">${run.stations.map((st,i)=>{const ok=st.qs.every(qOK),s=st.s;
+    return `<article class="rv ${ok?'':'bad'}">${s.imgs&&s.imgs[0]?tagImg(s.imgs[0],''):`<div class="labcard" style="padding:8px;font-size:13px"><b>${esc((s.table&&s.table.title)||M.itemLabel+' '+(i+1))}</b></div>`}
+    <div><h3>${esc(M.itemLabel)} ${i+1} · ${esc(D[s.topic]||'')} </h3><ul>${st.qs.map((q,qi)=>rvQ(q,i,qi)).join('')}</ul>
+    ${s.look?`<p class="muted" style="margin:6px 0 0;font-size:14px"><b>${esc(M.lookLabel)}:</b> ${esc(s.look)}</p>`:''}</div></article>`}).join('')}</section>`;
+  $('again').onclick=()=>{run=null;render()};
+  const rv=app.querySelector('#rev');if(rv)rv.onclick=()=>{treinoFilter='erros';$('tab-treino')&&$('tab-treino').click()};
+  app.querySelectorAll('[data-si]').forEach(c=>c.onchange=()=>{run.stations[+c.dataset.si].qs[+c.dataset.qi].self[+c.dataset.ci]=c.checked;renderResult()});
+  window.scrollTo(0,y);
+}
+
+/* ---------- atlas ---------- */
+function renderAtlas(){
+  const keys=['todos',...Object.keys(D).filter(k=>DATA.atlas.some(a=>a[1]===k))];
+  const items=DATA.atlas.filter(a=>atlasFilter==='todos'||a[1]===atlasFilter);
+  app.innerHTML=`<div class="filters">${keys.map(k=>`<button type="button" class="chip" aria-pressed="${atlasFilter===k}" data-k="${k}">${k==='todos'?'Todas':esc(D[k])}</button>`).join('')}
+    <label class="switch"><input type="checkbox" id="hide" ${hideNames?'checked':''}> Esconder nomes (modo flashcard)</label></div>
+  <section class="atlas">${items.map(([img,dz,cap])=>{const show=!hideNames||revealed.has(img);
+    return `<article class="card">${tagImg(img,show?D[dz]+': '+cap:'Imagem para identificar','loading="lazy"')}<div class="cb">${show?`<div class="dz">${esc(D[dz])}</div><div class="cap">${esc(cap)}</div>`:`<button type="button" class="reveal" data-r="${img}">Qual é? Revelar</button>`}</div></article>`}).join('')}</section>
+  ${DATA.sheet.length?`<h2 style="font-size:30px;text-transform:uppercase;margin-top:28px">Cola rápida</h2><section class="sheet">${DATA.sheet.map(([k,lines,cd])=>`<div class="panel"><h3>${esc(D[k]||k)}</h3><ul>${lines.map(l=>`<li>${l}</li>`).join('')}</ul>${cd?`<div class="tx"><b>${esc(M.condLabel)}:</b> ${cd}</div>`:''}</div>`).join('')}</section>`:''}`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{atlasFilter=b.dataset.k;renderAtlas()});
+  app.querySelector('#hide').onchange=e=>{hideNames=e.target.checked;revealed.clear();renderAtlas()};
+  app.querySelectorAll('.reveal').forEach(b=>b.onclick=()=>{revealed.add(b.dataset.r);renderAtlas()});
+}
+
+/* ---------- 80/20 ---------- */
+function renderResumo(){
+  const side=x=>x?`<div class="side"><strong>${x[0]}</strong>${x[1]}</div>`:'';
+  const nR=DATA.rules.length;
+  app.innerHTML=`<div class="hy-intro"><h2>Resumo 80/20</h2><p class="muted" style="margin:0">O pouco que resolve a maior parte da prova.</p></div>
+  ${nR?`<section class="hy-sec"><h2>As ${nR} regras</h2><ol class="rules20">${DATA.rules.map(([t,d])=>`<li><div><b>${t}</b>${d}</div></li>`).join('')}</ol></section>`:''}
+  ${DATA.pairs.length?`<section class="hy-sec"><h2>Pares que confundem</h2><p class="muted">Quando duas coisas parecem iguais, decida pelo critério da última linha.</p><div class="pairs">${DATA.pairs.map(p=>`<article class="pair"><h3>${p.t}</h3><div class="vs">${side(p.a)}${side(p.b)}${side(p.c)}</div><p class="key">${p.k}</p></article>`).join('')}</div></section>`:''}
+  ${DATA.snaps.length?`<section class="hy-sec"><h2>Síntese por tópico</h2><p class="muted">A ideia central e a conduta de cada bloco da matéria.</p><div class="dcards">${DATA.snaps.map(([k,img,ag,tags,cl,cd])=>`<article class="dcard">${img?tagImg(img,D[k],'loading="lazy"'):`<div class="nolab">${esc(D[k]||k)}</div>`}<div class="db"><h3>${esc(D[k]||k)}</h3><div class="ag">${ag}</div>${tags&&tags.length?`<div>${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}<div>${cl}</div><div class="cd"><b>${esc(M.condLabel)}:</b> ${cd}</div></div></article>`).join('')}</div></section>`:''}`;
+}
+
+/* ---------- cards ---------- */
+function renderCards(){
+  app.innerHTML=`<div class="hy-intro"><h2>Cards</h2><p class="muted" style="margin:0">Um card por tópico, com o essencial e os alertas.</p></div>
+  <section class="notes">${DATA.notes.map(([k,img,f,att],idx)=>{const t=DATA.topics[k]||{p:'#eee',d:'#333',name:k};
+    return `<article class="ncard" style="--p:${t.p};--d:${t.d}"><div class="nh">${img?tagImg(img,t.name,'loading="lazy"'):`<div class="ph">${String(idx+1).padStart(2,'0')}</div>`}<h3>${esc(t.name)}</h3></div>
+    <dl>${DATA.noteLabels.map((l,i)=>f[i]?`<div><dt>${esc(l)}</dt><dd>${f[i]}</dd></div>`:'').join('')}</dl>${att?`<div class="att">${att}</div>`:''}</article>`}).join('')}</section>`;
+}
+
+/* ---------- definitivo ---------- */
+const defList=a=>`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+let defStudy=false,defOpen=new Set();
+function defSheet(o,half){
+  const t=DATA.topics[o.k]||{p:'#eee',d:'#333',name:o.k};
+  const imgs=o.table?`<div class="dimgs one"><div class="dlab"><b>${esc(o.table.title)}</b><table>${o.table.rows.map(r=>`<tr><td>${esc(r[0])}</td><td ${r[3]?'class="flag"':''}>${esc(r[1])}</td></tr>`).join('')}</table>${o.table.note?`<small>${esc(o.table.note)}</small>`:''}</div></div>`
+    :(o.imgs&&o.imgs.length?`<div class="dimgs ${o.imgs.length>1?'two':'one'}">${o.imgs.map(([i,c])=>`<figure>${tagImg(i,c,'loading="lazy"')}<figcaption>${c}</figcaption></figure>`).join('')}</div>`:'');
+  const hidden=defStudy&&!defOpen.has(o.k);
+  return `<div class="dsheet ${half?'half':''}" style="--p:${t.p};--d:${t.d}"><header class="dhead"><h3>${esc(t.name)}</h3></header>${imgs}
+  ${o.case?`<div class="dcase"><div class="dl">${o.practice?'Fora da aula · exemplo de treino':esc(M.caseLabel)}</div><p>${o.case}</p>${o.case2?`<div class="dl" style="margin-top:10px">${esc(M.caseLabel)} 2</div><p>${o.case2}</p>`:''}${o.question?`<p class="dq"><b>Pergunta:</b> ${o.question}</p>`:''}</div>`:''}
+  <div class="dans" ${hidden?'':'hidden'}><button type="button" class="btn" data-open="${o.k}">Mostrar resposta</button><span class="muted">Responda de cabeça antes de abrir.</span></div>
+  <div class="dbody" ${hidden?'hidden':''}><div class="dgrid">${o.sections.map(([h,a])=>`<section class="df"><h4>${h}</h4>${defList(a)}</section>`).join('')}</div>
+  ${o.dif&&o.dif.length?`<section class="ddif"><h4>${esc(M.difLabel)}</h4><ul>${o.dif.map(([n,x])=>`<li><b>${n}:</b> ${x}</li>`).join('')}</ul></section>`:''}
+  ${o.alerts&&o.alerts.length?`<section class="dprof"><h4>${o.alertsTitle||'Pontos de atenção'}</h4>${defList(o.alerts)}</section>`:''}</div></div>`;
+}
+function renderDef(){
+  const y=window.scrollY,pages=[],used=new Set();
+  DATA.def.forEach(o=>{if(used.has(o.k))return;used.add(o.k);const d=o.duo&&DATA.def.find(x=>x.k===o.duo);if(d)used.add(d.k);pages.push(d?[o,d]:[o])});
+  app.innerHTML=`<div class="hy-intro"><h2>Resumo definitivo</h2><p class="muted" style="margin:0">Uma página por tópico: material, exemplo no estilo da prova e tudo o que foi cobrado.</p></div>
+  <label class="switch dstudy"><input type="checkbox" id="dstudy" ${defStudy?'checked':''}> Modo estudo: esconder as respostas</label>
+  <nav class="dnav">${pages.map((pg,i)=>pg.map(o=>`<button type="button" class="chip" data-go="pg${i}">${esc((DATA.topics[o.k]||{}).name||o.k)}</button>`).join('')).join('')}</nav>
+  ${pages.map((pg,i)=>`<article class="dpage ${pg.length>1?'duo':''}" id="pg${i}">${pg.map(o=>defSheet(o,pg.length>1)).join('')}<footer class="dfoot">Página ${i+1} de ${pages.length} · ${esc(M.title)}${M.author?' · '+esc(M.author):''}</footer></article>`).join('')}`;
+  const ds=app.querySelector('#dstudy');ds.onchange=()=>{defStudy=ds.checked;defOpen.clear();renderDef()};
+  app.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{defOpen.add(b.dataset.open);renderDef()});
+  window.scrollTo(0,y);
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>$(b.dataset.go).scrollIntoView({behavior:'smooth',block:'start'}));
+}
+
+/* ---------- provas antigas ---------- */
+let provaFilter='todos', provaOpen=new Set();
+function renderProvas(){
+  const keys=['todos',...Object.keys(D).filter(k=>DATA.provas.some(q=>q.topic===k))];
+  const list=DATA.provas.filter(q=>provaFilter==='todos'||q.topic===provaFilter);
+  app.innerHTML=`<div class="hy-intro"><h2>Provas antigas (N2 Institucional)</h2><p class="muted" style="margin:0">As 10 questões originais de TB e HIV da N2, com gabarito e comentário.</p></div>
+  <div class="filters">${keys.map(k=>`<button type="button" class="chip" aria-pressed="${provaFilter===k}" data-k="${k}">${k==='todos'?'Todas ('+DATA.provas.length+')':esc(D[k])}</button>`).join('')}</div>
+  <section class="examlist">${list.map(q=>{const open=provaOpen.has(q.id);
+    return `<article class="examq"><div class="meta"><span class="badge">${esc(D[q.topic]||q.topic)}</span><span>${esc(q.source)} · ${esc(q.type)}</span>${q.hot?'<span class="hot">Cai muito</span>':''}</div>
+    <h3>${esc(q.title)}</h3><p class="enun">${esc(q.enun)}</p>
+    ${q.opts&&q.opts.length?`<ul class="altlist">${q.opts.map(o=>`<li class="${open&&o===q.ans?'ans':''}">${esc(o)}</li>`).join('')}</ul>`:''}
+    <div><button type="button" class="btn ghost" data-pq="${q.id}">${open?'Esconder gabarito':'Ver gabarito e comentário'}</button></div>
+    ${open?`<div class="why"><b>Gabarito:</b> ${esc(q.ans)}<br><br><b>Comentário:</b> ${esc(q.why)}</div>`:''}</article>`}).join('')}</section>`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{provaFilter=b.dataset.k;renderProvas()});
+  app.querySelectorAll('[data-pq]').forEach(b=>b.onclick=()=>{const id=b.dataset.pq;provaOpen.has(id)?provaOpen.delete(id):provaOpen.add(id);renderProvas()});
+}
+
+/* ---------- simulado discursivo ---------- */
+let discState=load('disc',{}), discOpen=new Set();
+function renderDiscursivo(){
+  app.innerHTML=`<div class="hy-intro"><h2>Simulado discursivo</h2><p class="muted" style="margin:0">Escreva sua resposta em tópicos e confira o checklist do que a banca pontua.</p></div>
+  <section class="examlist">${DATA.discursivo.map((d,idx)=>{const open=discOpen.has(d.id);const st=discState[d.id]||{txt:'',chk:[]};
+    return `<article class="examq"><div class="meta"><span class="badge">${esc(D[d.topic]||d.topic)}</span><span>Caso ${idx+1}</span></div>
+    <h3>${esc(d.title)}</h3><p class="enun">${esc(d.case)}</p><p class="enun" style="font-weight:700">${esc(d.prompt)}</p>
+    <textarea class="discbox" data-txt="${d.id}" placeholder="Rascunhe aqui sua resposta antes de abrir o espelho...">${esc(st.txt||'')}</textarea>
+    <div><button type="button" class="btn" data-dq="${d.id}">${open?'Ocultar checklist e resposta-modelo':'Conferir checklist de autoavaliação'}</button></div>
+    ${open?`<div><b>Checklist de pontuação (marque o que você acertou):</b>
+      <ul class="chklist">${d.checklist.map((item,ci)=>`<li><label><input type="checkbox" data-cid="${d.id}" data-ci="${ci}" ${st.chk&&st.chk[ci]?'checked':''}><span>${esc(item)}</span></label></li>`).join('')}</ul>
+      <div class="why" style="margin-top:12px"><b>Resposta-modelo:</b><br>${d.model}</div></div>`:''}</article>`}).join('')}</section>`;
+  app.querySelectorAll('[data-txt]').forEach(t=>t.oninput=()=>{const id=t.dataset.txt;discState[id]=discState[id]||{txt:'',chk:[]};discState[id].txt=t.value;store('disc',discState)});
+  app.querySelectorAll('[data-dq]').forEach(b=>b.onclick=()=>{const id=b.dataset.dq;discOpen.has(id)?discOpen.delete(id):discOpen.add(id);renderDiscursivo()});
+  app.querySelectorAll('[data-cid]').forEach(c=>c.onchange=()=>{const id=c.dataset.cid,ci=+c.dataset.ci;discState[id]=discState[id]||{txt:'',chk:[]};discState[id].chk[ci]=c.checked;store('disc',discState)});
+}
+
+/* ---------- flashcards com repetição espaçada (caixas de Leitner) ---------- */
+const BOX_DAYS=[0,1,3,7,16];
+let flashState=load('flash',{}), flashQueue=null, flashShow=false, flashTopic='todos';
+function flashId(c,i){return c.id||('f'+i)}
+function flashDue(){const now=Date.now();return DATA.flash.map((c,i)=>({c,id:flashId(c,i)})).filter(x=>(flashTopic==='todos'||x.c.topic===flashTopic)&&((flashState[x.id]||{due:0}).due<=now))}
+function renderFlash(){
+  if(!flashQueue)flashQueue=shuffle(flashDue());
+  const tk=['todos',...Object.keys(D)];
+  const cur=flashQueue[0];
+  app.innerHTML=`<div class="hy-intro"><h2>Flashcards</h2><p class="muted" style="margin:0">Repetição espaçada: o que você erra volta logo; o que acerta volta cada vez mais tarde.</p></div>
+  <div class="filters">${tk.map(k=>`<button type="button" class="chip" aria-pressed="${flashTopic===k}" data-k="${k}">${k==='todos'?'Todos':esc(D[k])}</button>`).join('')}</div>
+  ${cur?`<section class="panel"><p class="muted">Restam ${flashQueue.length} para revisar hoje</p>
+    <h2 style="font-size:30px;margin:8px 0 14px">${cur.c.front}</h2>
+    ${flashShow?`<div class="why">${cur.c.back}</div><div class="actions" style="justify-content:flex-start;margin-top:14px"><button class="btn ghost" data-g="0">Errei</button><button class="btn" data-g="1">Acertei</button></div>`
+      :`<button class="btn" id="show">Mostrar resposta</button>`}</section>`
+    :`<section class="panel"><h2 style="font-size:28px;text-transform:uppercase">Tudo revisado por hoje</h2><p class="muted">Volte amanhã: os cards que você acertou reaparecem no prazo certo.</p></section>`}`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{flashTopic=b.dataset.k;flashQueue=null;flashShow=false;renderFlash()});
+  const s=app.querySelector('#show');if(s)s.onclick=()=>{flashShow=true;renderFlash()};
+  app.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{
+    const st=flashState[cur.id]||{box:0};st.box=b.dataset.g==='1'?Math.min(st.box+1,BOX_DAYS.length-1):0;st.due=Date.now()+BOX_DAYS[st.box]*864e5;flashState[cur.id]=st;store('flash',flashState);
+    flashQueue.shift();if(b.dataset.g==='0')flashQueue.push(cur);flashShow=false;renderFlash()});
+}
+
+/* ---------- glossário ---------- */
+let glossQ='';
+function renderGloss(){
+  const q=glossQ.toLowerCase();
+  const items=DATA.glossary.filter(g=>!q||(g.term+' '+g.def).toLowerCase().includes(q)).sort((a,b)=>a.term.localeCompare(b.term,'pt-BR'));
+  app.innerHTML=`<div class="hy-intro"><h2>Glossário</h2></div>
+  <div class="filters"><input id="gq" type="search" placeholder="Buscar termo…" value="${esc(glossQ)}" style="flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit"></div>
+  <section class="sheet">${items.map(g=>`<div class="panel"><h3>${esc(g.term)}</h3><p style="margin:0">${g.def}</p>${g.topic?`<div class="tx">${esc(D[g.topic]||g.topic)}</div>`:''}</div>`).join('')||'<p class="muted">Nada encontrado.</p>'}</section>`;
+  const i=$('gq');i.oninput=()=>{glossQ=i.value;const p=i.selectionStart;renderGloss();const n=$('gq');n.focus();n.setSelectionRange(p,p)};
+}
+
+render();
+/* exportar/importar progresso (histórico, erros, flashcards, discursivo, configuração) */
+(function(){
+  const f=document.createElement('footer');f.style.cssText='margin-top:32px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center';
+  f.innerHTML='<button type="button" class="btn ghost" id="exp">Exportar progresso</button><button type="button" class="btn ghost" id="imp">Importar progresso</button><input type="file" id="impf" accept="application/json" hidden>';
+  document.querySelector('.wrap').appendChild(f);
+  $('exp').onclick=()=>{const o={};['cfg','hist','wrong','flash','disc'].forEach(k=>o[k]=load(k,null));
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({key:M.storageKey,data:o})],{type:'application/json'}));a.download=`progresso-${M.storageKey}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
+  $('imp').onclick=()=>$('impf').click();
+  $('impf').onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);
+    if(j.key!==M.storageKey)throw new Error('outro site');Object.entries(j.data).forEach(([k,v])=>{if(v!==null)store(k,v)});toast('Progresso importado');setTimeout(()=>location.reload(),900)}catch(err){toast('Arquivo inválido para este site')}};r.readAsText(file)};
+})();
+</script>
+</body></html>
