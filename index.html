@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sites de Estudo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#EEF2F1; --surface:#FFFFFF; --sunk:#E3E9E7; --ink:#14201E; --muted:#56635F; --line:#CDD6D3;
+  --primary:#0B6B66; --primary-soft:#D7ECEA;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0E1514; --surface:#162120; --sunk:#1D2A28; --ink:#E4EDEB; --muted:#93A39F; --line:#2B3936;
+  --primary:#46B9AF; --primary-soft:#173B38; color-scheme:dark;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 56px max(16px,env(safe-area-inset-right,0px))}
+header{margin-bottom:24px;border-bottom:1px solid var(--line);padding-bottom:14px}
+h1{font-family:var(--display);font-size:clamp(32px,5vw,46px);text-transform:uppercase;line-height:1;margin:0}
+header p{margin:6px 0 0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{display:grid;gap:8px;padding:18px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent,var(--primary));border-radius:var(--r);text-decoration:none;color:inherit;transition:transform .12s ease,border-color .12s ease}
+.card:hover{transform:translateY(-2px);border-color:var(--accent,var(--primary))}
+.card h2{font-family:var(--display);font-size:28px;text-transform:uppercase;line-height:1.05;margin:0;color:var(--accent,var(--primary))}
+.card .sub{color:var(--muted);font-size:14.5px;margin:0}
+.card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tag{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--sunk);color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Sites de Estudo</h1>
+    <p>Medicina · simulados, resumos 80/20, flashcards e provas comentadas</p>
+  </header>
+  <main class="grid">
+    <a class="card" href="./talassemia/" style="--accent:#9B1C2E">
+      <h2>Talassemia</h2>
+      <p class="sub">Hematologia · 4º período de Medicina</p>
+      <div class="tags">
+        <span class="tag">Prova mista (25 questões)</span>
+        <span class="tag">Discursivo N2</span>
+        <span class="tag">Provas antigas</span>
+        <span class="tag">30 Flashcards</span>
+      </div>
+    </a>
+  </main>
+</div>
+</body>
+</html>

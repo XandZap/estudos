@@ -1,0 +1,2077 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Talassemia</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Great+Vibes&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: placa do item + cronômetro no topo, mídia à esquerda, enunciado e perguntas à direita; empilha no celular */
+:root{
+  --pamt:100%;
+  --bg:#EEF2F1; --surface:#FFFFFF; --sunk:#E3E9E7; --ink:#14201E; --muted:#56635F; --line:#CDD6D3;
+  --primary:#9B1C2E; --primary-ink:#FFFFFF; --primary-soft:#FBE6E9;
+  --alert:#B42318; --alert-soft:#FBE4E1; --ok:#1C7A3B; --ok-soft:#DDF1E3; --warn:#9A5800; --warn-soft:#FBEBD3;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1514; --surface:#162120; --sunk:#1D2A28; --ink:#E4EDEB; --muted:#93A39F; --line:#2B3936;
+  --primary:#F27485; --primary-ink:#2B070D; --primary-soft:#3D161D;
+  --alert:#F2705E; --alert-soft:#3D1D1A; --ok:#5DC48A; --ok-soft:#173623; --warn:#E6A24A; --warn-soft:#3A2A12; --pamt:20%; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1514; --surface:#162120; --sunk:#1D2A28; --ink:#E4EDEB; --muted:#93A39F; --line:#2B3936;
+  --primary:#F27485; --primary-ink:#2B070D; --primary-soft:#3D161D;
+  --alert:#F2705E; --alert-soft:#3D1D1A; --ok:#5DC48A; --ok-soft:#173623; --warn:#E6A24A; --warn-soft:#3A2A12; --pamt:20%; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0}
+button{font:inherit;color:inherit}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:18px}
+.brand h1{font-size:clamp(30px,5vw,44px);line-height:1;text-transform:uppercase}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:15px}
+.author{display:flex;align-items:baseline;gap:8px;margin-top:6px;color:var(--primary)}
+.author small{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.author span{font-family:"Great Vibes","Snell Roundhand","Apple Chancery",cursive;font-size:clamp(28px,4vw,36px);line-height:1}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--sunk);padding:4px;border-radius:999px}
+.tabs button{border:0;background:transparent;padding:8px 16px;border-radius:999px;font-weight:600;cursor:pointer;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.setup{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+@media (max-width:820px){.setup{grid-template-columns:1fr}}
+.setup h2{font-size:28px;text-transform:uppercase;margin-bottom:6px}
+.muted{color:var(--muted)}
+.field{margin-top:16px}
+.field label.l{display:block;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-variant-numeric:tabular-nums}
+.seg button[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.btn{border:0;background:var(--primary);color:var(--primary-ink);padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:16px}
+.btn.ghost{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.rules{margin:0;padding-left:18px;display:grid;gap:6px}
+.rules li::marker{color:var(--primary)}
+/* station */
+.stationbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.placard{font-family:var(--display);font-weight:700;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:6px 14px;border-radius:6px;font-size:22px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.progress{flex:1;min-width:140px;height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--primary);transition:width .3s}
+.timer{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;min-width:110px;justify-content:flex-end}
+.timer svg{width:38px;height:38px;transform:rotate(-90deg)}
+.timer circle{fill:none;stroke-width:5}
+.timer .bgc{stroke:var(--sunk)} .timer .fg{stroke:var(--primary);transition:stroke-dashoffset 1s linear,stroke .3s}
+.timer.low{color:var(--alert)} .timer.low .fg{stroke:var(--alert)}
+.station{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.station{grid-template-columns:1fr}}
+.gallery{display:grid;gap:8px;background:var(--sunk);padding:8px;border-radius:var(--r)}
+.gallery.two{grid-template-columns:1fr 1fr}
+.gallery figure{margin:0;position:relative}
+.gallery img{width:100%;max-height:440px;object-fit:contain;display:block;border-radius:6px;background:#000;cursor:zoom-in}
+.gallery.two img{max-height:300px}
+.labcard{background:var(--surface);border-radius:6px;padding:16px;font-variant-numeric:tabular-nums}
+.labcard h3{font-size:20px;text-transform:uppercase;margin-bottom:8px}
+.labcard table{width:100%;border-collapse:collapse;font-size:15px}
+.labcard td{padding:6px 4px;border-bottom:1px dashed var(--line)}
+.labcard td:last-child{text-align:right;color:var(--muted)}
+.labcard .flag{color:var(--alert);font-weight:700}
+.zoomhint{font-size:13px;color:var(--muted);margin:6px 2px 0}
+.case{display:grid;gap:14px;min-width:0}
+.case .who{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--primary)}
+.case .story{font-size:17px;margin:0}
+.q{border-top:1px solid var(--line);padding-top:12px}
+.q p{margin:0 0 8px;font-weight:700}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:var(--surface);padding:10px 12px;border-radius:8px;cursor:pointer;line-height:1.35}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--muted)}
+.opt:hover:not(:disabled){border-color:var(--primary)}
+.opt[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft)}
+.opt[aria-pressed="true"] .k{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)} .opt.right .k{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.opt.wrong{border-color:var(--alert);background:var(--alert-soft)} .opt.wrong .k{background:var(--alert);border-color:var(--alert);color:var(--surface)}
+.opt:disabled{cursor:default}
+.why{background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:15px;margin-top:8px}
+.why b{color:var(--primary)}
+.look{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 12px;border-radius:0 8px 8px 0;font-size:15px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:4px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:8px;font-weight:600;z-index:40}
+/* result */
+.score{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+.big{font-family:var(--display);font-size:72px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.verdict{flex:1;min-width:240px}
+.review{display:grid;gap:12px;margin-top:18px}
+.rv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--ok);border-radius:var(--r);padding:12px}
+.rv.bad{border-left-color:var(--alert)}
+.rv img{width:120px;height:100px;object-fit:cover;border-radius:6px}
+.rv h3{font-size:20px;text-transform:uppercase}
+.rv ul{margin:6px 0 0;padding-left:18px;font-size:15px}
+.rv .y{color:var(--alert)} .rv .c{color:var(--ok);font-weight:600}
+@media (max-width:520px){.rv{grid-template-columns:1fr}.rv img{width:100%;height:160px}}
+/* atlas */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;align-items:center}
+.chip{border:1px solid var(--line);background:var(--surface);padding:5px 12px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.atlas{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.card img{width:100%;height:190px;object-fit:cover;cursor:zoom-in;background:#000}
+.card .cb{padding:10px 12px;display:grid;gap:4px}
+.card .dz{font-family:var(--display);font-size:20px;font-weight:700;text-transform:uppercase}
+.card .cap{font-size:14px;color:var(--muted)}
+.card .reveal{border:1px dashed var(--primary);background:var(--primary-soft);color:var(--primary);border-radius:6px;padding:8px;font-weight:700;cursor:pointer}
+.switch{display:inline-flex;align-items:center;gap:8px;margin-left:auto;font-weight:600;font-size:14px;cursor:pointer}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:22px}
+.sheet .panel{padding:14px}
+.sheet h3{font-size:22px;text-transform:uppercase;margin-bottom:6px}
+.sheet ul{margin:0;padding-left:18px;font-size:15px;display:grid;gap:3px}
+.sheet .tx{margin-top:8px;font-size:14px;background:var(--sunk);padding:6px 8px;border-radius:6px}
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(5,10,9,.92);display:grid;place-items:center;z-index:50;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));cursor:zoom-out}
+.lb img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.lb button{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));background:#fff;color:#111;border:0;border-radius:6px;padding:8px 12px;font-weight:700;cursor:pointer}
+/* celular: barra do item fixa, cabeçalho compacto */
+.stationbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:8px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--bg)}
+.hist{display:grid;gap:6px;margin-top:10px;font-variant-numeric:tabular-nums}
+.hist .row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:4px 0;font-size:15px}
+.weak{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.weak span{background:var(--alert-soft);border-radius:999px;padding:3px 10px;font-size:14px;font-weight:600}
+.chip.err{border-color:var(--alert)}
+.linkbtn{background:none;border:0;color:var(--primary);font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
+@media (max-width:600px){
+  .brand h1{font-size:28px}.brand p{display:none}
+  .top{align-items:center}
+  .placard{font-size:18px;padding:4px 10px}
+  .timer{font-size:26px;min-width:0;margin-left:auto}
+  .progress{display:none}
+  .stationbar{flex-wrap:nowrap;gap:10px}
+  .case .story{font-size:16px}
+  .opt{padding:12px}
+  .gallery img{max-height:300px}
+}
+/* 80/20 */
+.hy-intro{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;margin-bottom:14px}
+.hy-intro h2{font-size:clamp(30px,5vw,40px);text-transform:uppercase}
+.hy-sec{margin-top:26px}
+.hy-sec>h2{font-size:26px;text-transform:uppercase;margin-bottom:4px}
+.hy-sec>p{margin:0 0 12px}
+.rules20{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:r}
+.rules20 li{counter-increment:r;display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.rules20 li::before{content:counter(r,decimal-leading-zero);font-family:var(--display);font-weight:700;font-size:26px;line-height:1;color:var(--primary);font-variant-numeric:tabular-nums}
+.rules20 b{display:block;font-size:17px}
+.pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+@media (max-width:400px){.pairs{grid-template-columns:1fr}}
+.pair{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;min-width:0}
+.pair h3{font-size:20px;text-transform:uppercase;margin-bottom:8px}
+.pair .vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.pair .side{background:var(--sunk);border-radius:8px;padding:10px;font-size:14px}
+.pair .side strong{display:block;font-size:15px;margin-bottom:2px}
+.pair .key{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.pair .key b{color:var(--ink)}
+.dcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+@media (max-width:400px){.dcards{grid-template-columns:1fr}}
+.dcard .sig{font-weight:700;color:var(--alert)}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:grid;grid-template-columns:110px minmax(0,1fr)}
+.dcard img{width:110px;height:100%;min-height:150px;object-fit:cover;cursor:zoom-in;background:#000}
+.dcard .nolab{display:grid;place-items:center;text-align:center;background:var(--sunk);font-size:13px;font-weight:700;padding:8px;color:var(--muted)}
+.dcard .db{padding:10px 12px;display:grid;gap:4px;font-size:14px}
+.dcard h3{font-size:21px;text-transform:uppercase}
+.dcard .ag{color:var(--muted);font-size:13px}
+.dcard .tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:var(--alert);color:var(--surface);margin-right:4px}
+.dcard .tag.b{background:var(--primary);color:var(--primary-ink)}
+.dcard .cd{background:var(--sunk);border-radius:6px;padding:6px 8px;margin-top:2px}
+/* cards estilo nota de estudo, um tom pastel por doença */
+.notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;align-items:start}
+@media (max-width:400px){.notes{grid-template-columns:1fr}}
+.ncard{background:color-mix(in srgb,var(--p) var(--pamt),var(--surface));border:1px solid color-mix(in srgb,var(--d) 35%,transparent);border-radius:14px;padding:14px;display:grid;gap:8px;align-content:start;min-width:0}
+.ncard .nh{display:flex;gap:10px;align-items:center}
+.ncard .nh img{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;cursor:zoom-in;border:2px solid color-mix(in srgb,var(--d) 40%,transparent)}
+.ncard .nh .ph{width:58px;height:58px;border-radius:10px;flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;text-align:center;line-height:1.1;background:color-mix(in srgb,var(--d) 15%,transparent)}
+.ncard h3{font-size:25px;text-transform:uppercase;line-height:1;color:var(--hd)}
+.ncard dl{margin:0;display:grid;gap:6px}
+.ncard dt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--hd)}
+.ncard dd{margin:0;font-size:14.5px;line-height:1.35}
+.ncard .att{background:color-mix(in srgb,var(--surface) 70%,transparent);border-radius:8px;padding:7px 9px;font-size:14px;font-weight:600}
+.ncard .att::before{content:"Atenção  ";font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--alert)}
+.ncard{--hd:var(--d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ncard{--hd:var(--p)}}
+:root[data-theme="dark"] .ncard{--hd:var(--p)}
+.ddif{background:color-mix(in srgb,var(--p) calc(var(--pamt) * .5),var(--surface));border:1px solid color-mix(in srgb,var(--d) 30%,var(--line));border-radius:10px;padding:10px 12px}
+.ddif h4{font-family:var(--display);font-size:18px;text-transform:uppercase;margin:0 0 4px;color:var(--hd)}
+.ddif ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14.5px;line-height:1.4}
+.dbody{display:grid;gap:14px}
+.dbody[hidden],.dans[hidden]{display:none!important}
+.dans{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:10px;padding:14px}
+.dstudy{margin:0 0 12px;display:inline-flex}
+/* resumo definitivo: páginas */
+.dnav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.dpage{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:22px;scroll-margin-top:calc(12px + env(safe-area-inset-top,0px));display:grid;gap:16px}
+.dpage.duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.dpage.duo .dfoot{grid-column:1/-1}
+@media (max-width:820px){.dpage.duo{grid-template-columns:1fr}}
+.dsheet{display:grid;gap:14px;min-width:0}
+.dsheet.half+.dsheet.half{border-left:1px dashed var(--line);padding-left:16px}
+@media (max-width:820px){.dsheet.half+.dsheet.half{border-left:0;padding-left:0;border-top:1px dashed var(--line);padding-top:16px}}
+.dhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:color-mix(in srgb,var(--p) var(--pamt),var(--surface));border-radius:10px;padding:10px 14px}
+.dhead h3{font-size:clamp(28px,4vw,38px);text-transform:uppercase;line-height:1;color:var(--hd)}
+.dsheet{--hd:var(--d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dsheet{--hd:var(--p)}}
+:root[data-theme="dark"] .dsheet{--hd:var(--p)}
+.dimgs{display:grid;gap:10px}
+.dimgs.two{grid-template-columns:1fr 1fr}
+@media (max-width:520px){.dimgs.two{grid-template-columns:1fr}}
+.dimgs figure{margin:0;display:grid;gap:4px}
+.dimgs img{width:100%;height:260px;object-fit:cover;object-position:center 25%;border-radius:10px;background:#000;cursor:zoom-in}
+.dsheet.half .dimgs img{height:220px}
+.dimgs figcaption{font-size:13px;color:var(--muted)}
+.dlab{background:var(--sunk);border-radius:10px;padding:14px;font-variant-numeric:tabular-nums}
+.dlab table{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+.dlab td{padding:5px 2px;border-bottom:1px dashed var(--line)}
+.dlab td:last-child{text-align:right}
+.dlab .flag{color:var(--alert);font-weight:700}
+.dlab small{display:block;margin-top:8px;color:var(--muted)}
+.dcase{border:1px solid color-mix(in srgb,var(--d) 40%,var(--line));border-left:5px solid var(--hd);border-radius:10px;padding:12px 14px;background:color-mix(in srgb,var(--p) calc(var(--pamt) * .35),var(--surface))}
+.dcase .dl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--hd)}
+.dcase p{margin:6px 0 0;font-size:16px;line-height:1.5}
+.dcase .dq{font-size:15px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.dsheet.half .dgrid{grid-template-columns:1fr}
+.df{background:var(--sunk);border-radius:10px;padding:10px 12px;min-width:0}
+.df h4,.dprof h4{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.03em;margin:0 0 4px;color:var(--hd)}
+.df ul,.dprof ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14.5px;line-height:1.4}
+.dprof{background:var(--alert-soft);border:1px solid color-mix(in srgb,var(--alert) 35%,transparent);border-radius:10px;padding:10px 12px}
+.dprof h4{color:var(--alert)}
+.dfoot{font-size:12px;color:var(--muted);text-align:right;border-top:1px solid var(--line);padding-top:8px}
+.ta{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;resize:vertical;min-height:110px;line-height:1.4}
+.ta:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.ta[readonly]{background:var(--sunk)}
+.chk{display:grid;gap:6px;background:var(--sunk);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:15px}
+.chk p{margin:0}
+.chk label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.chk input{margin-top:4px;accent-color:var(--primary)}
+.rv .why{margin-top:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* abas extras: discursivo, provas antigas, comparativo */
+.old-list,.disc-list,.cmp-list{display:grid;gap:16px}
+.old-card,.disc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:12px}
+.old-head,.disc-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.old-meta,.disc-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.hot-tag{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:4px;background:var(--warn);color:#fff}
+.topic-tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--sunk);color:var(--ink)}
+.disc-ans{border-top:1px dashed var(--line);padding-top:14px;display:grid;gap:12px}
+.cmp-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin-top:10px}
+.cmp-table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:540px}
+.cmp-table th,.cmp-table td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cmp-table th{background:var(--sunk);font-family:var(--display);font-size:17px;text-transform:uppercase;letter-spacing:.03em;color:var(--primary)}
+.cmp-table tr:last-child td{border-bottom:0}
+.cmp-table td.hi{font-weight:700;background:color-mix(in srgb,var(--primary-soft) 55%,var(--surface))}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1 id="m-title"></h1>
+      <p id="m-sub"></p>
+      <div class="author" id="m-author"><small>por</small><span></span></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Modo" id="tabs"></nav>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* =====================================================================
+   DADOS — Talassemia (Hematologia · 4º período de Medicina)
+   ===================================================================== */
+const DATA = {
+  meta:{
+    title:"TALASSEMIA",
+    subtitle:"Hematologia · 4º período de Medicina",
+    author:"",
+    storageKey:"talassemia-med4",
+    imgDir:"img",
+    ext:"jpg",
+    itemLabel:"Questão",
+    itemLabelPl:"questões",
+    caseLabel:"Caso clínico",
+    lookLabel:"O que observar",
+    condLabel:"Conduta",
+    difLabel:"Diagnóstico diferencial",
+    timing:"total",
+    passRules:{hi:80, mid:60}
+  },
+  tabs:["prova","treino","discursivo","provas","comparativo","resumo","cards","def","flash","glossario"],
+  topics:{
+    fisio:{name:"Conceito e Fisiopatologia", p:"#FADBD8", d:"#922B21"},
+    hb:{name:"Hemoglobinas e Switching", p:"#E8DAEF", d:"#6C3483"},
+    alfa:{name:"α-Talassemia", p:"#D6EAF8", d:"#1F618D"},
+    beta:{name:"β-Talassemia (Minor, NTDT, TDT)", p:"#D1F2EB", d:"#117864"},
+    clinica:{name:"Quadro Clínico e Complicações", p:"#FCF3CF", d:"#9A7D0A"},
+    diag:{name:"Diagnóstico e Diferencial", p:"#FDEBD0", d:"#A04000"},
+    trat:{name:"Tratamento, Transfusão e Quelação", p:"#D4EFDF", d:"#1E8449"},
+    gen:{name:"Genética e Aconselhamento", p:"#E5E8E8", d:"#34495E"}
+  },
+  questoes:[
+    {
+      id:"s1", topic:"fisio", imgs:[],
+      table:{
+        title:"Hemograma e marcadores de precursor",
+        rows:[
+          ["Hemoglobina","6,8 g/dL","11,0–13,5 g/dL",true],
+          ["VCM","61 fL","75–87 fL",true],
+          ["Reticulócitos","2,8% (inadequado ao grau de anemia)","",true],
+          ["Bilirrubina indireta","2,6 mg/dL","< 0,8 mg/dL",true],
+          ["Eritroblastos no sangue","14 / 100 leucócitos","0",true]
+        ],
+        note:"Medula óssea com hiperplasia eritroide intensa e apoptose de precursores."
+      },
+      case:"Menino de 2 anos com anemia grave e expansão de ossos da face. O residente pergunta por que há hiperplasia eritroide exuberante na medula, mas a produção efetiva de hemácias maduras circulantes falha.",
+      look:"Na talassemia, a globina produzida tem estrutura normal, porém falta quantidade de uma cadeia; as cadeias em excesso precipitam nos precursores e causam eritropoiese ineficaz + hemólise.",
+      qs:[
+        {
+          q:"Qual é o defeito primário e o mecanismo central que explicam a morte precoce dos precursores na medula óssea?",
+          a:"Defeito quantitativo de síntese globínica com precipitação das cadeias livres em excesso, gerando eritropoiese ineficaz",
+          opts:[
+            "Defeito quantitativo de síntese globínica com precipitação das cadeias livres em excesso, gerando eritropoiese ineficaz",
+            "Defeito qualitativo com substituição de aminoácido que polimeriza apenas sob hipóxia periférica",
+            "Deficiência enzimática da G6PD com formação de corpos de Heinz após infecções",
+            "Autoanticorpos IgG ligados à membrana eritrocitária com sequestro esplênico"
+          ],
+          why:"Talassemias são defeitos quantitativos (redução ou ausência de cadeias estruturalmente normais). O excesso relativo da cadeia oposta precipita nos precursores eritroides, causando dano oxidativo, apoptose medular (eritropoiese ineficaz) e hemólise periférica. Polimerização por troca de aminoácido descreve anemia falciforme; G6PD e IgG são outros mecanismos hemolíticos."
+        },
+        {
+          q:"Na β-talassemia, qual cadeia globínica se acumula em excesso nos precursores eritroides por ser altamente insolúvel?",
+          a:"Cadeias α-globina livres",
+          opts:[
+            "Cadeias α-globina livres",
+            "Cadeias β-globina livres",
+            "Cadeias δ-globina livres",
+            "Tetrâmeros solúveis de HbA2"
+          ],
+          why:"Na β-talassemia falta cadeia β; portanto, sobram cadeias α (α-globina), que precipitam por serem insolúveis. Na prova Parcial anterior, uma pegadinha clássica afirmava que se acumulavam cadeias β na β-talassemia."
+        }
+      ]
+    },
+    {
+      id:"s2", topic:"hb", imgs:[],
+      table:{
+        title:"Análise de hemoglobinas por idade",
+        rows:[
+          ["Ao nascimento","HbF ~75–85% | HbA ~15–25%","",false],
+          ["Aos 8 meses (paciente)","HbF 88% | HbA 8% | HbA2 4%","HbA esperada > 95%",true],
+          ["Hemoglobina sérica","6,4 g/dL","10,5–13,5 g/dL",true]
+        ],
+        note:"Lactente assintomático ao nascimento que evoluiu com palidez e esplenomegalia progressiva."
+      },
+      case:"Lactente de 8 meses, previamente saudável nos primeiros meses de vida, apresenta palidez intensa, atraso ponderoestatural e hepatoesplenomegalia.",
+      look:"O switch fetal-adulto troca γ por β após o nascimento; quando há ausência ou redução grave de β, a clínica grave da β-talassemia major aparece após ~6 meses de vida.",
+      qs:[
+        {
+          q:"Por que os sintomas da β-talassemia major geralmente iniciam após os 6 meses de vida, e não ao nascimento?",
+          a:"Porque a HbF (α2γ2) protege o feto e o recém-nascido até ocorrer a queda fisiológica da síntese de cadeias γ",
+          opts:[
+            "Porque a HbF (α2γ2) protege o feto e o recém-nascido até ocorrer a queda fisiológica da síntese de cadeias γ",
+            "Porque a medula óssea fetal só passa a produzir cadeias α após o sexto mês pós-natal",
+            "Porque a mãe transfere HbA suficiente pela placenta para durar os primeiros 6 meses",
+            "Porque os estoques maternos de ferro impedem a microcitose até o desmame"
+          ],
+          why:"Na vida fetal predomina a HbF (α2γ2), que não usa cadeias β. Após o nascimento ocorre o hemoglobin switching (troca γ → β). Quando a γ cai após os 6 meses e falta β para formar HbA (α2β2), surge a anemia grave. (Dado também cobrado diretamente na Q4 da Parcial)."
+        },
+        {
+          q:"Por que níveis persistentemente elevados de HbF atenuam a gravidade clínica de um paciente com β-talassemia?",
+          a:"As cadeias γ pareiam-se com o excesso de cadeias α livres, diminuindo a precipitação tóxica",
+          opts:[
+            "As cadeias γ pareiam-se com o excesso de cadeias α livres, diminuindo a precipitação tóxica",
+            "A HbF substitui diretamente a função da hepcidina na mucosa duodenal",
+            "As cadeias γ impedem a síntese de cadeias δ e normalizam o VCM",
+            "A HbF estimula a produção medular de cadeias β mutadas"
+          ],
+          why:"Como o dano celular vem do excesso de cadeias α livres, a persistência de cadeias γ permite formar HbF (α2γ2), consumindo parte dessas cadeias α e reduzindo o desequilíbrio globínico."
+        }
+      ]
+    },
+    {
+      id:"s3", topic:"hb", imgs:[],
+      case:"Estudante revisa a composição das principais hemoglobinas humanas normais e dos tetrâmeros patológicos das talassemias antes de uma discussão de TBL.",
+      look:"Associe cada fração à sua fórmula: HbA = α2β2, HbA2 = α2δ2, HbF = α2γ2, HbH = β4 e Hb Bart's = γ4.",
+      qs:[
+        {
+          q:"Qual alternativa relaciona CORRETAMENTE a fração de hemoglobina à sua composição e significado diagnóstico?",
+          a:"HbA2 (α2δ2) encontra-se tipicamente elevada na β-talassemia minor / trait",
+          opts:[
+            "HbA2 (α2δ2) encontra-se tipicamente elevada na β-talassemia minor / trait",
+            "HbH (α4) forma-se pelo excesso de cadeias α na β-talassemia major",
+            "HbF (α2δ2) predomina na vida fetal e cai após o nascimento",
+            "Hb Bart's (β4) é a fração principal do recém-nascido com β-talassemia minor"
+          ],
+          why:"HbA2 é α2δ2 e sua elevação (tipicamente > 3,5%) é o marcador clássico do traço β-talassêmico. Pegadinhas: HbH é β4 (não α4 — pegadinha da Q1 da Parcial), HbF é α2γ2 (não α2δ2) e Hb Bart's é γ4."
+        },
+        {
+          q:"Em adultos saudáveis sem hemoglobinopatias, qual fração de hemoglobina corresponde a > 95% do total circulante?",
+          a:"HbA (α2β2)",
+          opts:[
+            "HbA (α2β2)",
+            "HbA2 (α2δ2)",
+            "HbF (α2γ2)",
+            "HbH (β4)"
+          ],
+          why:"Após o switch fetal-adulto, a HbA (α2β2) torna-se a hemoglobina predominante do adulto (> 95%), restando apenas pequena fração de HbA2 (< 3,5%) e traços de HbF."
+        }
+      ]
+    },
+    {
+      id:"s4", topic:"alfa", imgs:[],
+      table:{
+        title:"Painel laboratorial — Adolescente com hemólise",
+        rows:[
+          ["Hemoglobina","8,9 g/dL","12,0–15,5 g/dL",true],
+          ["VCM","64 fL","80–98 fL",true],
+          ["Reticulócitos","6,5%","0,5–2,0%",true],
+          ["Esplenomegalia","3 cm abaixo do RCE","",true],
+          ["HPLC / Eletroforese","Presença de banda rápida compatível com HbH","",true]
+        ],
+        note:"Piora súbita da anemia após infecção viral respiratória recente."
+      },
+      case:"Adolescente de 16 anos apresenta anemia microcítica crônica moderada, icterícia discreta, esplenomegalia e crises de queda da hemoglobina durante infecções. A eletroforese identifica HbH.",
+      look:"Doença da HbH corresponde a apenas 1 gene α funcional (––/–α), com formação de tetrâmeros β4 após o nascimento.",
+      qs:[
+        {
+          q:"Qual é o número de genes α funcionais e a composição da hemoglobina característica desse quadro?",
+          a:"1 gene α funcional (––/–α) com formação de tetrâmeros β4 (HbH)",
+          opts:[
+            "1 gene α funcional (––/–α) com formação de tetrâmeros β4 (HbH)",
+            "2 genes α funcionais (––/αα) com formação exclusiva de HbA2",
+            "0 genes α funcionais (––/––) com formação de tetrâmeros α4",
+            "3 genes α funcionais (–α/αα) com ausência total de HbA"
+          ],
+          why:"Com 3 genes α temos portador silencioso; com 2 genes temos traço α-talassêmico; com 1 gene (––/–α) sobra muita cadeia β no período pós-natal, formando tetrâmeros β4 (HbH), que geram anemia hemolítica variável e esplenomegalia; 0 genes causa Hb Bart's (γ4)."
+        },
+        {
+          q:"Por que essa paciente pode apresentar quedas agudas de hemoglobina durante quadros infecciosos ou exposição oxidativa?",
+          a:"Os tetrâmeros β4 (HbH) são instáveis, precipitam sob estresse oxidativo e encurtam a sobrevida das hemácias",
+          opts:[
+            "Os tetrâmeros β4 (HbH) são instáveis, precipitam sob estresse oxidativo e encurtam a sobrevida das hemácias",
+            "As infecções convertem subitamente a HbH em Hb Bart's intramedular",
+            "A febre suprime a síntese de cadeias δ e bloqueia a eritropoietina renal",
+            "Os vírus destroem os genes α remanescentes no cromossomo 11"
+          ],
+          why:"A HbH (β4) é tetramérica e instável; diante de infecções ou estresse oxidativo, precipita formando inclusões que lesam a membrana eritrocitária e agravam a hemólise (crises hemolíticas)."
+        }
+      ]
+    },
+    {
+      id:"s5", topic:"alfa", imgs:[],
+      case:"Em revisão de neonatologia, discute-se o espectro máximo de gravidade da α-talassemia, associado à ausência completa dos quatro genes α-globina (––/––), levando à formação predominante de hemoglobina de Bart (γ4).",
+      look:"Na ausência total de cadeias α (0 genes funcionais), não se forma HbF nem HbA; ocorre hidropisia fetal já na gestação.",
+      qs:[
+        {
+          q:"Qual afirmação descreve CORRETAMENTE a talassemia com Hb Bart's (α-talassemia maior)?",
+          a:"Os tetrâmeros γ4 (Hb Bart's) têm altíssima afinidade por O2, causando hipóxia tecidual e hidropisia fetal grave ainda na vida intrauterina",
+          opts:[
+            "Os tetrâmeros γ4 (Hb Bart's) têm altíssima afinidade por O2, causando hipóxia tecidual e hidropisia fetal grave ainda na vida intrauterina",
+            "A criança nasce assintomática graças à HbF normal e só desenvolve anemia no segundo trimestre de vida",
+            "O quadro costuma ser benigno porque a HbA assume o transporte de oxigênio logo após o parto",
+            "Decorre da deleção de apenas um gene α em heterozigose (–α/αα)"
+          ],
+          why:"Sem cadeias α (––/––), o feto não sintetiza HbF (α2γ2) nem HbA (α2β2), acumulando Hb Bart's (γ4), incompatível com a sobrevida fetal sem intervenção intrauterina especializada. Pegadinha da Q2/Q3 da Parcial: quem nasce bem e manifesta após ~6 meses é a β-talassemia maior, jamais a α-talassemia maior."
+        }
+      ]
+    },
+    {
+      id:"s6", topic:"alfa", imgs:[],
+      table:{
+        title:"Investigação de casal assintomático",
+        rows:[
+          ["Hemoglobina (mulher)","11,8 g/dL","12,0–15,5 g/dL",false],
+          ["VCM (mulher)","70 fL","80–98 fL",true],
+          ["Ferritina sérica","78 ng/mL","15–150 ng/mL",false],
+          ["HbA2 (HPLC)","2,5%","2,0–3,5%",false],
+          ["HbF (HPLC)","0,6%","< 2,0%",false]
+        ],
+        note:"Marido possui perfil semelhante de microcitose sem deficiência de ferro."
+      },
+      case:"Mulher de 27 anos, assintomática, apresenta microcitose persistente com ferritina normal e HPLC de hemoglobinas sem elevação de HbA2. Suspeita-se de traço α-talassêmico.",
+      look:"No traço α-talassêmico (2 genes funcionais), a eletroforese/HPLC de rotina pode ser normal; o estudo molecular define deleção em cis (––/αα) versus trans (–α/–α).",
+      qs:[
+        {
+          q:"Qual é o próximo passo mais informativo para confirmar o diagnóstico e estimar o risco fetal desse casal?",
+          a:"Estudo molecular dos genes α para confirmar o traço e diferenciar arranjo em cis (––/αα) de trans (–α/–α)",
+          opts:[
+            "Estudo molecular dos genes α para confirmar o traço e diferenciar arranjo em cis (––/αα) de trans (–α/–α)",
+            "Repetir dosagem de ferritina após 3 meses de sulfato ferroso empírico",
+            "Solicitar mielograma e biópsia de medula óssea para avaliar eritropoiese ineficaz",
+            "Dosar anticorpo anti-fator intrínseco e vitamina B12 sérica"
+          ],
+          why:"A eletroforese/HPLC costuma ser normal no traço α-talassêmico (2 genes funcionais). Apenas o estudo molecular distingue deleção em cis (––/αα, que se ambos tiverem gera risco de 25% de hidropisia fetal ––/––) de deleção em trans (–α/–α, sem risco de feto com 0 genes)."
+        },
+        {
+          q:"Em qual cromossomo estão localizados os genes α-globina e qual é o total de cópias funcionais em um indivíduo normal?",
+          a:"Cromossomo 16; quatro genes α funcionais no total (dois por cromossomo)",
+          opts:[
+            "Cromossomo 16; quatro genes α funcionais no total (dois por cromossomo)",
+            "Cromossomo 11; dois genes α funcionais no total (um por cromossomo)",
+            "Cromossomo 16; dois genes α funcionais no total (um por cromossomo)",
+            "Cromossomo 11; quatro genes α funcionais no total (dois por cromossomo)"
+          ],
+          why:"Os genes α ficam no cromossomo 16 (2 por cromossomo = 4 no total); os genes β ficam no cromossomo 11 (1 por cromossomo = 2 no total)."
+        }
+      ]
+    },
+    {
+      id:"s7", topic:"beta", imgs:[],
+      case:"Paciente de 22 anos procura ambulatório com exame admissional mostrando microcitose discreta e hemoglobina limítrofe. Ao explicar a genética molecular da β-talassemia, o docente destaca a nomenclatura padrão dos alelos do cromossomo 11.",
+      look:"Os genes β (2 cópias no cromossomo 11) dividem-se funcionalmente em β+ (produção reduzida) e β0 (ausência de produção).",
+      qs:[
+        {
+          q:"Qual é a nomenclatura CORRETA empregada para subclassificar os alelos mutados na β-talassemia?",
+          a:"β+ (síntese reduzida de cadeia β) e β0 (ausência completa de síntese de cadeia β)",
+          opts:[
+            "β+ (síntese reduzida de cadeia β) e β0 (ausência completa de síntese de cadeia β)",
+            "β+ (síntese aumentada de cadeia β) e β− (síntese invertida de cadeia β)",
+            "βcis (dois alelos no mesmo cromossomo) e βtrans (um alelo em cada cromossomo)",
+            "β4 (tetrâmero instável) e βS (mutação pontual no códon 6)"
+          ],
+          why:"Na β-talassemia as variantes reduzem (β+) ou abolem (β0) a síntese de cadeias β. Na Q2 da Parcial, a alternativa C tentava confundir usando o termo inexistente 'beta menos (beta-)'."
+        }
+      ]
+    },
+    {
+      id:"s8", topic:"beta", imgs:[],
+      table:{
+        title:"Hemograma e HPLC — Adulto jovem assintomático",
+        rows:[
+          ["Hemoglobina","11,9 g/dL","13,0–17,0 g/dL",false],
+          ["Hemácias","6,15 milhões/mm³","4,5–5,9 milhões/mm³",true],
+          ["VCM","63 fL","80–98 fL",true],
+          ["HCM","19,4 pg","27–33 pg",true],
+          ["RDW","13,2%","11,5–14,5%",false],
+          ["Ferritina","112 ng/mL","30–300 ng/mL",false],
+          ["HbA2 (HPLC)","5,1%","2,0–3,5%",true]
+        ],
+        note:"Paciente assintomático, sem uso prévio de ferro."
+      },
+      case:"Homem de 28 anos realiza hemograma de rotina pré-operatório. Nega fadiga, sangramentos ou transfusões prévias.",
+      look:"Na β-talassemia minor: microcitose acentuada desproporcional à anemia leve, hemácias elevadas/preservadas, RDW frequentemente normal (embora não seja regra absoluta) e HbA2 elevada.",
+      qs:[
+        {
+          q:"Qual conjunto de achados fecha o diagnóstico mais provável e qual a conduta imediata?",
+          a:"β-talassemia minor / trait; não prescrever ferro sem deficiência documentada e orientar aconselhamento genético",
+          opts:[
+            "β-talassemia minor / trait; não prescrever ferro sem deficiência documentada e orientar aconselhamento genético",
+            "β-talassemia intermediária (NTDT); iniciar transfusões a cada 3 semanas",
+            "Anemia ferropriva subclínica; prescrever sulfato ferroso por 6 meses",
+            "Doença da HbH; indicar esplenectomia profilática imediata"
+          ],
+          why:"Anemia leve, VCM muito baixo (63 fL), eritrócitos altos (6,15 mi), ferritina normal e HbA2 elevada (5,1%) caracterizam β-talassemia minor. O tratamento não requer sulfato ferroso (a menos que haja ferropenia associada) nem transfusões (Q8 e Q10 da Parcial)."
+        },
+        {
+          q:"Por que um portador de β-talassemia minor apresenta elevação da fração HbA2 na eletroforese/HPLC?",
+          a:"Com menor síntese de cadeias β, as cadeias α disponíveis pareiam-se proporcionalmente mais com cadeias δ (formando α2δ2)",
+          opts:[
+            "Com menor síntese de cadeias β, as cadeias α disponíveis pareiam-se proporcionalmente mais com cadeias δ (formando α2δ2)",
+            "Porque o alelo β0 é convertido enzimaticamente em cadeia δ no baço",
+            "Porque o excesso de cadeias β estimula a transcrição do gene γ fetal",
+            "Porque o ferro livre se liga à HbA e migra na mesma banda da HbA2"
+          ],
+          why:"Quando há redução da cadeia β, há aumento relativo da associação entre cadeias α normais e cadeias δ, elevando a proporção de HbA2 (α2δ2) acima de 3,5%."
+        }
+      ]
+    },
+    {
+      id:"s9", topic:"beta", imgs:[],
+      table:{
+        title:"Evolução clínica — Jovem de 17 anos",
+        rows:[
+          ["Hemoglobina basal","8,4 g/dL","12,0–15,5 g/dL",true],
+          ["VCM","66 fL","80–98 fL",true],
+          ["Transfusões na vida","Apenas 2 episódios durante infecções graves","",false],
+          ["Ferritina sérica","1.180 ng/mL","15–150 ng/mL",true],
+          ["Baço","Palpável a 5 cm do RCE","",true]
+        ],
+        note:"Paciente apresenta icterícia leve crônica e dor em hipocôndrio direito eventual."
+      },
+      case:"Jovem de 17 anos com β-talassemia intermediária (NTDT) apresenta ferritina acima de 1.000 ng/mL apesar de ter recebido apenas duas transfusões em toda a vida.",
+      look:"Na NTDT há sobrecarga de ferro mesmo sem transfusão regular: a eritropoiese ineficaz suprime hepcidina e aumenta a absorção intestinal de ferro.",
+      qs:[
+        {
+          q:"Como explicar a ferritina elevada nessa paciente não dependente de transfusão regular?",
+          a:"A eritropoiese ineficaz suprime a hepcidina, aumentando a absorção intestinal de ferro (sobrecarga não transfusional)",
+          opts:[
+            "A eritropoiese ineficaz suprime a hepcidina, aumentando a absorção intestinal de ferro (sobrecarga não transfusional)",
+            "As hemácias microcíticas impedem a excreção renal fisiológica do ferro circulante",
+            "A elevação de HbA2 sequestra transferrina e bloqueia o transporte para a medula",
+            "Duas transfusões isoladas na infância fornecem ferro suficiente para ultrapassar 1.000 ng/mL"
+          ],
+          why:"Em pacientes com NTDT, o intenso estímulo eritropoético suprime a produção hepática de hepcidina (via eritroferrona), liberando a ferroportina intestinal e elevando a absorção de ferro da dieta, acumulando ferro especialmente no fígado."
+        }
+      ]
+    },
+    {
+      id:"s10", topic:"clinica", imgs:[],
+      case:"Menino de 7 anos com β-talassemia major diagnosticada tardiamente em área rural, com adesão irregular às transfusões, apresenta proeminência maxilar, bossa frontal proeminente, hepatoesplenomegalia volumosa e atraso pôndero-estatural.",
+      look:"A anemia grave não suprimida leva à hiperplasia maciça da medula óssea, causando expansão medular, deformidades craniofaciais e risco de osteopenia/fraturas.",
+      qs:[
+        {
+          q:"Qual estratégia modifica diretamente a fisiopatologia dessas deformidades ósseas na TDT?",
+          a:"Manter regime transfusional regular com Hb pré-transfusional > 9,5 g/dL para suprimir a eritropoiese ineficaz",
+          opts:[
+            "Manter regime transfusional regular com Hb pré-transfusional > 9,5 g/dL para suprimir a eritropoiese ineficaz",
+            "Administrar suplementação contínua de ferro oral em doses dobradas",
+            "Indicar esplenectomia imediata antes dos 5 anos para reduzir o consumo ósseo",
+            "Manter Hb alvo propositalmente entre 6,5 e 7,5 g/dL para economizar transfusões"
+          ],
+          why:"Transfusões regulares corrigem a anemia e suprimem o estímulo medular da eritropoiese ineficaz, evitando expansão óssea e alterações craniofaciais. A meta pré-transfusional clássica é > 9,5 g/dL (TIF 2025: 9,0–10,5 g/dL); deixar Hb baixa (7–8 g/dL) não suprime a medula."
+        }
+      ]
+    },
+    {
+      id:"s11", topic:"clinica", imgs:[],
+      table:{
+        title:"Avaliação multissistêmica — TDT 21 anos",
+        rows:[
+          ["Ferritina sérica seriada","3.450 ng/mL","< 1.000 ng/mL (meta)",true],
+          ["RM Cardíaca T2*","8 ms","Normal > 20 ms (grave < 10 ms)",true],
+          ["Fração de ejeção (ECO)","46% (arritmia atrial recente)","≥ 55%",true],
+          ["Glicemia de jejum","168 mg/dL","< 100 mg/dL",true],
+          ["TSH / T4L","Compatível com hipotireoidismo","",true]
+        ],
+        note:"Paciente realizou transfusões crônicas sem adesão à terapia quelante."
+      },
+      case:"Homem de 21 anos com β-talassemia major (TDT) desenvolve dispneia progressiva, palpitações, diabetes mellitus e hipotireoidismo.",
+      look:"O organismo não possui via fisiológica eficaz para excretar o ferro transfusional; o acúmulo tecidual (hemossiderose) lesa coração, fígado e glândulas endócrinas.",
+      qs:[
+        {
+          q:"Qual afirmação explica CORRETAMENTE a fisiopatologia e a monitorização desse quadro?",
+          a:"A hemossiderose transfusional causa cardiomiopatia e endocrinopatias, sendo a RM T2* essencial porque a ferritina é reagente de fase aguda",
+          opts:[
+            "A hemossiderose transfusional causa cardiomiopatia e endocrinopatias, sendo a RM T2* essencial porque a ferritina é reagente de fase aguda",
+            "A ferritina isolada quantifica exatamente o ferro miocárdico, dispensando ressonância magnética",
+            "O fígado excreta na bile todo o excesso de ferro transfusional quando o paciente tem baço preservado",
+            "A lesão cardíaca na TDT decorre exclusivamente de autoanticorpos anti-miocárdio pós-transfusionais"
+          ],
+          why:"Hemossiderose / sobrecarga de ferro (Q1 da Parcial) é complicação clássica na TDT, causando cardiomiopatia/arritmias (principal causa de morte), fibrose hepática e endocrinopatias (DM, hipogonadismo, hipotireoidismo). Ferritina acompanha tendência, mas varia com inflamação; a RM T2* avalia ferro orgânico no coração e fígado."
+        }
+      ]
+    },
+    {
+      id:"s12", topic:"clinica", imgs:[],
+      case:"Mulher de 32 anos com β-talassemia intermediária (NTDT), submetida a esplenectomia na infância por esplenomegalia sintomática, dá entrada com dor torácica, dispneia aos esforços, úlcera maleolar crônica e histórico de cálculos biliares.",
+      look:"Em NTDT (especialmente após esplenectomia), aumentam os riscos de trombose venosa, hipertensão pulmonar, úlceras de perna e litíase biliar pigmentar.",
+      qs:[
+        {
+          q:"Quais complicações estão tipicamente associadas ao perfil NTDT e ao estado pós-esplenectomia?",
+          a:"Cálculos biliares pigmentares (bilirrubina da hemólise), eventos trombóticos e hipertensão pulmonar",
+          opts:[
+            "Cálculos biliares pigmentares (bilirrubina da hemólise), eventos trombóticos e hipertensão pulmonar",
+            "Deficiência isolada de vitamina B12 por ausência de fator intrínseco gástrico",
+            "Aplasia pura da série vermelha mediada exclusivamente por parvovírus B19",
+            "Poliglobulia reacional com hiperviscosidade arterial"
+          ],
+          why:"Hemólise crônica aumenta bilirrubina indireta e forma cálculos biliares pigmentares. Na NTDT, sobretudo após esplenectomia (que deixa circular hemácias anômalas pró-coagulantes e fragmentos celulares), elevam-se os riscos de trombose, hipertensão pulmonar e úlceras de perna."
+        }
+      ]
+    },
+    {
+      id:"s13", topic:"diag", imgs:[],
+      table:{
+        title:"Comparação de dois hemogramas ambulatoriais",
+        rows:[
+          ["Paciente A — Hb / Hemácias","11,4 g/dL | 5,8 milhões/mm³","",true],
+          ["Paciente A — VCM / RDW","62 fL | 13,0%","",true],
+          ["Paciente B — Hb / Hemácias","9,1 g/dL | 3,9 milhões/mm³","",false],
+          ["Paciente B — VCM / RDW","71 fL | 19,2%","",true]
+        ],
+        note:"Ambos os pacientes têm microcitose e hipocromia no esfregaço periférico."
+      },
+      case:"Você avalia dois pacientes jovens com microcitose. Antes da solicitação de ferritina e eletroforese, aplica o raciocínio sobre índices eritrocitários e índice de Mentzer (VCM / hemácias em milhões).",
+      look:"Paciente A tem VCM muito baixo com Hb quase normal e hemácias altas (Mentzer = 62 / 5,8 = 10,7 < 13); Paciente B tem anemia proporcional com RDW alto e hemácias baixas (Mentzer = 71 / 3,9 = 18,2 > 13).",
+      qs:[
+        {
+          q:"Qual hipótese diagnóstica inicial se ajusta melhor a cada paciente e qual é a limitação do índice de Mentzer?",
+          a:"A sugere traço talassêmico e B sugere ferropriva; porém o Mentzer é heurístico e não substitui ferritina e frações de Hb",
+          opts:[
+            "A sugere traço talassêmico e B sugere ferropriva; porém o Mentzer é heurístico e não substitui ferritina e frações de Hb",
+            "A sugere ferropriva e B sugere traço talassêmico; o Mentzer confirma o diagnóstico sozinho",
+            "Ambos têm anemia megaloblástica mascarada por microcitose",
+            "O RDW elevado em B exclui definitivamente qualquer coexistência com talassemia"
+          ],
+          why:"Traço talassêmico tende a ter microcitose acentuada com hemácias elevadas (Mentzer < 13) e RDW normal/discreto. Ferropriva cursa com hemácias baixas/normais (Mentzer > 13) e RDW elevado. Nenhum índice substitui ferritina + análise de Hb, sobretudo se coexistirem."
+        },
+        {
+          q:"Calculando o índice de Mentzer do Paciente A (VCM 62 fL / 5,8 milhões) e do Paciente B (VCM 71 fL / 3,9 milhões), quais valores encontramos?",
+          a:"Paciente A ≈ 10,7 (< 13, sugere traço talassêmico) e Paciente B ≈ 18,2 (> 13, sugere ferropriva)",
+          opts:[
+            "Paciente A ≈ 10,7 (< 13, sugere traço talassêmico) e Paciente B ≈ 18,2 (> 13, sugere ferropriva)",
+            "Paciente A ≈ 18,2 (> 13, sugere ferropriva) e Paciente B ≈ 10,7 (< 13, sugere traço talassêmico)",
+            "Ambos têm índice de Mentzer < 13 por possuírem VCM abaixo de 80 fL",
+            "Ambos têm índice de Mentzer > 13 porque o RDW está elevado no Paciente B"
+          ],
+          why:"Índice de Mentzer = VCM / hemácias em milhões/mm³. Em A: 62 / 5,8 = 10,69 (< 13 → favorece traço). Em B: 71 / 3,9 = 18,21 (> 13 → favorece anemia ferropriva)."
+        }
+      ]
+    },
+    {
+      id:"s14", topic:"diag", imgs:[],
+      table:{
+        title:"Suspeita clínica + deficiência de ferro associada",
+        rows:[
+          ["Hemoglobina","9,8 g/dL","12,0–15,5 g/dL",true],
+          ["VCM","60 fL","80–98 fL",true],
+          ["Ferritina sérica","7 ng/mL","15–150 ng/mL",true],
+          ["HbA2 (HPLC)","3,2% (limítrofe)","2,0–3,5%",false]
+        ],
+        note:"Mulher de 26 anos com hipermenorreia e irmão portador de β-talassemia minor."
+      },
+      case:"Mulher de 26 anos com história familiar positiva de β-talassemia minor apresenta anemia microcítica e ferritina muito baixa (7 ng/mL), com HbA2 em 3,2%.",
+      look:"Deficiência de ferro concomitante pode reduzir a HbA2 e gerar resultado falso-normal ou limítrofe para β-talassemia trait!",
+      qs:[
+        {
+          q:"Qual é a conduta diagnóstica e terapêutica CORRETA para esse caso?",
+          a:"Tratar a deficiência de ferro documentada e repetir a análise de frações de hemoglobina (HbA2) após correção dos estoques",
+          opts:[
+            "Tratar a deficiência de ferro documentada e repetir a análise de frações de hemoglobina (HbA2) após correção dos estoques",
+            "Descartar definitivamente β-talassemia minor porque a HbA2 está abaixo de 3,5%",
+            "Proibir qualquer reposição de ferro pela possibilidade de talassemia na família",
+            "Iniciar transfusões regulares imediatamente para elevar HbA2"
+          ],
+          why:"Quando coexistem ferropriva e β-talassemia minor, a escassez de ferro reduz a síntese de cadeias δ e pode diminuir a HbA2 para valores limítrofes. Deve-se repor ferro (pois há deficiência confirmada pela ferritina baixa!) e reavaliar o HPLC após normalizar a ferritina."
+        }
+      ]
+    },
+    {
+      id:"s15", topic:"diag", imgs:[],
+      case:"No laboratório de hematologia, analisam-se lâminas de sangue periférico de pacientes com diferentes anemias microcíticas e hemolíticas.",
+      look:"No esfregaço da talassemia são frequentes microcitose, hipocromia, células-alvo (codócitos), pontilhado basofílico e, nas formas graves, anisopoquilocitose e eritroblastos circulantes.",
+      qs:[
+        {
+          q:"Qual achado do esfregaço periférico é típico da talassemia por haver excesso relativo de membrana em relação ao menor conteúdo de hemoglobina?",
+          a:"Células-alvo (codócitos), frequentemente acompanhadas de microcitose, hipocromia e pontilhado basofílico",
+          opts:[
+            "Células-alvo (codócitos), frequentemente acompanhadas de microcitose, hipocromia e pontilhado basofílico",
+            "Macro-ovalócitos acompanhados de neutrófilos hipersegmentados",
+            "Numerosos esferócitos hipercrômicos isolados com Coombs direto positivo",
+            "Mais de 40% de eliptócitos em paciente com história familiar negativa para microcitose"
+          ],
+          why:"Células-alvo resultam da redução do conteúdo de Hb com superfície de membrana relativamente preservada, sendo clássicas nas talassemias. Macro-ovalócitos/neutrófilos hipersegmentados pertencem à megaloblástica (Q2/Q8 da N2); esferócitos a AHAI/esferocitose (Q3/Q5 da N2); eliptócitos à eliptocitose (Q6/Q10 da N2)."
+        }
+      ]
+    },
+    {
+      id:"s16", topic:"trat", imgs:[],
+      table:{
+        title:"Acompanhamento de lactente — TDT",
+        rows:[
+          ["Idade atual","14 meses","",false],
+          ["Hemoglobina pré-transfusional","7,9 g/dL","Meta > 9,5 g/dL (TIF: 9,0–10,5)",true],
+          ["Intervalo atual","Transfusões apenas quando Hb < 7,0 g/dL","",true],
+          ["Fenotipagem eritrocitária","Ainda não realizada","",true]
+        ],
+        note:"Lactente com β-talassemia major apresenta retorno do crescimento lento e hepatoesplenomegalia."
+      },
+      case:"Lactente de 14 meses com diagnóstico confirmado de β-talassemia major vem sendo transfundido de forma irregular e apenas quando a hemoglobina cai abaixo de 7 g/dL.",
+      look:"Na TDT, a meta não é apenas evitar choque anêmico, mas manter Hb pré-transfusional > 9,5 g/dL em intervalos regulares (2 a 5 semanas) após fenotipagem/genotipagem eritrocitária.",
+      qs:[
+        {
+          q:"Qual ajuste é fundamental no plano transfusional desse paciente?",
+          a:"Realizar fenotipagem/genotipagem eritrocitária prévia (compatibilizando Rh e Kell) e manter transfusões regulares a cada 2–5 semanas com Hb > 9,5 g/dL",
+          opts:[
+            "Realizar fenotipagem/genotipagem eritrocitária prévia (compatibilizando Rh e Kell) e manter transfusões regulares a cada 2–5 semanas com Hb > 9,5 g/dL",
+            "Manter a Hb pré-transfusional entre 7,5 e 8,5 g/dL para impedir sobrecarga de ferro",
+            "Indicar esplenectomia imediata aos 14 meses para suspender as transfusões",
+            "Substituir as transfusões por prednisona em dose de manutenção"
+          ],
+          why:"Segundo o resumo e as diretrizes (TIF 2025 + Q6/Q7 da Parcial), transfusões crônicas exigem perfil antigênico prévio (Rh/Kell) contra aloimunização, periodicidade de 2 a 5 semanas e Hb pré-transfusional > 9,5 g/dL (9,0–10,5 g/dL). Subtransfundir mantém expansão medular."
+        },
+        {
+          q:"Qual é a principal finalidade da fenotipagem/genotipagem eritrocitária e da compatibilização Rh e Kell antes de iniciar transfusões crônicas?",
+          a:"Reduzir o risco de aloimunização contra antígenos eritrocitários em pacientes politransfundidos",
+          opts:[
+            "Reduzir o risco de aloimunização contra antígenos eritrocitários em pacientes politransfundidos",
+            "Aumentar a meia-vida do deferasirox no plasma entre as transfusões",
+            "Converter a β-talassemia major em NTDT após seis meses de seguimento",
+            "Substituir a dosagem periódica de ferritina e a ressonância magnética T2*"
+          ],
+          why:"Pacientes em regime transfusional crônico expõem-se a múltiplos doadores. Caracterizar o perfil antigênico prévio e compatibilizar sistemas imunogênicos como Rh e Kell previne aloanticorpos e reações hemolíticas transfusionais."
+        }
+      ]
+    },
+    {
+      id:"s17", topic:"trat", imgs:[],
+      case:"Paciente de 5 anos com β-talassemia major recebeu 14 transfusões de concentrado de hemácias ao longo dos últimos 12 meses. A equipe analisa o momento ideal de iniciar terapia quelante de ferro e os exames de monitorização de toxicidade.",
+      look:"Na prática e pelas diretrizes (TIF 2025 / PCDT 2026), inicia-se quelação após ~10–20 transfusões ou quando ferritina sérica > 1.000 ng/mL (atenção à pegadinha de prova '1,5 g/kg').",
+      qs:[
+        {
+          q:"Sobre a terapia quelante de ferro e seus fármacos, qual associação está CORRETA?",
+          a:"Deferiprona (oral) requer vigilância hematológica periódica pelo risco de neutropenia/agranulocitose",
+          opts:[
+            "Deferiprona (oral) requer vigilância hematológica periódica pelo risco de neutropenia/agranulocitose",
+            "Deferoxamina é usada por via oral em dose única semanal sem risco ocular ou auditivo",
+            "Deferasirox tem uso exclusivo endovenoso hospitalar e dispensa monitorização renal",
+            "A quelação só deve iniciar quando a ferritina sérica ultrapassar 1,5 g/kg"
+          ],
+          why:"Deferiprona (oral) exige hemograma regular pelo risco de neutropenia/agranulocitose. Deferoxamina é parenteral (SC prolongada/EV) e exige vigiar audição, visão e crescimento. Deferasirox é oral e exige vigiar função renal, hepática e TGI. Na Q6 da Parcial, 'ferritina > 1,5 g/kg' era uma pegadinha clássica de unidade."
+        },
+        {
+          q:"Em um paciente em uso de deferasirox (oral), quais parâmetros precisam de monitorização periódica além da ferritina?",
+          a:"Função renal, função hepática e tolerabilidade gastrointestinal (além de seguir os critérios do PCDT de Sobrecarga de Ferro 2026)",
+          opts:[
+            "Função renal, função hepática e tolerabilidade gastrointestinal (além de seguir os critérios do PCDT de Sobrecarga de Ferro 2026)",
+            "Audiometria semanal como toxicidade exclusiva da via subcutânea",
+            "Dosagem de anticorpo anti-fator intrínseco e vitamina B12 mensal",
+            "Nenhuma monitorização orgânica é necessária porque o deferasirox é eliminado apenas pelos pulmões"
+          ],
+          why:"O resumo destaca que deferasirox (oral) exige acompanhar função renal, função hepática e eventos gastrointestinais conforme protocolo (no SUS, referência atual do PCDT Portaria Conjunta SAES/SCTIE nº 38/2026)."
+        }
+      ]
+    },
+    {
+      id:"s18", topic:"trat", imgs:[],
+      case:"Durante reunião multidisciplinar, pais de uma criança de 4 anos com β-talassemia major perguntam se ela terá que fazer esplenectomia de rotina aos 5 anos ou se existe alguma opção potencialmente curativa além das transfusões crônicas.",
+      look:"Esplenectomia NÃO é obrigatória nem rotineira; TCTH alogênico (TMO) e avanços em terapias gênicas são opções potencialmente curativas em casos selecionados.",
+      qs:[
+        {
+          q:"Qual orientação dada à família está de acordo com as recomendações atuais?",
+          a:"A esplenectomia não é rotineira (reserva-se a hiperesplenismo refratário); o transplante de células-tronco hematopoéticas (TCTH) pode ser curativo em pacientes selecionados",
+          opts:[
+            "A esplenectomia não é rotineira (reserva-se a hiperesplenismo refratário); o transplante de células-tronco hematopoéticas (TCTH) pode ser curativo em pacientes selecionados",
+            "Toda criança com baço palpável após os 5 anos deve operar obrigatoriamente para curar o defeito globínico",
+            "Não existe qualquer terapia curativa descrita para a β-talassemia major",
+            "A esplenectomia ao diagnóstico evita a necessidade de quelantes e de fenotipagem eritrocitária"
+          ],
+          why:"Esplenectomia tem indicação restrita (hiperesplenismo com alta demanda transfusional, ex. > 200 mL/kg/ano na TIF 2025) pelo risco de sepse, trombose e hipertensão pulmonar (Q3/Q7 da Parcial). TCTH alogênico pode curar pacientes selecionados; terapia gênica também representa avanço em centros especializados."
+        }
+      ]
+    },
+    {
+      id:"s19", topic:"gen", imgs:[],
+      case:"Casal jovem procura aconselhamento genético pré-concepcional. Ambos têm hemograma com VCM de 64 fL, ferritina normal e HbA2 de 5,0% (diagnóstico de β-talassemia minor / heterozigose).",
+      look:"Na herança autossômica recessiva, cruzamento de dois heterozigotos (β/β0 × β/β0) resulta em 25% homozigoto normal, 50% portador (minor) e 25% afetado grave (major).",
+      qs:[
+        {
+          q:"A cada gestação desse casal, qual é a probabilidade de o filho nascer com β-talassemia major?",
+          a:"25% (com 50% de chance de portador/minor e 25% de não herdar nenhum alelo mutado)",
+          opts:[
+            "25% (com 50% de chance de portador/minor e 25% de não herdar nenhum alelo mutado)",
+            "50% de chance de β-talassemia major em cada gestação",
+            "75% de chance de β-talassemia major por ser herança autossômica dominante",
+            "100% porque ambos os progenitores carregam alelos do cromossomo 11"
+          ],
+          why:"As talassemias têm padrão geralmente autossômico recessivo. Dois heterozigotos geram, em cada gestação: 25% β/β (normal), 50% β/βmut (traço minor) e 25% βmut/βmut (β-talassemia major ou intermediária conforme alelos). Tema clássico da Q9 da Parcial."
+        }
+      ]
+    },
+    {
+      id:"s20", topic:"gen", imgs:[],
+      case:"Dois casais vêm para aconselhamento sobre α-talassemia: Casal X tem ambos os parceiros com genótipo em trans (–α/–α); Casal Y tem ambos os parceiros com genótipo em cis (––/αα).",
+      look:"O arranjo cis (––/αα) coloca os dois genes deletados no mesmo cromossomo 16; dois portadores em cis têm 25% de risco de feto ––/–– (Hb Bart's / hidropisia fetal).",
+      qs:[
+        {
+          q:"Qual é o risco fetal comparativo entre o Casal X (trans × trans) e o Casal Y (cis × cis)?",
+          a:"O Casal Y (cis × cis) apresenta 25% de risco de hidropisia fetal por Hb Bart's (––/––), enquanto o Casal X (trans × trans) gera filhos apenas com traço (–α/–α)",
+          opts:[
+            "O Casal Y (cis × cis) apresenta 25% de risco de hidropisia fetal por Hb Bart's (––/––), enquanto o Casal X (trans × trans) gera filhos apenas com traço (–α/–α)",
+            "O Casal X tem maior risco de hidropisia fetal por ter deleções separadas nos dois cromossomos",
+            "Ambos os casais têm exatamente o mesmo risco de 50% para doença da HbH",
+            "Nenhum dos dois casais precisa de estudo molecular porque a eletroforese diferencia cis de trans"
+          ],
+          why:"Em trans (–α/–α), todo gameta carrega exatamente 1 gene α (–α), logo dois parceiros em trans só geram filhos –α/–α (traço, 2 genes). Em cis (––/αα), metade dos gametas não carrega nenhum gene α (––), criando 25% de chance de feto ––/–– (0 genes = Hb Bart's)."
+        }
+      ]
+    },
+    {
+      id:"d1", topic:"beta", imgs:[],
+      title:"Caso 1 — Lactente com anemia grave pós-desmame (Estilo N2)",
+      table:{
+        title:"Exames — Lactente de 8 meses",
+        rows:[
+          ["Hemoglobina","6,1 g/dL","10,5–13,5 g/dL",true],
+          ["VCM","59 fL","72–84 fL",true],
+          ["Reticulócitos","2,2% (baixo para a gravidade)","",true],
+          ["Bilirrubina indireta","2,4 mg/dL","< 0,8 mg/dL",true],
+          ["Eletroforese / HPLC","HbF 86% | HbA 10% | HbA2 4%","HbA > 95%",true]
+        ],
+        note:"Lactente de 8 meses com palidez intensa, atraso ponderoestatural, bossa frontal inicial e baço a 4 cm do RCE."
+      },
+      case:"Um lactente de 8 meses é levado ao ambulatório de hematopediatria por palidez progressiva iniciada há 2 meses, irritabilidade, baixo ganho ponderal e aumento do volume abdominal. Nasceu a termo, sem intercorrências neonatais e com triagem neonatal inicial sem queixas até os 6 meses. Ao exame físico: descorado (+++/4+), icterícia escleral discreta, hepatoesplenomegalia e proeminência frontal discreta.",
+      look:"Padrão clássico da β-talassemia major: queda da HbF após ~6 meses expõe o déficit de β, causando eritropoiese ineficaz + hemólise; exige transfusões regulares (Hb > 9,5 g/dL) com fenotipagem e vigilância de hemossiderose.",
+      qs:[
+        {
+          type:"disc", rows:5,
+          q:"Dê o diagnóstico mais provável e explique a fisiopatologia da anemia, justificando por que os sintomas não surgiram logo ao nascimento.",
+          model:"<b>Diagnóstico:</b> β-talassemia major (talassemia dependente de transfusão / TDT).<br><b>Fisiopatologia:</b> Trata-se de defeito quantitativo na síntese de cadeias β-globina (alelos β0/β0 ou β0/β+). A redução ou ausência de cadeias β gera acúmulo relativo de cadeias α livres insolúveis, que precipitam nos precursores eritroides da medula óssea, causando dano oxidativo, apoptose medular (<b>eritropoiese ineficaz</b>), expansão medular (alterações craniofaciais) e <b>hemólise periférica</b> (icterícia, esplenomegalia).<br><b>Motivo do início após 6 meses:</b> Durante a vida fetal e os primeiros meses, predomina a <b>HbF (α2γ2)</b>, que não depende de cadeias β. Após o nascimento ocorre o <i>hemoglobin switching</i> (troca progressiva de γ para β). Somente com a queda fisiológica da HbF (por volta dos 6 meses) o déficit de HbA (α2β2) torna-se clinicamente manifesto.",
+          check:[
+            "Identificou β-talassemia major / TDT como diagnóstico.",
+            "Explicou o defeito quantitativo com excesso de cadeias α livres insolúveis, eritropoiese ineficaz e hemólise.",
+            "Justificou o início após 6 meses pelo switch fetal-adulto (queda da HbF α2γ2)."
+          ]
+        },
+        {
+          type:"disc", rows:5,
+          q:"Descreva os princípios do tratamento transfusional adequado (incluindo segurança pré-transfusional e meta de Hb — complemento de diretrizes/prova) e explique a principal complicação crônica decorrente desse tratamento.",
+          model:"<b>Tratamento transfusional:</b> Transfusões regulares de concentrado de hemácias (em geral a cada 2 a 5 semanas, conforme prova/TIF 2025) visando manter <b>Hb pré-transfusional > 9,5 g/dL</b> (meta TIF 2025: 9,0–10,5 g/dL) para corrigir anemia, permitir crescimento adequado e <b>suprimir a eritropoiese ineficaz</b> e a expansão medular.<br><b>Segurança:</b> Realizar fenotipagem ou genotipagem eritrocitária prévia, pesquisa de anticorpos irregulares e compatibilização estendida (especialmente sistemas Rh e Kell) para prevenir aloimunização.<br><b>Principal complicação crônica:</b> <b>Sobrecarga de ferro (hemossiderose)</b>, pois o organismo não possui mecanismo fisiológico eficaz para excretar o ferro transfusional, acumulando-se em coração (cardiomiopatia/arritmias), fígado (fibrose/cirrose) e órgãos endócrinos (diabetes, hipogonadismo, hipotireoidismo), exigindo monitorização e terapia quelante.",
+          check:[
+            "Citou transfusões regulares (2–5 sem) com meta Hb > 9,5 g/dL para suprimir eritropoiese ineficaz.",
+            "Mencionou fenotipagem/genotipagem (Rh/Kell) para prevenir aloimunização.",
+            "Identificou sobrecarga de ferro (hemossiderose) em órgãos-alvo pela ausência de excreção fisiológica."
+          ]
+        }
+      ]
+    },
+    {
+      id:"d2", topic:"diag", imgs:[],
+      title:"Caso 2 — Investigação de microcitose + aconselhamento reprodutivo",
+      table:{
+        title:"Exames — Mulher de 29 anos",
+        rows:[
+          ["Hemoglobina","11,4 g/dL","12,0–15,5 g/dL",true],
+          ["Hemácias","5,65 milhões/mm³","4,0–5,2 milhões/mm³",true],
+          ["VCM / HCM","63 fL / 19,8 pg","80–98 fL / 27–33 pg",true],
+          ["RDW","13,4%","11,5–14,5%",false],
+          ["Ferritina sérica","94 ng/mL","15–150 ng/mL",false],
+          ["HPLC — HbA2 / HbF","4,9% / 1,1%","HbA2 2,0–3,5%",true]
+        ],
+        note:"Esfregaço com microcitose, hipocromia e células-alvo. Parceiro possui resultado laboratorial semelhante."
+      },
+      case:"Mulher de 29 anos, assintomática, comparece para consulta pré-concepcional trazendo hemograma realizado após tentativa frustrada de tratamento em outro serviço com sulfato ferroso por 6 meses (sem alteração do VCM). Seu parceiro fez os mesmos exames na semana anterior e apresentou microcitose acentuada com ferritina normal e HbA2 de 5,2%.",
+      look:"Na β-talassemia minor, microcitose é desproporcional à anemia, hemácias são altas, ferritina normal e HbA2 > 3,5%. Casal heterozigoto tem 25% de risco de β-major.",
+      qs:[
+        {
+          type:"disc", rows:5,
+          q:"Diferencie o perfil laboratorial dessa paciente em relação a uma anemia ferropriva típica (citando ao menos quatro parâmetros) e informe se deve manter a reposição de ferro.",
+          model:"<b>Diagnóstico:</b> β-talassemia minor (traço β-talassêmico).<br><b>Diferencial laboratorial vs. Ferropriva:</b> (1) <b>VCM</b> muito reduzido de forma desproporcional à anemia leve (na ferropriva costuma ser proporcional à queda da Hb); (2) <b>Contagem de hemácias</b> elevada/preservada (5,65 mi/mm³, enquanto na ferropriva tende a normal/baixa); (3) <b>RDW</b> dentro da faixa normal (na ferropriva costuma estar elevado, embora não seja regra absoluta); (4) <b>Ferritina</b> normal (na ferropriva é baixa); (5) <b>HbA2</b> elevada em 4,9% (normal ou reduzida na ferropriva) e presença de <b>células-alvo</b>.<br><b>Conduta quanto ao ferro:</b> Suspender/não prescrever sulfato ferroso, pois não há deficiência de ferro documentada e ferro desnecessário traz risco de sobrecarga.",
+          check:[
+            "Diagnosticou β-talassemia minor e contraindicou manutenção de ferro oral sem ferropenia.",
+            "Diferenciou da ferropriva por 4+ critérios (VCM desproporcional, hemácias altas, RDW normal, ferritina normal, HbA2 elevada, células-alvo)."
+          ]
+        },
+        {
+          type:"disc", rows:5,
+          q:"Explique o padrão de herança e calcule objetivamente o risco reprodutivo para a prole desse casal em cada gestação.",
+          model:"<b>Herança:</b> Padrão geralmente <b>autossômico recessivo</b> (genes β no cromossomo 11). Ambos são heterozigotos portadores (traço β-talassêmico).<br><b>Risco reprodutivo por gestação:</b><br>• <b>25%</b> de chance de filho com <b>β-talassemia major</b> (homozigoto ou heterozigoto composto para alelos mutados);<br>• <b>50%</b> de chance de filho portador assintomático com <b>β-talassemia minor</b>;<br>• <b>25%</b> de chance de filho com genótipo normal (dois alelos β normais).<br>Deve-se oferecer aconselhamento genético especializado para discussão de opções reprodutivas e diagnóstico pré-natal.",
+          check:[
+            "Informou herança autossômica recessiva.",
+            "Calculou corretamente: 25% β-talassemia major, 50% portador (minor) e 25% normal."
+          ]
+        }
+      ]
+    },
+    {
+      id:"d3", topic:"clinica", imgs:[],
+      title:"Caso 3 — Talassemia intermediária (NTDT) com ferritina em ascensão",
+      table:{
+        title:"Exames — Homem de 31 anos (NTDT)",
+        rows:[
+          ["Hemoglobina","8,6 g/dL","13,0–17,0 g/dL",true],
+          ["VCM","67 fL","80–98 fL",true],
+          ["Bilirrubina indireta","2,7 mg/dL","< 0,8 mg/dL",true],
+          ["Ferritina sérica","1.340 ng/mL","30–300 ng/mL",true],
+          ["Transfusões prévias","Apenas 1 episódio há 10 anos","",false]
+        ],
+        note:"Paciente apresenta esplenomegalia de 6 cm e ultrassonografia com colelitíase."
+      },
+      case:"Homem de 31 anos com diagnóstico de β-talassemia intermediária (NTDT) comparece em retorno queixando-se de dor pós-prandial em hipocôndrio direito e fadiga moderada. Nunca recebeu esquema transfusional regular. O ultrassom mostra múltiplos cálculos biliares e baço aumentado (6 cm abaixo do RCE). Traz exame de ferritina de 1.340 ng/mL e pergunta por que está acumulando ferro sem receber transfusões e se deve retirar o baço.",
+      look:"Na NTDT há sobrecarga hepática de ferro por supressão de hepcidina; esplenectomia é evitada ao máximo por elevar trombose, hipertensão pulmonar e risco infeccioso.",
+      qs:[
+        {
+          type:"disc", rows:5,
+          q:"Explique o mecanismo fisiopatológico que leva à sobrecarga de ferro mesmo sem transfusões regulares na NTDT e justifique a formação dos cálculos biliares.",
+          model:"<b>Sobrecarga de ferro na NTDT:</b> A <b>eritropoiese ineficaz</b> crônica na medula óssea gera sinalização intensa que <b>suprime a produção hepática de hepcidina</b>. Com hepcidina baixa, aumenta a absorção intestinal de ferro da dieta (via ferroportina), levando ao acúmulo progressivo de ferro orgânico, especialmente no fígado.<br><b>Cálculos biliares:</b> Decorrem da <b>hemólise crônica</b>, com aumento contínuo da produção de bilirrubina indireta e excreção aumentada na bile, formando cálculos biliares pigmentares.",
+          check:[
+            "Explicou sobrecarga de ferro na NTDT por supressão de hepcidina secundária à eritropoiese ineficaz.",
+            "Explicou cálculos biliares pigmentares por hemólise crônica / hiperbilirrubinemia indireta."
+          ]
+        },
+        {
+          type:"disc", rows:5,
+          q:"Cite duas complicações vasculares/cardiopulmonares importantes na NTDT, explique o papel restrito da esplenectomia e comente sobre avaliação e manejo do ferro nesse caso.",
+          model:"<b>Complicações vasculares/cardiopulmonares:</b> Eventos <b>trombóticos / tromboembolismo</b> (ex.: trombose portal/venosa), <b>hipertensão pulmonar</b> e úlceras de perna.<br><b>Papel da esplenectomia:</b> Não deve ser indicada de rotina pela simples presença de baço palpável (pegadinha de prova), pois a retirada esplênica aumenta ainda mais o risco de trombose, hipertensão pulmonar e infecções graves (sepse por encapsulados). Só é considerada em situações excepcionais como hiperesplenismo grave/refratário.<br><b>Manejo do ferro:</b> Confirmar/quantificar carga orgânica (ex.: RM hepática quando indicada, lembrando que ferritina sofre influência inflamatória) e avaliar início de <b>terapia quelante de ferro</b> individualizada mesmo sem transfusão regular.",
+          check:[
+            "Citou trombose e hipertensão pulmonar como complicações relevantes da NTDT.",
+            "Justificou por que a esplenectomia é evitada/restrita (aumenta risco trombótico, hipertensão pulmonar e infeccioso).",
+            "Indicou avaliação de ferro hepático (RM) e consideração de quelação mesmo sem transfusão regular."
+          ]
+        }
+      ]
+    },
+    {
+      id:"d4", topic:"alfa", imgs:[],
+      title:"Caso 4 — Espectro da α-talassemia e estudo molecular",
+      case:"Uma estudante de medicina compara dois casos acompanhados no ambulatório de hematologia genética: (Paciente 1) jovem de 19 anos com microcitose leve persistente, ferritina normal e eletroforese/HPLC completamente normal; (Paciente 2) jovem de 20 anos com anemia hemolítica crônica (Hb 8,8 g/dL), esplenomegalia e presença de HbH na eletroforese.",
+      look:"Traço α (2 genes) costuma ter HPLC normal e requer estudo molecular (cis vs. trans); 1 gene forma HbH (β4) e 0 genes causa Hb Bart's (γ4) / hidropisia fetal.",
+      qs:[
+        {
+          type:"disc", rows:5,
+          q:"Identifique a quantidade provável de genes α funcionais e o fenótipo de cada paciente, explicando o que é a HbH e por que ela não aparece nas α-talassemias leves.",
+          model:"<b>Paciente 1:</b> Provável <b>traço α-talassêmico (2 genes α funcionais)</b> ou portador silencioso (3 genes α funcionais). Como ainda há síntese suficiente de cadeias α ou excesso discreto, o perfil eletroforético de rotina (HbA, HbA2, HbF) costuma ser normal.<br><b>Paciente 2:</b> <b>Doença da HbH (1 gene α funcional: ––/–α)</b>. Com perda de 3 genes α, há grande excesso relativo de cadeias β no adulto/criança, que se agregam formando <b>tetrâmeros β4 (HbH)</b> — hemoglobina instável que precipita, lesa hemácias e causa anemia hemolítica e esplenomegalia.",
+          check:[
+            "Associou Paciente 1 a traço α (2 genes) / portador silencioso (3 genes) com eletroforese/HPLC normal.",
+            "Associou Paciente 2 à Doença da HbH (1 gene α funcional) formada por tetrâmeros β4."
+          ]
+        },
+        {
+          type:"disc", rows:5,
+          q:"Explique por que o estudo molecular é indispensável no traço α-talassêmico para aconselhamento genético (diferenciando arranjo cis e trans) e contraste com a forma de 0 genes funcionais.",
+          model:"<b>Importância do estudo molecular (cis vs. trans):</b> Como a eletroforese/HPLC pode ser normal no traço α, o exame molecular confirma o diagnóstico e diferencia 2 genes deletados no mesmo cromossomo (<b>cis: ––/αα</b>) de 1 gene deletado em cada cromossomo (<b>trans: –α/–α</b>). Se dois parceiros tiverem arranjo em <b>cis (––/αα)</b>, há 25% de risco de o feto não herdar nenhum gene α (––/––).<br><b>0 genes α funcionais (––/––):</b> Causa <b>Hb Bart's (tetrâmeros γ4) e hidropisia fetal</b>, quadro gravíssimo com hipóxia fetal e óbito intrauterino/neonatal na ausência de intervenção especializada.",
+          check:[
+            "Explicou a necessidade do estudo molecular para diferenciar arranjo cis (––/αα) de trans (–α/–α).",
+            "Descreveu que 0 genes (––/––) gera Hb Bart's (γ4) e hidropisia fetal grave."
+          ]
+        }
+      ]
+    },
+    {
+      id:"d5", topic:"trat", imgs:[],
+      title:"Caso 5 — Sobrecarga orgânica na TDT, RM T2* e escolha de quelantes",
+      table:{
+        title:"Seguimento — Paciente TDT 18 anos",
+        rows:[
+          ["Ferritina sérica","2.980 ng/mL (PCR elevada por infecção)","< 1.000 ng/mL",true],
+          ["RM Cardíaca T2*","9 ms (risco alto)","Normal > 20 ms",true],
+          ["LIC (RM hepática)","14 mg Fe/g peso seco","< 3 mg/g",true],
+          ["Creatinina sérica","1,5 mg/dL (em elevação)","0,6–1,2 mg/dL",true],
+          ["Neutrófilos","3.200 /mm³","Normal",false]
+        ],
+        note:"Paciente em transfusão regular a cada 3 semanas; faz uso irregular de deferasirox."
+      },
+      case:"Rapaz de 18 anos com β-talassemia major em programa transfusional regular há 15 anos comparece para reavaliação. Teve episódio recente de quadro gripal febril (PCR elevada) e refere baixa adesão ao quelante oral atual por desconforto abdominal. Exames mostram ferritina de 2.980 ng/mL, creatinina elevada e T2* cardíaco de 9 ms.",
+      look:"Ferritina sofre viés inflamatório; RM T2* quantifica ferro orgânico. Cada quelante exige monitorização específica: DFO (olho/ouvido), DFX (rim/fígado), DFP (neutrófilos).",
+      qs:[
+        {
+          type:"disc", rows:5,
+          q:"Explique as limitações da ferritina sérica isolada (especialmente nesse contexto clínico) e o papel da ressonância magnética T2*.",
+          model:"<b>Limitações da ferritina:</b> A ferritina é um marcador indireto de tendência dos estoques corporais e atua como <b>reagente de fase aguda</b> (eleva-se falsamente em infecções como o quadro gripal atual, inflamação ou hepatopatia), além de não refletir com precisão o depósito específico em cada órgão.<br><b>Papel da RM (T2* e hepática):</b> A ressonância magnética quantifica diretamente a carga de ferro tecidual no <b>fígado</b> e no <b>miocárdio (T2* cardíaco)</b>, identificando precocemente risco de insuficiência cardíaca/arritmia (T2* < 10 ms indica sobrecarga grave) e guiando o ajuste da quelação.",
+          check:[
+            "Apontou que ferritina é reagente de fase aguda (alterada na infecção/inflamação) e não mede ferro órgão-específico.",
+            "Explicou que a RM T2* quantifica diretamente ferro cardíaco e hepático para guiar conduta."
+          ]
+        },
+        {
+          type:"disc", rows:5,
+          q:"Compare as três classes de quelantes disponíveis (via e principais cuidados de monitorização) para discutir a adequação terapêutica desse paciente.",
+          model:"<b>1. Deferoxamina:</b> Via parenteral (infusão subcutânea prolongada/EV); eficaz na remoção cardíaca/sistêmica, porém tem menor adesão pelo uso de bomba; exige monitorizar <b>audição, visão</b> e crescimento em crianças.<br><b>2. Deferasirox:</b> Via oral (dose única diária); exige monitorização de <b>função renal</b> (atenção à creatinina já alterada neste paciente!), função hepática e sintomas gastrointestinais.<br><b>3. Deferiprona:</b> Via oral; excelente penetração miocárdica (muito útil isolada ou combinada na sobrecarga cardíaca grave); exige monitorização frequente do hemograma pelo risco de <b>neutropenia/agranulocitose</b> e função hepática. A decisão segue avaliação especializada e critérios do PCDT de Sobrecarga de Ferro.",
+          check:[
+            "Descreveu Deferoxamina: parenteral (SC prolongada), vigiar audição/visão/crescimento e adesão.",
+            "Descreveu Deferasirox: oral, vigiar função renal (relevante no caso!), hepática e TGI.",
+            "Descreveu Deferiprona: oral, vigiar neutrófilos/agranulocitose e função hepática."
+          ]
+        }
+      ]
+    }
+  ],
+  oldExams:[
+    {
+      id:"q1", num:1, source:"Parcial · Perda de Sangue e Anemias", topic:"clinica", hot:true,
+      stem:"Quanto à talassemia marque a alternativa correta:",
+      opts:[
+        "Normalmente se apresenta como anemia macrocítica.",
+        "Não há indicação de transplante de medula óssea.",
+        "A hemoglobina H é formada por tetrâmeros de alfa 4.",
+        "Hemossiderose é uma complicação comum na talassemia major.",
+        "Na betatalassemia há um acúmulo de cadeias beta altamente insolúveis."
+      ],
+      a:"Hemossiderose é uma complicação comum na talassemia major.",
+      comment:"<b>Correta: d) Hemossiderose é uma complicação comum na talassemia major.</b><br>• <b>a) Errada:</b> A talassemia apresenta-se tipicamente como anemia <i>microcítica e hipocrômica</i> (nunca macrocítica).<br>• <b>b) Errada:</b> O transplante de células-tronco hematopoéticas (TMO/TCTH) é opção potencialmente curativa em casos selecionados.<br>• <b>c) Errada (Pegadinha!):</b> A HbH é formada por tetrâmeros de <b>β4</b> (e não α4); quem é γ4 é a Hb Bart's.<br>• <b>e) Errada (Pegadinha!):</b> Na β-talassemia faltam cadeias β; portanto acumulam-se <b>cadeias α</b> livres insolúveis."
+    },
+    {
+      id:"q2", num:2, source:"Parcial · Perda de Sangue e Anemias", topic:"alfa", hot:true,
+      stem:"As talassemias são doenças que determinam deficiências seletivas na síntese de cadeias de globina. Quanto a essas doenças, assinale a alternativa correta.",
+      opts:[
+        "O padrão de herança da doença geralmente é autossômico dominante.",
+        "São classificadas segundo a cadeia polipeptídica afetada, sendo as mais comuns tipo alfa e beta.",
+        "As beta-talassemias são subclassificadas em beta mais (beta+) e beta menos (beta-).",
+        "As crianças com alfa-talassemia maior nascem bem, apresentando sintomas a partir do segundo trimestre de vida.",
+        "A beta-talassemia maior é incompatível com a vida extrauterina."
+      ],
+      a:"São classificadas segundo a cadeia polipeptídica afetada, sendo as mais comuns tipo alfa e beta.",
+      comment:"<b>Correta: b) São classificadas segundo a cadeia polipeptídica afetada, sendo as mais comuns tipo alfa e beta.</b><br>• <b>a) Errada:</b> O padrão geral de herança é <b>autossômico recessivo</b>.<br>• <b>c) Errada (Pegadinha!):</b> A subclassificação é <b>β+</b> (reduzida) e <b>β0</b> (ausente) — não existe 'beta-'.<br>• <b>d) Errada:</b> Na α-talassemia maior (0 genes α / Hb Bart's γ4), a anemia grave e hidropisia já ocorrem na <i>vida fetal</i> (quem nasce bem e manifesta após o 6º mês é a β-talassemia maior!).<br>• <b>e) Errada:</b> A β-talassemia maior é compatível com a vida extrauterina; a α-talassemia maior (hidropisia fetal) é que costuma ser incompatível sem intervenção intrauterina."
+    },
+    {
+      id:"q3", num:3, source:"Parcial · Perda de Sangue e Anemias", topic:"diag", hot:true,
+      stem:"Sobre talassemias é CORRETO afirmar:",
+      opts:[
+        "Pacientes com beta talassemia menor tipicamente apresentam anemia leve, hipocrômica e microcítica e amplitude de variação do tamanho das hemácias (RDW) normal.",
+        "A esplenectomia está indicada para todas as crianças que apresentem baço palpável após 5 anos de vida.",
+        "Na talassemia com Hemoglobina de Bart, em que há ausência total da síntese de cadeias alfa, a criança nasce assintomática e evolui com anemia grave no segundo trimestre de vida.",
+        "A beta talassemia decorre da falha na produção de cadeias de alfaglobina, conduzindo a um relativo excesso de cadeias beta."
+      ],
+      a:"Pacientes com beta talassemia menor tipicamente apresentam anemia leve, hipocrômica e microcítica e amplitude de variação do tamanho das hemácias (RDW) normal.",
+      comment:"<b>Correta: a)</b> Na β-talassemia menor é clássico encontrar anemia ausente ou leve, microcitose/hipocromia e RDW geralmente normal (<i>Observação do resumo do professor:</i> o RDW pode estar normal ou discretamente elevado, não devendo ser usado isoladamente como regra rígida).<br>• <b>b) Errada:</b> A esplenectomia NÃO é indicada rotineiramente para baço palpável > 5 anos — reserva-se a hiperesplenismo grave pelo risco de sepse, trombose e hipertensão pulmonar.<br>• <b>c) Errada:</b> Hb Bart's (0 genes α) causa doença fetal grave/hidropisia já antes do nascimento.<br>• <b>d) Errada:</b> Inverteu os nomes — β-talassemia é falha na cadeia <b>beta</b> com excesso de <b>alfa</b>."
+    },
+    {
+      id:"q4", num:4, source:"Parcial · Perda de Sangue e Anemias", topic:"hb", hot:true,
+      stem:"Na beta-talassemia maior, os sintomas geralmente iniciam:",
+      opts:[
+        "Ao nascimento",
+        "Após 6 meses de vida",
+        "Na adolescência",
+        "Após os 20 anos",
+        "Apenas após infecções virais"
+      ],
+      a:"Após 6 meses de vida",
+      comment:"<b>Correta: b) Após 6 meses de vida.</b><br>Durante os primeiros meses, a <b>HbF (α2γ2)</b> protege o lactente. À medida que ocorre o <i>switch</i> fetal-adulto (queda de γ e necessidade de β para produzir HbA α2β2), a falta de cadeias β desencadeia a anemia grave (entre o 1º e o 2º ano de vida, classicamente após os 6 meses — complemento importante fixado pela prova)."
+    },
+    {
+      id:"q5", num:5, source:"Parcial · Perda de Sangue e Anemias", topic:"beta", hot:false,
+      stem:"Lactente de 8 meses apresenta palidez intensa, icterícia, atraso ponderoestatural e hepatoesplenomegalia. Hemograma: anemia microcítica grave. Eletroforese: HbF elevada e redução importante de HbA. Qual o diagnóstico mais provável?",
+      opts:[
+        "Deficiência de G6PD",
+        "Esferocitose hereditária",
+        "Beta-talassemia maior",
+        "Alfa-talassemia silenciosa",
+        "Anemia aplástica"
+      ],
+      a:"Beta-talassemia maior",
+      comment:"<b>Correta: c) Beta-talassemia maior.</b><br>Quadro clínico e laboratorial clássico: lactente após 6 meses (8 meses), palidez intensa, icterícia (hemólise), atraso de crescimento, hepatoesplenomegalia, anemia microcítica grave com <b>HbF elevada e redução importante/ausência de HbA</b>.<br>• G6PD e esferocitose não cursam com HbF elevada por ausência de HbA nem com microcitose extrema típica; α-talassemia silenciosa é assintomática; anemia aplástica cursa com pancitopenia e medula hipocelular."
+    },
+    {
+      id:"q6", num:6, source:"Parcial · Perda de Sangue e Anemias", topic:"trat", hot:true,
+      stem:"Em relação ao tratamento da talassemia, marque a alternativa correta:",
+      opts:[
+        "O transplante de medula óssea não deve ser encorajado, não tem bons resultados.",
+        "O uso de quelante de ferro tem indicação, ideal fazer quando a dosagem da ferritina estiver > que 1,5 g/kg.",
+        "O principal tratamento para as Talassemias, principalmente a Maior, é transfusões regulares de hemácias, a cada 2 a 5 semanas.",
+        "Manter a hemoglobina entre 8-9 g/dl com as transfusões de hemácias."
+      ],
+      a:"O principal tratamento para as Talassemias, principalmente a Maior, é transfusões regulares de hemácias, a cada 2 a 5 semanas.",
+      comment:"<b>Correta: c)</b> Transfusões regulares a cada <b>2 a 5 semanas</b> são a base do manejo da talassemia maior/TDT.<br>• <b>a) Errada:</b> TCTH/TMO tem bom potencial curativo em pacientes selecionados (ex.: jovens com doador compatível).<br>• <b>b) Errada (Pegadinha de unidade!):</b> Ferritina é medida em <b>ng/mL (µg/L)</b>, não g/kg! Inicia-se quelação quando ferritina está <b>> 1.000 ng/mL</b> (ou após 10–20 transfusões).<br>• <b>d) Errada:</b> A meta pré-transfusional é manter Hb <b>> 9,5 g/dL</b> (TIF 2025: 9,0–10,5 g/dL), não 8–9 g/dL."
+    },
+    {
+      id:"q7", num:7, source:"Parcial · Perda de Sangue e Anemias", topic:"trat", hot:true,
+      stem:"Sobre o tratamento da beta-talassemia maior, é correto afirmar:",
+      opts:[
+        "Ferro oral é indicado continuamente",
+        "Corticoide é tratamento de manutenção",
+        "Transfusões devem manter Hb > 9,5 g/dL",
+        "Esplenectomia é obrigatória ao diagnóstico",
+        "Não existe terapia curativa"
+      ],
+      a:"Transfusões devem manter Hb > 9,5 g/dL",
+      comment:"<b>Correta: c) Transfusões devem manter Hb > 9,5 g/dL.</b><br>• <b>a) Errada:</b> Ferro oral é contraindicado (já existe sobrecarga de ferro!).<br>• <b>b) Errada:</b> Corticoide trata anemia hemolítica autoimune (AHAI), não talassemia.<br>• <b>d) Errada:</b> Esplenectomia NÃO é obrigatória ao diagnóstico; é exceção.<br>• <b>e) Errada:</b> Existe terapia potencialmente curativa — o transplante de células-tronco hematopoéticas (TCTH) em pacientes selecionados (e terapias gênicas modernas)."
+    },
+    {
+      id:"q8", num:8, source:"Parcial · Perda de Sangue e Anemias", topic:"diag", hot:true,
+      stem:"A eletroforese de hemoglobina na beta-talassemia menor tipicamente demonstra:",
+      opts:[
+        "Aumento de HbA2",
+        "Redução de HbF",
+        "Ausência de HbA2",
+        "Predomínio de Hb Bart's",
+        "Eletroforese invariavelmente normal"
+      ],
+      a:"Aumento de HbA2",
+      comment:"<b>Correta: a) Aumento de HbA2.</b><br>Com menor oferta de cadeias β, as cadeias α disponíveis pareiam-se mais com cadeias δ, elevando a fração <b>HbA2 (α2δ2)</b> (tipicamente > 3,5%). HbF também pode estar discretamente elevada em parte dos casos. Quem costuma ter eletroforese normal é o <i>traço α-talassêmico</i> (pegadinha da alternativa E)."
+    },
+    {
+      id:"q9", num:9, source:"Parcial · Perda de Sangue e Anemias", topic:"gen", hot:true,
+      stem:"Casal jovem, ambos com diagnóstico de beta-talassemia menor, deseja engravidar. Qual o risco de terem um filho com beta-talassemia maior?",
+      opts:[
+        "10%",
+        "25%",
+        "50%",
+        "75%",
+        "100%"
+      ],
+      a:"25%",
+      comment:"<b>Correta: b) 25%.</b><br>Herança autossômica recessiva: cada progenitor heterozigoto (β/βmut) passa o alelo mutado com 50% de chance. Probabilidade de herdar os dois alelos mutados = 0,5 × 0,5 = <b>25%</b> (50% serão minor e 25% normais)."
+    },
+    {
+      id:"q10", num:10, source:"Parcial · Perda de Sangue e Anemias", topic:"trat", hot:false,
+      stem:"Paciente com traço talassêmico apresenta anemia leve e microcitose persistente. Sobre a conduta, a melhor opção é:",
+      opts:[
+        "Prescrever sulfato ferroso indefinidamente",
+        "Iniciar eritropoetina",
+        "Não tratar, exceto se houver deficiência de ferro associada",
+        "Solicitar transfusões periódicas",
+        "Realizar transplante de medula"
+      ],
+      a:"Não tratar, exceto se houver deficiência de ferro associada",
+      comment:"<b>Correta: C) Não tratar, exceto se houver deficiência de ferro associada.</b><br>O traço talassêmico é clinicamente benigno/assintomático na maior parte dos casos e não necessita transfusão, eritropoetina ou TMO. O erro médico mais comum em prova e na prática é prescrever sulfato ferroso apenas por causa da microcitose sem documentar ferropenia."
+    }
+  ],
+  comparisons:[
+    {
+      id:"comp1", topic:"diag",
+      title:"Talassemia trait × Deficiência de ferro (Diagnóstico Diferencial)",
+      subtitle:"Comparação essencial de prova para investigar microcitose e hipocromia.",
+      cols:["Característica","Talassemia trait (traço)","Deficiência de ferro (ferropriva)"],
+      rows:[
+        ["VCM","Muito baixo, desproporcional à anemia leve","Baixo, em geral proporcional ao grau de anemia",true],
+        ["Contagem de hemácias","Normal ou elevada (eritrócitos pequenos em grande número)","Normal ou reduzida",true],
+        ["Índice de Mentzer (VCM / Hemácias)","Classicamente < 13 (heurístico)","Classicamente > 13 (heurístico)",false],
+        ["RDW","Frequentemente normal ou pouco elevado (não é regra)","Tipicamente elevado (anisocitose)",false],
+        ["Ferritina sérica","Normal (se isolada)","Baixa (diagnóstica)",true],
+        ["HbA2 (HPLC / Eletroforese)","Elevada (> 3,5%) na β-talassemia trait; normal na α-trait","Normal ou pode estar reduzida",true],
+        ["Esfregaço periférico","Microcitose, hipocromia, células-alvo, pontilhado basofílico","Microcitose, hipocromia, anisocitose / eliptócitos ocasionais",false],
+        ["Conduta imediata","Evitar sulfato ferroso se ferritina normal; aconselhamento genético","Reposição de ferro + investigar causa da perda/deficiência",false]
+      ],
+      pearl:"Atenção à coexistência: se o paciente tem ferropriva + β-talassemia trait, a deficiência de ferro pode reduzir falsamente a HbA2 — corrija o ferro primeiro e repita a análise das frações de Hb!"
+    },
+    {
+      id:"comp2", topic:"fisio",
+      title:"α-Talassemia × β-Talassemia",
+      subtitle:"Bases genéticas, fisiopatologia do excesso de cadeias e abordagem laboratorial.",
+      cols:["Aspecto","α-Talassemia","β-Talassemia"],
+      rows:[
+        ["Cromossomo e nº de genes","Cromossomo 16 · 4 genes α (2 por cromossomo)","Cromossomo 11 · 2 genes β (1 por cromossomo)",true],
+        ["Mecanismo genético mais comum","Deleções gênicas (também variantes não delecionais)","Mutações pontuais (e outras alterações)",false],
+        ["Notação dos alelos","α+ (redução em 1 locus) / α0 (ausência nos 2 loci)","β+ (produção reduzida) / β0 (ausência de síntese)",true],
+        ["Cadeia que sobra em excesso","Cadeias γ (feto → Hb Bart's γ4) e β (após parto → HbH β4)","Cadeias α livres altamente insolúveis (precipitam na medula)",true],
+        ["Época de início nas formas graves","Forma 0 genes (Bart's): já na vida fetal (hidropisia)","Forma major: após queda da HbF (~6 meses de vida)",true],
+        ["Eletroforese / HPLC no traço","Pode ser completamente normal no traço α","HbA2 elevada (> 3,5%) é achado clássico no traço β",true],
+        ["Papel do estudo molecular","Fundamental para confirmar traço α e distinguir cis (––/αα) de trans (–α/–α)","Complementar em casos complexos, variantes raras e pré-natal",false]
+      ],
+      pearl:"Regra de ouro das provas: na β-talassemia acumula α; na α-talassemia acumula γ (feto) ou β (pós-natal). O alelo ausente nunca é chamado de 'beta-' e sim 'β0'."
+    },
+    {
+      id:"comp3", topic:"alfa",
+      title:"Espectro clínico da α-Talassemia (4 → 0 genes funcionais)",
+      subtitle:"Relação direta entre perda de genes no cromossomo 16 e gravidade clínica.",
+      cols:["Genes α funcionais","Genótipo simplificado","Fenótipo","Achados laboratoriais e clínicos"],
+      rows:[
+        ["4 genes","αα / αα","Normal","Hemograma e frações de Hb normais.",false],
+        ["3 genes","–α / αα","Portador silencioso (α+ trait)","Assintomático; hemograma normal ou microcitose mínima; HPLC normal.",false],
+        ["2 genes","–α / –α (trans) ou –– / αα (cis)","Traço α-talassêmico","Microcitose e hipocromia leves; assintomático; HPLC geralmente normal; importa para risco reprodutivo (cis vs. trans).",true],
+        ["1 gene","–– / –α","Doença da HbH","Formação de HbH (β4); anemia hemolítica crônica variável, crises com infecções/oxidantes, esplenomegalia, possível transfusão.",true],
+        ["0 genes","–– / ––","Hb Bart's / Hidropisia fetal","Formação de γ4 (Hb Bart's); ausência de HbF e HbA; hipóxia fetal grave, anasarca e incompatibilidade com sobrevida sem intervenção intrauterina.",true]
+      ],
+      pearl:"No traço com 2 genes, o arranjo em cis (––/αα) em ambos os pais confere 25% de risco de feto com Hb Bart's (––/––). O arranjo em trans (–α/–α) em ambos não gera risco de 0 genes."
+    },
+    {
+      id:"comp4", topic:"beta",
+      title:"Espectro da β-Talassemia: Minor × Intermediária (NTDT) × Major (TDT)",
+      subtitle:"Comparação fenotípica e classificação contemporânea por dependência transfusional.",
+      cols:["Critério","β-Minor / Trait","Intermediária / NTDT","β-Major / TDT"],
+      rows:[
+        ["Genótipo típico","Heterozigose (β/β+ ou β/β0)","Variável (β+/β+, β+/β0 com modificadores, ↑HbF)","Homozigose ou dupla heterozigose grave (β0/β0, β0/β+)",true],
+        ["Início típico","Descoberta incidental (qualquer idade)","Infância tardia ou idade adulta","Após 6 meses de vida (1º–2º ano, queda da HbF)",true],
+        ["Anemia e clínica","Assintomática ou anemia leve; sem esplenomegalia importante","Anemia moderada crônica, icterícia, esplenomegalia, litíase biliar, trombose, hipertensão pulmonar","Anemia grave, atraso pôndero-estatural, deformidades craniofaciais (sem transfusão), hepatoesplenomegalia",true],
+        ["Regime transfusional","Não necessita","Não regular (intermitente em infecção, cirurgia, gestação ou complicações)","Regular desde a infância (cada 2–5 sem; meta Hb > 9,5 g/dL)",true],
+        ["Sobrecarga de ferro","Ausente (se isolada)","Presente ao longo da vida via supressão de hepcidina (↑ absorção intestinal)","Intensa por transfusões crônicas + eritropoiese ineficaz",true],
+        ["Manejo principal","Não dar ferro; aconselhamento genético","Vigilância de complicações, quelação se sobrecarga, transfusão sob demanda","Transfusões regulares (Rh/Kell) + quelação precoce + RM T2* + seguimento multidisciplinar (TCTH em selecionados)",false]
+      ],
+      pearl:"Lembre-se da nomenclatura atual: TDT (dependente de transfusão) vs. NTDT (não dependente de transfusão) classifica a necessidade clínica real do paciente, não apenas o genótipo."
+    },
+    {
+      id:"comp5", topic:"trat",
+      title:"Quelantes de ferro na prática clínica (TIF 2025 / PCDT 2026)",
+      subtitle:"Início habitual na TDT após 10–20 transfusões ou ferritina > 1.000 ng/mL.",
+      cols:["Quelante","Via / Administração","Destaques clínicos","Efeitos adversos e monitorização"],
+      rows:[
+        ["Deferoxamina (DFO)","Parenteral (infusão SC prolongada 8–12 h com bomba, ou EV)","Quelante clássico de referência; alta eficácia na remoção de ferro cardíaco (em infusão contínua) e sistêmico.","Dificuldade de adesão; reação local; monitorar <b>audição, visão</b> (toxicidade neurosensorial) e <b>crescimento ósseo</b> em crianças.",true],
+        ["Deferasirox (DFX)","Oral (dose única diária)","Praticidade posológica favorece adesão prolongada na TDT e NTDT.","Eventos gastrointestinais; monitorar periodicamente <b>função renal (creatinina/proteinúria)</b> e <b>função hepática</b>.",true],
+        ["Deferiprona (DFP)","Oral (2–3×/dia)","Excelente penetração miocárdica; muito útil isolada ou combinada com DFO/DFX na sobrecarga cardíaca.","Risco de <b>neutropenia e agranulocitose</b> (exige hemograma regular!), além de vigilância hepática e artralgia.",true]
+      ],
+      pearl:"Na prova: jamais espere ferritina '> 1,5 g/kg' (unidade absurda da Q6 da Parcial!). O critério clínico é ferritina em ng/mL (> 1.000 ng/mL na TDT) associada à quantificação por RM."
+    }
+  ],
+  atlas:[],
+  sheet:[],
+  rules:[
+    ["Talassemia é defeito QUANTITATIVO","Globinas têm estrutura normal, mas são produzidas em quantidade reduzida ou ausente. O excesso da cadeia oposta precipita nos precursores, causando <b>eritropoiese ineficaz</b> e <b>hemólise</b>."],
+    ["Na β-talassemia acumula α; na α-talassemia acumula γ ou β","Nunca caia na pegadinha inversa da prova! Na β-talassemia faltam cadeias β e sobram cadeias <b>α insolúveis</b>. Na α-talassemia formam-se <b>Hb Bart's (γ4)</b> no feto e <b>HbH (β4)</b> após o nascimento."],
+    ["Nomenclatura correta: β+ e β0 (não β−)","Redução parcial = <b>β+</b>; ausência total = <b>β0</b>. (Pegadinha clássica da Q2 da Parcial)."],
+    ["Por que a β-talassemia major surge após 6 meses de vida?","<i>Complemento (Prova anterior):</i> No feto e RN predomina <b>HbF (α2γ2)</b>. Após o nascimento ocorre o <i>switch</i> γ → β; quando a HbF cai após ~6 meses, o déficit de β manifesta anemia grave."],
+    ["Hb Bart's (0 genes α) já é grave na vida fetal","Ao contrário da β-major, a α-talassemia com 0 genes (––/––) não espera o 6º mês nem o 2º trimestre após nascer: gera <b>hidropisia fetal</b> intrauterina por ausência de HbF e HbA."],
+    ["β-talassemia minor: HbA2 elevada (> 3,5%)","Microcitose acentuada desproporcional à anemia leve, contagem de hemácias alta/preservada, células-alvo e <b>HbA2 elevada</b>. Na α-trait, a eletroforese/HPLC pode ser normal (pede estudo molecular)."],
+    ["Não prescreva ferro para microcitose sem dosar ferritina","Erro clássico de conduta! Confirme deficiência de ferro antes de tratar. Se houver ferropenia + β-trait juntas, corrija o ferro e repita a HbA2 depois."],
+    ["Transfusão na TDT: a cada 2–5 semanas, Hb > 9,5 g/dL","<i>Complemento (Prova anterior / TIF 2025):</i> Meta pré-transfusional <b>> 9,5 g/dL</b> (9,0–10,5 g/dL) para suprimir eritropoiese ineficaz. Sempre fenotipar/genotipar antes (Rh e Kell)."],
+    ["Sobrecarga de ferro (hemossiderose) ocorre na TDT e na NTDT","Na TDT pelas transfusões (sem via de excreção); na NTDT porque a eritropoiese ineficaz <b>suprime a hepcidina</b> e aumenta a absorção intestinal de ferro."],
+    ["Quelação: iniciar > 1.000 ng/mL (ou 10–20 transfusões) + RM T2*","<i>Complemento (TIF 2025 / Prova):</i> Ferritina é reagente de fase aguda e não substitui RM hepática/cardíaca T2*. Deferiprona exige vigiar neutrófilos; Deferasirox vigia rim/fígado; Deferoxamina vigia audição/visão."],
+    ["Esplenectomia NÃO é obrigatória nem rotineira","<i>Complemento (Prova anterior / TIF 2025):</i> Não se opera toda criança com baço palpável após 5 anos. Aumenta risco de sepse, trombose e hipertensão pulmonar. TCTH alogênico é opção curativa em selecionados."],
+    ["Casal β-minor × β-minor = 25% de β-major","<i>Complemento (Prova anterior):</i> Herança autossômica recessiva: 25% major, 50% minor, 25% normal. Na α-trait, o estudo molecular distingue <b>cis (––/αα)</b> (risco de 25% Bart's) de <b>trans (–α/–α)</b>."]
+  ],
+  pairs:[
+    {
+      t:"Talassemia trait × Anemia ferropriva",
+      a:["Talassemia trait","VCM muito baixo para Hb leve/normal; hemácias normais/altas; RDW frequentemente normal; células-alvo; ferritina normal."],
+      b:["Anemia ferropriva","VCM baixo proporcional à anemia; hemácias normais/baixas; RDW alto; ferritina baixa."],
+      k:"<b>Desempate:</b> Ferritina sérica baixa fecha ferropenia; ferritina normal com <b>HbA2 elevada</b> confirma β-talassemia trait (se HbA2 normal, investigar α-trait molecular)."
+    },
+    {
+      t:"β-Talassemia major × α-Talassemia maior (Hb Bart's)",
+      a:["β-Talassemia major","Nasce assintomático pela HbF (α2γ2) e desenvolve anemia grave <b>após os 6 meses</b> de vida."],
+      b:["Hb Bart's (0 genes α)","Sem cadeias α para formar HbF ou HbA; forma γ4 (Bart's), gerando <b>hidropisia fetal</b> já na vida intrauterina."],
+      k:"<b>Desempate:</b> Momento do início — pós-6 meses (switch γ→β) = β-major; fetal/hidropisia = α-talassemia maior."
+    },
+    {
+      t:"HbH (β4) × Hb Bart's (γ4)",
+      a:["Doença da HbH (1 gene α)","Pós-natal; excesso de cadeias β forma <b>β4</b>; anemia hemolítica variável, esplenomegalia e crises infecciosas."],
+      b:["Hb Bart's (0 genes α)","Fetal/neonatal; excesso de cadeias γ forma <b>γ4</b>; forma gravíssima frequentemente incompatível com a vida."],
+      k:"<b>Desempate:</b> 1 gene α restante = β4 (HbH); 0 genes α restantes = γ4 (Bart's). Nunca confunda com α4!"
+    },
+    {
+      t:"TDT (Major) × NTDT (Intermediária)",
+      a:["TDT (Dependente de transfusão)","Exige transfusão regular (2–5 sem, Hb > 9,5 g/dL) para sobrevida, crescimento e supressão medular."],
+      b:["NTDT (Não dependente)","Transfusões eventuais; risco tardio de trombose, hipertensão pulmonar, litíase biliar e sobrecarga de ferro sem transfusão."],
+      k:"<b>Desempate:</b> A necessidade clínica regular de transfusão define TDT vs. NTDT; ambas podem acumular ferro (transfusional vs. supressão de hepcidina)."
+    },
+    {
+      t:"Deleção α em cis (––/αα) × trans (–α/–α)",
+      a:["Arranjo cis (––/αα)","Os dois genes ausentes estão no <b>mesmo cromossomo 16</b>; gera metade dos gametas sem nenhum gene α (––)."],
+      b:["Arranjo trans (–α/–α)","Um gene ausente em <b>cada cromossomo 16</b>; todo gameta sempre carrega 1 gene α (–α)."],
+      k:"<b>Desempate:</b> Ambos os pais cis × cis têm <b>25% de risco</b> de feto ––/–– (Hb Bart's). Dois pais trans × trans nunca geram feto 0 genes."
+    },
+    {
+      t:"Deferoxamina × Deferasirox × Deferiprona",
+      a:["Deferoxamina","Parenteral (SC prolongada/EV); vigiar audição, visão, crescimento e baixa adesão."],
+      b:["Deferasirox","Oral (1×/dia); vigiar <b>função renal</b>, hepática e TGI."],
+      c:["Deferiprona","Oral (2–3×/dia); alta ação cardíaca; vigiar <b>neutrófilos/agranulocitose</b> e fígado."],
+      k:"<b>Desempate:</b> Toxicidade-chave na prova: DFO = olho/ouvido; DFX = rim/TGI; DFP = neutropenia/agranulocitose."
+    }
+  ],
+  snaps:[
+    ["fisio",null,"Desequilíbrio globínico",["Base de tudo"],"Defeito <b>quantitativo</b> de síntese de globinas normais. A cadeia oposta em excesso precipita nos precursores eritroides.","Gera <b>eritropoiese ineficaz</b> (medula) + <b>hemólise</b> (periferia)."],
+    ["hb",null,"Troca γ → β pós-natal",["Switch","HbA2"],"HbA = α2β2, HbA2 = α2δ2, HbF = α2γ2. A queda da HbF após os 6 meses revela a β-talassemia major.","HbF elevada atenua β-talassemia; <b>HbA2 alta</b> marca o traço β."],
+    ["alfa",null,"4 a 0 genes α (Crom. 16)",["Deleções"],"3 genes = portador silencioso; 2 = traço (cis ou trans); 1 = <b>HbH (β4)</b>; 0 = <b>Hb Bart's (γ4)</b> / hidropisia.","HPLC normal no traço → confirmar por <b>estudo molecular</b>."],
+    ["beta",null,"β+ / β0 (Crom. 11)",["TDT vs NTDT"],"Minor (assintomática), Intermediária/NTDT (hemólise crônica, sobrecarga não transfusional) e Major/TDT (anemia grave após 6m).","Classificação atual prioriza necessidade transfusional (TDT/NTDT)."],
+    ["clinica",null,"Expansão medular + Ferro",["Hemossiderose"],"Alterações craniofaciais, osteopenia, hepatoesplenomegalia, cálculos pigmentares, trombose/HP (NTDT) e lesão de coração, fígado e endócrino.","Prevenir com transfusão adequada e quelação monitorada por RM T2*."],
+    ["diag",null,"Microcitose desproporcional",["Diferencial"],"VCM muito baixo, hemácias altas, células-alvo, ferritina normal e HbA2 elevada (β-trait). Coexistência com ferropriva reduz HbA2.","Nunca iniciar ferro sem dosar <b>ferritina</b> primeiro."],
+    ["trat",null,"Transfusão + Quelação + TCTH",["TIF 2025 / PCDT"],"Transfusão cada 2–5 sem com Hb > 9,5 g/dL (Rh/Kell); quelação (DFO, DFX, DFP) se > 10–20 transfusões ou ferritina > 1.000 ng/mL.","Esplenectomia só em exceção; TCTH pode ser curativo em selecionados."],
+    ["gen",null,"Autossômica recessiva",["25% Risco"],"Casal com β-talassemia minor tem <b>25%</b> de chance de filho com β-major, 50% minor e 25% normal.","Avaliar parceiro e distinguir cis vs. trans na α-talassemia."]
+  ],
+  noteLabels:["Conceito / Mecanismo","Genética / Classificação","Laboratório / Pista","Clínica / Complicações","Conduta / Manejo"],
+  notes:[
+    ["fisio",null,[
+      "Defeito <b>quantitativo</b>: globinas estruturalmente normais, porém sintetizadas em quantidade reduzida ou ausente.",
+      "Cadeia em excesso precipita nos precursores → dano oxidativo e apoptose na medula (eritropoiese ineficaz).",
+      "Reticulocitose frequentemente inadequada para o grau de anemia; bilirrubina indireta aumentada.",
+      "Anemia grave + hiperplasia medular → expansão óssea, esplenomegalia e absorção aumentada de ferro.",
+      "Suprimir o desequilíbrio (com HbF ou transfusão regular) reduz a eritropoiese ineficaz."
+    ],"Na β-talassemia acumulam cadeias <b>α livres insolúveis</b> — jamais cadeias β!"],
+    ["hb",null,[
+      "<b>HbA (α2β2)</b>: adulto; <b>HbA2 (α2δ2)</b>: fração menor; <b>HbF (α2γ2)</b>: predomina no feto.",
+      "Após o parto ocorre o <i>switch</i> fetal-adulto: ↓ γ e ↑ β.",
+      "Persistência de HbF consome excesso de cadeias α e suaviza fenótipos de β-talassemia.",
+      "<i>Complemento (Prova):</i> A proteção da HbF faz os sintomas da β-major surgirem <b>após os 6 meses</b>.",
+      "Elevação de HbA2 (> 3,5%) no HPLC/eletroforese é o achado clássico de β-talassemia minor."
+    ],"Não troque fórmulas: HbH = <b>β4</b> e Hb Bart's = <b>γ4</b> (α4 não existe clinicamente aqui)."],
+    ["alfa",null,[
+      "Redução ou ausência de síntese de cadeias α; tetrâmeros de excesso: γ4 (feto) e β4 (pós-natal).",
+      "<b>Cromossomo 16 (4 genes α)</b>: 3 = portador silencioso; 2 = traço (cis ––/αα ou trans –α/–α); 1 = HbH; 0 = Bart's.",
+      "No traço α, HPLC/eletroforese pode ser normal; na HbH aparece banda rápida β4; estudo molecular confirma.",
+      "Portador/traço assintomáticos; HbH = hemólise crônica + esplenomegalia; Bart's = hidropisia fetal grave.",
+      "Evitar ferro sem deficiência no traço; HbH pode exigir transfusão em crises/infecções; aconselhamento cis/trans."
+    ],"Quem nasce bem e piora aos 6 meses é a <b>β-major</b>; Hb Bart's (0 genes α) já é letal/grave no feto."],
+    ["beta",null,[
+      "Redução (<b>β+</b>) ou ausência (<b>β0</b>) de cadeias β causa excesso de cadeias α livres na medula.",
+      "<b>Cromossomo 11 (2 genes β)</b>: Minor (heterozigose), Intermediária (NTDT) e Major (TDT).",
+      "Minor: HbA2 elevada; Intermediária/Major: HbF elevada, ↓/ausência HbA, microcitose e células-alvo.",
+      "TDT: anemia grave pós-6 meses, atraso de crescimento, fácies talassêmica; NTDT: trombose, HP, litíase.",
+      "Minor não trata; NTDT individualiza + vigia ferro; TDT exige transfusão regular + quelação."
+    ],"Não existe nomenclatura 'beta menos (β−)' — os alelos são apenas <b>β+</b> e <b>β0</b>."],
+    ["clinica",null,[
+      "Anemia + eritropoiese ineficaz + hemólise periférica + depósito de ferro (hemossiderose).",
+      "Complicações por gravidade: menor (assintomática) < NTDT (cálculos, trombose, HP) < TDT (órgãos-alvo).",
+      "Ferritina seriada + função hepática/endócrina + ecocardiograma + <b>RM T2*</b> cardíaca e hepática.",
+      "Ferro acumulado causa <b>cardiomiopatia/arritmias</b>, cirrose, diabetes, hipogonadismo e hipotireoidismo.",
+      "Prevenir com transfusão adequada, quelação precoce e seguimento multidisciplinar."
+    ],"Na NTDT também há sobrecarga hepática de ferro mesmo sem transfusão, por <b>supressão da hepcidina</b>."],
+    ["diag",null,[
+      "Investigar toda microcitose/hipocromia antes de rotular como ferropriva e repor ferro.",
+      "Fluxo: Hemograma + história → <b>Ferritina/perfil de ferro</b> → Esfregaço + HPLC/eletroforese → Molecular se dúvida/α.",
+      "Traço: VCM baixo desproporcional à anemia, hemácias altas, RDW normal/discreto, células-alvo, Mentzer < 13.",
+      "<i>Complemento (Prova/Prática):</i> β-trait típica tem HbA2 > 3,5%; na α-trait a separação pode vir normal.",
+      "Não iniciar ferro se ferritina normal; se coexistir ferropenia, repor ferro e repetir HPLC depois."
+    ],"Deficiência de ferro associada pode reduzir a HbA2 e mascarar β-talassemia minor limítrofe!"],
+    ["trat",null,[
+      "Suprimir eritropoiese ineficaz (TDT), corrigir anemia, evitar aloimunização e remover excesso de ferro.",
+      "Classificação prática para conduta: Traço vs. NTDT vs. TDT; referência nacional PCDT Sobrecarga de Ferro 2026.",
+      "<i>Complemento (TIF 2025/Prova):</i> Transfundir cada <b>2–5 sem</b> (meta Hb <b>> 9,5 g/dL</b>); quelar se > 10–20 transfusões ou ferritina > 1.000 ng/mL.",
+      "Quelantes: DFO (SC, olho/ouvido), DFX (oral, rim/fígado), DFP (oral, neutrófilos/agranulocitose).",
+      "Fenotipagem Rh/Kell; esplenectomia NÃO é rotineira; <b>TCTH (TMO)</b> pode ser curativo em selecionados."
+    ],"Pegadinha dupla da prova: ferritina de quelação NÃO é '> 1,5 g/kg' e esplenectomia NÃO é obrigatória aos 5 anos!"],
+    ["gen",null,[
+      "Doença hereditária cujo impacto reprodutivo depende da identificação correta de portadores saudáveis.",
+      "Padrão geral <b>autossômico recessivo</b>; na α-talassemia o arranjo <b>cis (––/αα) vs. trans (–α/–α)</b> muda o risco fetal.",
+      "Rastreamento: hemograma + HPLC (β-trait) e estudo molecular quando α-trait ou diagnóstico pré-natal.",
+      "<i>Complemento (Prova):</i> Casal β-minor × β-minor tem <b>25%</b> major, <b>50%</b> minor e <b>25%</b> normal por gestação.",
+      "Avaliar o parceiro do portador conhecido e oferecer aconselhamento genético especializado."
+    ],"A identificação do traço no adulto serve justamente para evitar ferro indevido e permitir <b>aconselhamento genético</b>."]
+  ],
+  def:[
+    {
+      k:"fisio", practice:false,
+      case:"Menino de 3 anos com palidez intensa, bilirrubina indireta elevada, baixa resposta reticulocitária para o grau de anemia e biópsia medular com intensa hiperplasia eritroide.",
+      question:"Por que há muitos precursores na medula óssea, mas poucas hemácias viáveis chegam ao sangue periférico?",
+      sections:[
+        ["Defeito primário e desequilíbrio",[
+          "Talassemias são doenças hereditárias causadas por redução ou ausência de síntese de uma ou mais cadeias globínicas (<b>defeito quantitativo</b>).",
+          "A globina produzida é estruturalmente normal, diferente das hemoglobinopatias estruturais como a anemia falciforme.",
+          "A gravidade clínica depende do tipo de mutação/deleção, do número de genes afetados, do grau de desequilíbrio entre cadeias α e não-α e de modificadores (como nível de HbF)."
+        ]],
+        ["Eritropoiese ineficaz × Hemólise",[
+          "<b>Eritropoiese ineficaz (medula óssea):</b> cadeias livres em excesso (ex.: cadeias α na β-talassemia) precipitam nos precursores eritroides, causando dano oxidativo e apoptose antes da maturação → expansão medular e aumento da absorção intestinal de ferro.",
+          "<b>Hemólise periférica (circulação e baço):</b> hemácias que chegam ao sangue têm conteúdo reduzido de Hb e inclusões de cadeias precipitadas, com menor sobrevida → ↑ bilirrubina indireta, esplenomegalia e reticulocitose variável."
+        ]]
+      ],
+      dif:[
+        ["Anemia falciforme","Defeito estrutural/qualitativo (HbS, troca de aminoácido na cadeia β) com polimerização sob hipóxia."],
+        ["Anemia ferropriva","Falta de substrato (ferro) para síntese do grupo heme, sem precipitação de globinas em excesso."]
+      ],
+      alertsTitle:"Pontos de atenção (Prova e TBL)",
+      alerts:[
+        "\"Talassemia é defeito quantitativo da síntese de globina — não uma hemoglobina estruturalmente anormal por definição.\"",
+        "Na β-talassemia faltam cadeias β e acumulam-se <b>cadeias α livres</b> insolúveis (pegadinha clássica da Q1 da Parcial!)."
+      ]
+    },
+    {
+      k:"hb", practice:false,
+      table:{
+        title:"Composição normal e tetrâmeros patológicos",
+        rows:[
+          ["HbA (adulto principal)","α2β2",""],
+          ["HbA2 (pequena fração; ↑ na β-trait)","α2δ2",""],
+          ["HbF (fetal; atenua β-talassemia)","α2γ2",""],
+          ["HbH (1 gene α; pós-natal)","β4","true"],
+          ["Hb Bart's (0 genes α; fetal)","γ4","true"]
+        ],
+        note:"Na α-talassemia faltam cadeias α, gerando tetrâmeros de β (HbH) ou γ (Bart's)."
+      },
+      case:"Lactente saudável do nascimento até os 5 meses desenvolve palidez progressiva e atraso de crescimento aos 8 meses de vida, com HbF de 85% e HbA quase ausente.",
+      question:"Qual evento fisiológico explica a janela assintomática nos primeiros meses de vida?",
+      sections:[
+        ["Hemoglobin switching (troca γ → β)",[
+          "Na vida fetal predomina a <b>HbF (α2γ2)</b>, que não depende do gene β.",
+          "Após o nascimento ocorre a substituição progressiva da síntese de cadeias γ por cadeias β para formar a <b>HbA (α2β2)</b>.",
+          "<i>Complemento (Prova anterior):</i> É após essa queda fisiológica da HbF (tipicamente <b>após os 6 meses de vida</b>) que os sintomas da β-talassemia major se instalam."
+        ]],
+        ["Efeito protetor da HbF",[
+          "Pacientes com persistência ou maior capacidade de produção de cadeias γ apresentam quadro mais brando na β-talassemia, porque as cadeias γ se associam às cadeias α livres em excesso, reduzindo sua precipitação tóxica."
+        ]]
+      ],
+      dif:[
+        ["Início da β-talassemia major","Após ~6 meses de vida, com a queda da HbF."],
+        ["Início da α-talassemia maior (Hb Bart's)","Já na vida intrauterina (porque a HbF também precisa de cadeias α!)."]
+      ],
+      alertsTitle:"Pontos de atenção",
+      alerts:[
+        "HbH é formada por <b>β4</b> (nunca α4 — pegadinha da Q1 da Parcial).",
+        "HbA2 elevada (> 3,5%) resulta do pareamento aumentado de cadeias α com cadeias δ quando faltam cadeias β."
+      ]
+    },
+    {
+      k:"alfa", practice:false,
+      table:{
+        title:"Correlação genes α → fenótipo",
+        rows:[
+          ["4 genes (αα/αα)","Normal",""],
+          ["3 genes (–α/αα)","Portador silencioso",""],
+          ["2 genes (–α/–α ou ––/αα)","Traço α-talassêmico",""],
+          ["1 gene (––/–α)","Doença da HbH (β4)",true],
+          ["0 genes (––/––)","Hb Bart's / Hidropisia fetal (γ4)",true]
+        ],
+        note:"Quatro genes α localizados no cromossomo 16 (dois por cromossomo)."
+      },
+      case:"Jovem de 18 anos com anemia hemolítica microcítica, esplenomegalia e crises de queda da Hb após infecções. Eletroforese revela fração compatível com HbH.",
+      question:"Quantos genes α funcionais restam e por que um irmão assintomático com microcitose pode ter eletroforese normal?",
+      sections:[
+        ["Espectro clínico (4 → 0 genes)",[
+          "<b>Portador silencioso (3 genes):</b> hemograma geralmente normal ou microcitose mínima.",
+          "<b>Traço α-talassêmico (2 genes):</b> microcitose e hipocromia assintomáticas; eletroforese/HPLC de rotina geralmente normal!",
+          "<b>Doença da HbH (1 gene):</b> excesso pós-natal de cadeias β forma <b>tetrâmeros β4 (HbH)</b> instáveis; anemia hemolítica variável, esplenomegalia, piora com infecções/fármacos oxidantes.",
+          "<b>Hb Bart's / Hidropisia fetal (0 genes):</b> ausência total de cadeias α gera <b>tetrâmeros γ4</b> de altíssima afinidade por O2, hipóxia fetal grave e inviabilidade na ausência de intervenção intrauterina."
+        ]],
+        ["Deleções cis vs. trans e estudo molecular",[
+          "A maioria das α-talassemias decorre de deleções (embora variantes não delecionais existam e possam ser mais graves).",
+          "O <b>estudo molecular</b> é indispensável para confirmar o traço α e distinguir <b>cis (––/αα)</b> de <b>trans (–α/–α)</b> no aconselhamento reprodutivo."
+        ]]
+      ],
+      dif:[
+        ["Traço α × Traço β","Ambos têm microcitose sem ferropenia; no traço α a HbA2 é normal, enquanto no traço β a HbA2 está elevada."]
+      ],
+      alertsTitle:"Pontos de atenção",
+      alerts:[
+        "Pegadinha da Q2/Q3 da Parcial: crianças com Hb Bart's (α-talassemia maior) NÃO nascem bem para adoecer no 2º trimestre — a doença já é grave no feto."
+      ]
+    },
+    {
+      k:"beta", practice:false,
+      case:"Criança de 10 meses com palidez intensa, atraso ponderoestatural, hepatoesplenomegalia e HbF elevada; paralelamente, seu primo de 24 anos apresenta apenas microcitose em hemograma de rotina com HbA2 de 5,1%.",
+      question:"Como classificar os dois familiares tanto pelo modelo clássico quanto pela nomenclatura clínica contemporânea?",
+      sections:[
+        ["Classificação genética e clínica",[
+          "Os genes β (2 cópias) localizam-se no <b>cromossomo 11</b>. Variantes reduzem (<b>β+</b>) ou abolem (<b>β0</b>) a produção da cadeia.",
+          "<b>β-talassemia minor / trait (heterozigose):</b> assintomática ou anemia leve, microcitose/hipocromia, HbA2 elevada.",
+          "<b>β-talassemia intermediária / NTDT:</b> anemia crônica moderada, eritropoiese ineficaz e hemólise sem necessidade transfusional regular (transfusões apenas eventuais em infecção, gravidez, cirurgia).",
+          "<b>β-talassemia major / TDT:</b> anemia grave após queda da HbF, exigindo transfusões regulares para sobrevida, crescimento e supressão medular."
+        ]],
+        ["Classificação contemporânea: TDT vs. NTDT",[
+          "Enfatiza a <b>necessidade clínica real de transfusões</b> (dependente = TDT; não dependente = NTDT), pois modificadores genéticos (como persistência de HbF ou co-herança de α-talassemia) fazem genótipos semelhantes terem fenótipos diferentes."
+        ]]
+      ],
+      dif:[
+        ["NTDT vs. Traço (Minor)","O traço é geralmente assintomático e sem complicações orgânicas; a NTDT tem eritropoiese ineficaz relevante, esplenomegalia, risco de trombose e sobrecarga de ferro."]
+      ],
+      alertsTitle:"Pontos de atenção",
+      alerts:[
+        "Notação correta: <b>β+</b> e <b>β0</b> (nunca 'β−', pegadinha da Q2 da Parcial).",
+        "<i>Complemento (Prova anterior):</i> Eletroforese na β-major mostra HbF muito elevada e redução importante ou ausência de HbA."
+      ]
+    },
+    {
+      k:"clinica", practice:false,
+      case:"Paciente de 22 anos com β-talassemia major irregularmente quelado apresenta insuficiência cardíaca, arritmia, diabetes e elevação de transaminases. Outro paciente com NTDT nunca transfundido cronicamente apresenta ferritina de 1.300 ng/mL e litíase biliar.",
+      question:"Por que ambos acumulam ferro e quais órgãos precisam de vigilância ativa?",
+      sections:[
+        ["Por que ocorre sobrecarga de ferro (hemossiderose)?",[
+          "<b>Na TDT:</b> transfusões repetidas introduzem ferro continuamente e o corpo humano não possui mecanismo fisiológico para excretar o excesso.",
+          "<b>Na NTDT (mesmo sem transfusão regular!):</b> a eritropoiese ineficaz crônica <b>suprime a hepcidina</b>, aumentando a absorção intestinal de ferro da dieta, acumulando ferro especialmente no fígado."
+        ]],
+        ["Complicações por sistema e monitorização",[
+          "<b>Esquelético:</b> expansão medular, alterações craniofaciais (fácies talassêmica), osteopenia/osteoporose e fraturas.",
+          "<b>Cardíaco:</b> cardiomiopatia por depósito de ferro e arritmias (principal causa de mortalidade na TDT).",
+          "<b>Hepático e Endócrino:</b> hepatomegalia, fibrose/cirrose, diabetes mellitus, hipogonadismo, atraso puberal e hipotireoidismo.",
+          "<b>Vascular (mais relevante na NTDT e pós-esplenectomia):</b> eventos trombóticos, hipertensão pulmonar e úlceras de perna; cálculos biliares pigmentares pela hemólise.",
+          "<b>Monitorização:</b> ferritina seriada (lembrar que é reagente de fase aguda!) + <b>Ressonância Magnética (T2* cardíaca e hepática)</b> + avaliação endócrina, hepática e ecocardiográfica."
+        ]]
+      ],
+      dif:[
+        ["Esferocitose / Hemólise crônica (N2)","Também cursam com icterícia, esplenomegalia e cálculos biliares pigmentares, mas com esferócitos no esfregaço e sem microcitose/hemossiderose transfusional maciça."]
+      ],
+      alertsTitle:"Pontos de atenção",
+      alerts:[
+        "\"Hemossiderose é uma complicação comum na talassemia major\" (gabarito literal da Q1 da Parcial).",
+        "Ferritina normalizada/baixa pode ocorrer na ferropenia, mas na sobrecarga de ferro a ferritina isolada é alterada por inflamação — a RM T2* avalia ferro orgânico real."
+      ]
+    },
+    {
+      k:"diag", practice:false,
+      table:{
+        title:"Roteiro prático diante de microcitose",
+        rows:[
+          ["1º Passo: Hemograma + História","VCM/HCM baixos, hemácias, RDW, origem/família",""],
+          ["2º Passo: Perfil de ferro","Ferritina baixa → tratar ferropenia primeiro",true],
+          ["3º Passo: Esfregaço + HPLC","Células-alvo; HbA2 > 3,5% fecha β-trait",true],
+          ["4º Passo: Molecular","Se suspeita de α-trait com HPLC normal",""]
+        ],
+        note:"A coexistência de deficiência de ferro pode diminuir a HbA2!"
+      },
+      case:"Paciente jovem com microcitose (VCM 62 fL), contagem de hemácias de 5,9 milhões/mm³, Hb 11,5 g/dL, RDW 13,1% e ferritina de 85 ng/mL.",
+      question:"Como conduzir a investigação sem cometer o erro terapêutico mais comum?",
+      sections:[
+        ["Índices eritrocitários e esfregaço",[
+          "Suspeitar de talassemia diante de microcitose e hipocromia <b>desproporcionais à anemia leve</b>, com contagem de hemácias relativamente preservada/elevada.",
+          "<b>Índice de Mentzer (VCM / hemácias):</b> < 13 favorece traço talassêmico e > 13 favorece ferropriva — é apenas heurístico e falha se houver associação das duas causas.",
+          "<b>Esfregaço periférico:</b> microcitose, hipocromia, <b>células-alvo</b>, pontilhado basofílico; nas formas graves há anisopoquilocitose intensa e eritroblastos circulantes."
+        ]],
+        ["Análise de frações (HPLC/eletroforese) e molecular",[
+          "<b>β-talassemia trait:</b> <b>HbA2 elevada (> 3,5%)</b> é o marcador clássico; HbF pode subir discretamente.",
+          "<b>α-talassemia trait:</b> frações de rotina geralmente normais → confirmar com <b>estudo molecular</b>.",
+          "<b>Armadilha da coexistência:</b> deficiência de ferro concomitante pode reduzir a HbA2; em resultados limítrofes com ferritina baixa, repor ferro e repetir o exame após correção."
+        ]]
+      ],
+      dif:[
+        ["Deficiência de ferro isolada","Ferritina baixa, RDW frequentemente alto, hemácias baixas/normais, HbA2 normal ou reduzida, ausência típica de células-alvo."]
+      ],
+      alertsTitle:"Pontos de atenção",
+      alerts:[
+        "\"Não tratar microcitose com ferro sem demonstrar deficiência\" — regra de ouro de TBL e da Q10 da Parcial."
+      ]
+    },
+    {
+      k:"trat", practice:false,
+      case:"Criança de 4 anos com β-talassemia major em transfusões regulares desenvolve ferritina persistentemente de 1.450 ng/mL após 15 transfusões.",
+      question:"Quais são os pilares de transfusão segura, quelação de ferro, papel da esplenectomia e opções curativas?",
+      sections:[
+        ["Traço e NTDT",[
+          "<b>Traço talassêmico:</b> não requer tratamento específico nem sulfato ferroso (salvo deficiência associada); foco em aconselhamento genético.",
+          "<b>NTDT:</b> seguimento individualizado (crescimento, baço, trombose, HP), transfusões pontuais (infecções graves, cirurgia, gestação, queda clínica) e quelação se sobrecarga documentada."
+        ]],
+        ["TDT: Transfusão segura (Prova / TIF 2025)",[
+          "<i>Complemento (Prova anterior / TIF 2025):</i> Transfusões regulares a cada <b>2 a 5 semanas</b> mantendo <b>Hb pré-transfusional > 9,5 g/dL</b> (meta TIF: 9,0–10,5 g/dL) para suprimir eritropoiese ineficaz e garantir crescimento.",
+          "Realizar fenotipagem/genotipagem eritrocitária prévia e pesquisa de anticorpos; compatibilizar ao menos <b>Rh e Kell</b> para reduzir aloimunização."
+        ]],
+        ["Quelação, Esplenectomia e Terapias Curativas",[
+          "<i>Complemento (TIF 2025 / PCDT 2026):</i> Iniciar quelação após <b>10–20 transfusões</b> ou ferritina <b>> 1.000 ng/mL</b>. Opções: <b>Deferoxamina</b> (SC/EV; vigiar audição, visão, crescimento), <b>Deferasirox</b> (oral; vigiar rim, fígado, TGI) e <b>Deferiprona</b> (oral; vigiar neutrófilos/agranulocitose e fígado). Referência nacional: PCDT Sobrecarga de Ferro (Portaria Conjunta SAES/SCTIE nº 38/2026).",
+          "<b>Esplenectomia:</b> NÃO é obrigatória nem rotineira (ao contrário da pegadinha da prova); reservada a hiperesplenismo grave/alta demanda (> 200 mL/kg/ano) pelo risco de sepse, trombose e hipertensão pulmonar.",
+          "<b>Curativos/Modificadores:</b> <b>TCTH (TMO)</b> pode ser curativo em selecionados; terapias gênicas e indutores de HbF são avanços especializados."
+        ]]
+      ],
+      dif:[
+        ["Anemia falciforme / AHAI","AHAI usa corticoide (nunca usado de manutenção na talassemia!); falciforme foca hidratação/analgesia nas crises vaso-oclusivas e hidroxiureia."]
+      ],
+      alertsTitle:"Pontos de atenção (Pegadinhas da Parcial)",
+      alerts:[
+        "Falso na prova: quelante quando 'ferritina > 1,5 g/kg' (unidade errada; correto: > 1.000 ng/mL).",
+        "Falso na prova: manter Hb entre 8–9 g/dL (correto: > 9,5 g/dL) ou esplenectomia obrigatória."
+      ]
+    },
+    {
+      k:"gen", practice:false,
+      case:"Casal jovem portador de β-talassemia minor planeja ter filhos; paralelamente, outro casal em investigação tem traço α-talassêmico confirmado por microcitose sem ferropenia e HPLC normal.",
+      question:"Qual o risco exato para o primeiro casal e por que o segundo precisa de estudo molecular?",
+      sections:[
+        ["Herança e cálculo de risco na β-talassemia",[
+          "As talassemias seguem, em sua maioria, herança <b>autossômica recessiva</b>.",
+          "<i>Complemento (Q9 da Parcial):</i> Casal em que ambos têm <b>β-talassemia minor</b> apresenta a cada gestação: <b>25%</b> de risco de filho com β-talassemia major, <b>50%</b> de portador (minor) e <b>25%</b> normal."
+        ]],
+        ["Aconselhamento na α-talassemia (cis vs. trans)",[
+          "Na α-talassemia, o estudo molecular define o arranjo dos genes deletados:",
+          "<b>Deleção em cis (––/αα):</b> ambos os genes faltantes no mesmo cromossomo → se ambos os pais forem cis, há <b>25% de risco de feto ––/–– (Hb Bart's / hidropisia fetal)</b>.",
+          "<b>Deleção em trans (–α/–α):</b> 1 gene faltante em cada cromossomo → se ambos forem trans, todos os filhos terão traço (–α/–α), sem risco de feto com 0 genes."
+        ]],
+        ["Prevenção e prática clínica",[
+          "Identificar portadores no hemograma, evitar ferro desnecessário, testar o parceiro quando houver planejamento familiar e encaminhar para aconselhamento genético especializado."
+        ]]
+      ],
+      dif:[
+        ["Esferocitose / Eliptocitose (N2)","Frequentam provas com padrão de herança geralmente <i>autossômico dominante</i> (pai ou mãe também sintomático com anemia hemolítica)."]
+      ],
+      alertsTitle:"Pontos de atenção",
+      alerts:[
+        "\"Casal jovem, ambos com diagnóstico de beta-talassemia menor... risco de filho com beta-talassemia maior?\" → <b>25%</b> (Q9 da Parcial)."
+      ]
+    }
+  ],
+  flash:[
+    {topic:"fisio", front:"Qual é o defeito básico da talassemia: estrutural (qualitativo) ou de quantidade (quantitativo)?", back:"<b>Defeito quantitativo:</b> a globina sintetizada é estruturalmente normal, mas produzida em quantidade reduzida ou ausente."},
+    {topic:"fisio", front:"Qual cadeia globínica precipita nos precursores eritroides da β-talassemia?", back:"<b>Cadeias α livres</b> (altamente insolúveis), causando dano oxidativo, eritropoiese ineficaz e hemólise. (Pegadinha de prova: não é cadeia β!)."},
+    {topic:"fisio", front:"Qual é a diferença entre eritropoiese ineficaz e hemólise periférica?", back:"<b>Eritropoiese ineficaz:</b> morte/apoptose de precursores na medula óssea antes de amadurecer.<br><b>Hemólise:</b> destruição prematura de hemácias já circulantes (sobrevida reduzida, ↑ bilirrubina indireta, esplenomegalia)."},
+    {topic:"hb", front:"Qual a composição em cadeias de HbA, HbA2 e HbF?", back:"<b>HbA:</b> α2β2 (adulto)<br><b>HbA2:</b> α2δ2 (elevada na β-trait)<br><b>HbF:</b> α2γ2 (fetal)."},
+    {topic:"hb", front:"Qual a composição dos tetrâmeros HbH e Hb Bart's?", back:"<b>HbH:</b> β4 (excesso de β na α-talassemia pós-natal).<br><b>Hb Bart's:</b> γ4 (excesso de γ na α-talassemia fetal). (Nunca é α4!)."},
+    {topic:"hb", front:"Por que os sintomas da β-talassemia major geralmente só iniciam após 6 meses de vida?", back:"Porque nos primeiros meses predomina a <b>HbF (α2γ2)</b>, que não usa cadeias β. Os sintomas surgem após a queda fisiológica das cadeias γ (<i>hemoglobin switching</i>)."},
+    {topic:"hb", front:"Por que níveis maiores de HbF atenuam a β-talassemia?", back:"Porque as cadeias γ combinam-se com o excesso de cadeias α livres, diminuindo a precipitação tóxica nos precursores."},
+    {topic:"alfa", front:"Quantos genes α normais temos e em qual cromossomo ficam?", back:"<b>4 genes α</b> no total (dois em cada <b>cromossomo 16</b>)."},
+    {topic:"alfa", front:"Relacione o nº de genes α funcionais (3, 2, 1, 0) aos respectivos fenótipos:", back:"<b>3:</b> Portador silencioso (–α/αα)<br><b>2:</b> Traço α-talassêmico (–α/–α ou ––/αα)<br><b>1:</b> Doença da HbH (––/–α)<br><b>0:</b> Hb Bart's / Hidropisia fetal (––/––)."},
+    {topic:"alfa", front:"Na α-talassemia maior (0 genes / Hb Bart's), a criança nasce bem e piora aos 6 meses?", back:"<b>NÃO!</b> Esse é o comportamento da β-major. Sem nenhum gene α não se forma nem HbF nem HbA; ocorre anemia grave e <b>hidropisia fetal</b> já na gestação."},
+    {topic:"alfa", front:"O estudo de frações (HPLC/eletroforese) confirma o traço α-talassêmico?", back:"Em geral <b>NÃO</b>: HbA, HbA2 e HbF costumam vir normais no traço α. O diagnóstico definitivo requer <b>estudo molecular</b>."},
+    {topic:"beta", front:"Onde ficam os genes β e qual é a notação correta dos alelos mutados?", back:"No <b>cromossomo 11</b> (2 genes). Notação: <b>β+</b> (síntese reduzida) e <b>β0</b> (ausência de síntese). (Pegadinha da prova: não existe 'beta−')."},
+    {topic:"beta", front:"O que tipicamente mostra a eletroforese na β-talassemia major?", back:"<b>HbF acentuadamente elevada</b> e redução importante ou ausência de <b>HbA</b>."},
+    {topic:"beta", front:"O que significam as siglas TDT e NTDT?", back:"<b>TDT:</b> Talassemia Dependente de Transfusão (ex.: β-major).<br><b>NTDT:</b> Talassemia Não Dependente de Transfusão (ex.: β-intermediária). Classifica pela necessidade clínica real."},
+    {topic:"clinica", front:"Por que ocorre sobrecarga de ferro (hemossiderose) na TDT?", back:"Transfusões crônicas fornecem grande quantidade de ferro e o corpo <b>não tem mecanismo eficaz de excreção</b>."},
+    {topic:"clinica", front:"Por que pode haver sobrecarga de ferro na NTDT mesmo sem transfusões regulares?", back:"Porque a <b>eritropoiese ineficaz suprime a hepcidina</b>, aumentando a absorção intestinal de ferro (acúmulo sobretudo hepático)."},
+    {topic:"clinica", front:"Quais os principais órgãos-alvo e complicações da hemossiderose na talassemia?", back:"<b>Coração:</b> cardiomiopatia, disfunção, arritmias.<br><b>Fígado:</b> hepatomegalia, fibrose, cirrose.<br><b>Endócrino:</b> diabetes, hipogonadismo, hipotireoidismo, atraso puberal."},
+    {topic:"clinica", front:"Quais complicações são características da NTDT e após esplenectomia?", back:"Cálculos biliares pigmentares (hemólise), <b>trombose</b>, <b>hipertensão pulmonar</b> e úlceras de perna."},
+    {topic:"diag", front:"Qual é o achado clássico na eletroforese/HPLC da β-talassemia minor / trait?", back:"<b>Elevação da HbA2</b> (> 3,5%), frequentemente com HbF normal ou discretamente aumentada."},
+    {topic:"diag", front:"Como diferenciar traço talassêmico de deficiência de ferro no hemograma?", back:"<b>Traço:</b> VCM muito baixo para anemia leve, hemácias normais/altas, RDW frequentemente normal (mas não é regra), Mentzer < 13.<br><b>Ferropriva:</b> hemácias normais/baixas, RDW alto, ferritina baixa."},
+    {topic:"diag", front:"Por que sempre dosar ferritina antes de fechar β-talassemia trait?", back:"1) Para não confundir com ferropriva e 2) porque a <b>deficiência de ferro pode reduzir a HbA2</b> e gerar resultado falso-normal/limítrofe."},
+    {topic:"diag", front:"Quais achados do esfregaço periférico sugerem talassemia?", back:"Microcitose, hipocromia, <b>células-alvo</b>, pontilhado basofílico; nas formas graves, anisopoquilocitose e eritroblastos circulantes."},
+    {topic:"trat", front:"Qual é a conduta no traço talassêmico com microcitose persistente e anemia leve?", back:"<b>Não tratar</b> (não prescrever ferro contínuo), exceto se houver deficiência de ferro documentada; fazer aconselhamento genético."},
+    {topic:"trat", front:"Qual o esquema e a meta transfusional na β-talassemia major (Prova anterior / TIF 2025)?", back:"Transfusões regulares a cada <b>2 a 5 semanas</b> mantendo <b>Hb pré-transfusional > 9,5 g/dL</b> (TIF 2025: 9,0–10,5 g/dL), com fenotipagem prévia (Rh e Kell)."},
+    {topic:"trat", front:"Quando iniciar quelação na TDT e por que a ferritina isolada não basta?", back:"Após <b>10–20 transfusões</b> ou ferritina <b>> 1.000 ng/mL</b> (TIF 2025 — cuidado com a pegadinha '1,5 g/kg'). Ferritina é reagente de fase aguda; usar <b>RM T2*</b> cardíaca e hepática."},
+    {topic:"trat", front:"Quais são os 3 quelantes de ferro e o principal cuidado de cada um?", back:"<b>Deferoxamina (parenteral):</b> audição, visão, crescimento e adesão.<br><b>Deferasirox (oral):</b> função renal, hepática e TGI.<br><b>Deferiprona (oral):</b> neutrófilos/agranulocitose e fígado."},
+    {topic:"trat", front:"Esplenectomia é obrigatória ou indicada para toda criança com baço palpável > 5 anos?", back:"<b>NÃO!</b> É reservada a hiperesplenismo grave/refratário pelo risco de sepse, trombose e hipertensão pulmonar."},
+    {topic:"trat", front:"Existe terapia potencialmente curativa para a β-talassemia major?", back:"<b>Sim:</b> transplante de células-tronco hematopoéticas (TCTH/TMO) em pacientes selecionados (e avanços em terapia gênica)."},
+    {topic:"gen", front:"Casal jovem com ambos os pais tendo β-talassemia minor: qual o risco de filho com β-talassemia major?", back:"<b>25%</b> por gestação (herança autossômica recessiva: 25% major, 50% minor, 25% normal)."},
+    {topic:"gen", front:"Por que importa distinguir deleção α em cis (––/αα) de trans (–α/–α)?", back:"Casal em que ambos têm arranjo em <b>cis (––/αα)</b> tem <b>25% de risco</b> de feto com Hb Bart's (––/––). Em trans (–α/–α) não há risco de feto com 0 genes."}
+  ],
+  glossary:[
+    {term:"Aloimunização eritrocitária", def:"Produção de anticorpos contra antígenos de hemácias transfundidas; reduzida com fenotipagem/genotipagem prévia (Rh e Kell).", topic:"trat"},
+    {term:"Anisopoquilocitose", def:"Grande variação no tamanho (anisocitose) e na forma (poiquilocitose) das hemácias no esfregaço; mais intensa em NTDT e TDT.", topic:"diag"},
+    {term:"Células-alvo (Codócitos)", def:"Hemácias com área central corada em forma de alvo pelo excesso relativo de membrana em relação à hemoglobina reduzida; comuns na talassemia.", topic:"diag"},
+    {term:"Deferasirox (DFX)", def:"Quelante de ferro de uso oral diário; exige monitorização periódica de função renal, hepática e eventos gastrointestinais.", topic:"trat"},
+    {term:"Deferiprona (DFP)", def:"Quelante de ferro oral com boa penetração miocárdica; exige monitorização hematológica pelo risco de neutropenia/agranulocitose.", topic:"trat"},
+    {term:"Deferoxamina (DFO)", def:"Quelante de ferro parenteral (infusão subcutânea prolongada ou EV); monitorar audição, visão, crescimento em crianças e adesão.", topic:"trat"},
+    {term:"Deleção em cis (––/αα)", def:"Perda dos dois genes α no mesmo cromossomo 16; quando presente em ambos os pais, confere risco de 25% de hidropisia fetal (Hb Bart's).", topic:"gen"},
+    {term:"Deleção em trans (–α/–α)", def:"Perda de um gene α em cada cromossomo 16; confere traço α sem risco de gerar feto com 0 genes α quando ambos os pais são trans.", topic:"gen"},
+    {term:"Eritropoiese ineficaz", def:"Destruição/apoptose de precursores eritroides ainda na medula óssea pela precipitação de globinas em excesso, levando a expansão medular e supressão da hepcidina.", topic:"fisio"},
+    {term:"Esplenectomia", def:"Retirada cirúrgica do baço; NÃO é rotineira na talassemia pelo risco de sepse, trombose e hipertensão pulmonar, ficando restrita a hiperesplenismo grave.", topic:"trat"},
+    {term:"HbA (α2β2)", def:"Principal hemoglobina do adulto normal; reduzida ou ausente na β-talassemia major.", topic:"hb"},
+    {term:"HbA2 (α2δ2)", def:"Fração menor da hemoglobina normal; sua elevação (> 3,5%) na eletroforese/HPLC é o marcador clássico de β-talassemia minor / trait.", topic:"hb"},
+    {term:"Hb Bart's (γ4)", def:"Tetrâmero de quatro cadeias γ formado na ausência total de genes α (––/––); possui altíssima afinidade por O2 e causa hidropisia fetal grave.", topic:"alfa"},
+    {term:"HbF (α2γ2)", def:"Hemoglobina fetal predominante antes do nascimento; protege lactentes nos primeiros ~6 meses e atenua β-talassemia ao consumir excesso de cadeias α.", topic:"hb"},
+    {term:"HbH (β4)", def:"Tetrâmero instável de quatro cadeias β formado na perda de 3 genes α (1 gene funcional: ––/–α); provoca anemia hemolítica e esplenomegalia.", topic:"alfa"},
+    {term:"Hemoglobin switching", def:"Troca fisiológica pós-natal da síntese de cadeias γ (HbF) para β (HbA), explicando o início clínico da β-talassemia major após ~6 meses.", topic:"hb"},
+    {term:"Hemossiderose", def:"Acúmulo excessivo de ferro nos tecidos (coração, fígado, glândulas endócrinas); complicação clássica de prova na talassemia major transfundida.", topic:"clinica"},
+    {term:"Hepcidina", def:"Hormônio hepático regulador do ferro; é suprimida pela eritropoiese ineficaz na NTDT, aumentando a absorção intestinal de ferro.", topic:"clinica"},
+    {term:"Índice de Mentzer", def:"Relação VCM / contagem de hemácias (em milhões/mm³); valores < 13 sugerem traço talassêmico e > 13 ferropriva (heurístico, não diagnóstico).", topic:"diag"},
+    {term:"NTDT", def:"Talassemia Não Dependente de Transfusão (ex.: β-intermediária, HbH); não requer transfusão regular, mas pode ter complicações vasculares e sobrecarga hepática de ferro.", topic:"beta"},
+    {term:"PCDT Sobrecarga de Ferro 2026", def:"Protocolo Clínico e Diretrizes Terapêuticas do Ministério da Saúde (Portaria Conjunta SAES/SCTIE nº 38/2026) para diagnóstico e quelação no SUS.", topic:"trat"},
+    {term:"Pontilhado basofílico", def:"Granulações azuladas finas/grosseiras nas hemácias por precipitação de RNA ribossômico; aparece na talassemia (e intoxicações, sem ser exclusivo).", topic:"diag"},
+    {term:"Ressonância Magnética T2*", def:"Técnica padrão-ouro de imagem para quantificar diretamente ferro no miocárdio e no fígado, superando limitações da ferritina sérica.", topic:"clinica"},
+    {term:"TDT", def:"Talassemia Dependente de Transfusão (ex.: β-major); necessita transfusões regulares (2–5 sem, Hb > 9,5 g/dL) e terapia quelante de ferro.", topic:"beta"}
+  ]
+};
+/* ========================== FIM DOS DADOS ========================== */
+
+const M=Object.assign({itemLabel:'Questão',itemLabelPl:'questões',caseLabel:'Enunciado',lookLabel:'Comentário',condLabel:'Em resumo',difLabel:'Diferencial (parecidos)',timing:'item',passRules:{hi:80,mid:60}},DATA.meta), D=Object.fromEntries(Object.entries(DATA.topics).map(([k,v])=>[k,v.name]));
+const S=DATA.questoes||DATA.stations||[];
+const IMG=n=>(typeof IMGDATA!=='undefined'&&IMGDATA[n])||`${M.imgDir}/${n}.${M.ext}`; // IMGDATA (opcional) é inserido como na seção 7 da skill
+const TABNAMES={prova:"Prova",treino:"Treino",discursivo:"Discursivo",provas:"Provas antigas",comparativo:"Comparativo",atlas:"Atlas",resumo:"80/20",cards:"Cards",def:"Definitivo",flash:"Flashcards",glossario:"Glossário"};
+const SK=k=>`${M.storageKey}-${k}`;
+const $=id=>document.getElementById(id);
+const app=$('app');
+let tab=DATA.tabs[0], cfg={n:Math.min(10,S.length||10), t:60, tt:1800, mode:M.timing}, run=null, tick=null;
+let atlasFilter='todos', hideNames=false, revealed=new Set(), treinoFilter='todos';
+let discFilter='todos', discOpen=new Set(), discState=null;
+let oldFilter='todos', oldRevealAll=false, oldPick={}, oldOpen=new Set();
+let compFilter='todas';
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const load=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(SK(k))||'null');return v??d}catch(e){return d}};
+const store=(k,v)=>{try{localStorage.setItem(SK(k),JSON.stringify(v))}catch(e){}};
+cfg=Object.assign({},cfg,load('cfg',{}));if(!cfg.t)cfg.t=60;if(!cfg.tt)cfg.tt=1800;if(!['item','total','none'].includes(cfg.mode))cfg.mode=M.timing;
+let history=load('hist',[]), wrongIds=new Set(load('wrong',[]));
+discState=load('disc',{checks:{},drafts:{}});
+if(!discState.checks)discState.checks={};
+if(!discState.drafts)discState.drafts={};
+const saveCfg=()=>store('cfg',cfg);
+let actx=null;
+function beep(f=880,d=.15){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
+document.addEventListener('pointerdown',()=>{try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume&&actx.resume()}catch(e){}},{once:true});
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1800)}
+function lightbox(src){const d=document.createElement('div');d.className='lb';d.innerHTML=`<img src="${src}" alt="Imagem ampliada"><button type="button">Fechar</button>`;
+  const close=()=>{d.remove();document.removeEventListener('keydown',k)};const k=e=>{if(e.key==='Escape')close()};d.addEventListener('click',close);document.addEventListener('keydown',k);document.body.appendChild(d)}
+document.addEventListener('click',e=>{const z=e.target.closest('[data-zoom]');if(z)lightbox(z.getAttribute('src'))});
+const tagImg=(n,alt,extra='')=>`<img src="${IMG(n)}" alt="${esc(alt)}" data-zoom ${extra} onerror="this.style.display='none'">`;
+
+/* cabeçalho */
+$('m-title').textContent=M.title; $('m-sub').textContent=M.subtitle; document.title=M.title;
+if(M.author&&M.author.trim()) $('m-author').querySelector('span').textContent=M.author; else $('m-author').remove();   // sem autor: não aparece o "por"
+$('tabs').innerHTML=DATA.tabs.map((t,i)=>`<button role="tab" id="tab-${t}" aria-selected="${i===0}" data-tab="${t}">${TABNAMES[t]||t}</button>`).join('');
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  stopTimer();tab=b.dataset.tab;run=null;
+  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));render()}));
+
+/* ---------- prova / treino ---------- */
+const isD=q=>q.type==='disc';
+const chkList=q=>q.check&&q.check.length?q.check:['Minha resposta cobre o essencial da resposta-modelo'];
+const qScore=q=>isD(q)?chkList(q).filter((_,i)=>q.self[i]).length/chkList(q).length:(q.pick===q.a?1:0);
+const qOK=q=>qScore(q)>=(isD(q)?M.passRules.mid/100:1);
+const answered=q=>isD(q)||!!q.pick;
+const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1).replace('.',',');
+const IL=()=>M.itemLabel.toLowerCase();
+function buildRun(mode,pool){
+  let list;
+  if(mode==='prova'){
+    const n=Math.min(cfg.n,pool.length);
+    list=shuffle(pool).slice(0,n);
+  } else list=shuffle(pool);
+  return {mode,i:0,stations:list.map(s=>({s,qs:s.qs.map(q=>({...q,order:isD(q)?[]:(q.fixed?[...q.opts]:shuffle(q.opts)),pick:null,text:'',self:[]}))})),left:(mode==='prova'&&cfg.mode==='total'?cfg.tt:cfg.t),locked:false,checked:false};
+}
+function stopTimer(){if(tick){clearInterval(tick);tick=null}}
+function render(){
+  if(tab==='discursivo')return renderDiscursivo();
+  if(tab==='provas')return renderProvas();
+  if(tab==='comparativo')return renderComparativo();
+  if(tab==='atlas')return renderAtlas();
+  if(tab==='resumo')return renderResumo();
+  if(tab==='cards')return renderCards();
+  if(tab==='def')return renderDef();
+  if(tab==='flash')return renderFlash();
+  if(tab==='glossario')return renderGloss();
+  if(!run)return tab==='prova'?renderSetup():renderTreinoSetup();
+  if(run.done)return renderResult();
+  renderStation();
+}
+function histHTML(){
+  const h2='<h2 style="font-size:22px;text-transform:uppercase;margin-top:18px">Histórico</h2>';
+  if(!history.length)return h2+'<p class="muted" style="margin:4px 0 0">Suas notas aparecem aqui depois da primeira prova. Ficam salvas só neste aparelho.</p>';
+  const cnt={};history.forEach(r=>(r.wrong||[]).forEach(d=>cnt[d]=(cnt[d]||0)+1));
+  const weak=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  return `${h2}<div class="hist">${history.slice(-6).reverse().map(r=>{const d=new Date(r.t);return `<div class="row"><span>${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span><span>${fmt(r.pts)+'/'+r.max}</span></div>`}).join('')}</div>
+  ${weak.length?`<p class="muted" style="margin:10px 0 0">Onde você mais erra:</p><div class="weak">${weak.map(([d,n])=>`<span>${esc(D[d]||d)} · ${n}×</span>`).join('')}</div>`:''}
+  <p style="margin:10px 0 0"><button type="button" class="linkbtn" id="clr">Apagar histórico</button></p>`;
+}
+function renderSetup(){
+  const ns=[...new Set([6,10,15,20,S.length].filter(n=>n<=S.length&&n>0))];
+  const il=IL(), hasD=S.some(s=>s.qs.some(isD));
+  const tOpts=cfg.mode==='item'?[[60,'1 min'],[90,'1 min 30'],[120,'2 min'],[180,'3 min'],[300,'5 min']]:cfg.mode==='total'?[[900,'15 min'],[1800,'30 min'],[3600,'1 h'],[7200,'2 h']]:[];
+  const tk=cfg.mode==='total'?'tt':'t';
+  const timeRule=cfg.mode==='item'?`Quando o tempo acaba, o item fecha e você passa para o próximo. Pergunta em branco conta como erro.`:cfg.mode==='total'?'Quando o tempo total acaba, a prova é encerrada. O que estiver em branco conta como erro.':'Sem cronômetro: vá no seu ritmo.';
+  app.innerHTML=`<section class="setup"><div class="panel"><h2>Simulado</h2>
+    <p class="muted">Cada ${il} traz o enunciado (com imagem ou tabela, se houver) e as perguntas. O resultado só aparece no final, como na prova.${hasD?' Nas perguntas discursivas você escreve a resposta e se autoavalia no final.':''}</p>
+    <div class="field"><label class="l">Número de ${esc(M.itemLabelPl)}</label><div class="seg" id="segN">${ns.map(n=>`<button type="button" aria-pressed="${cfg.n===n}" data-n="${n}">${n===S.length?'Todas ('+n+')':n}</button>`).join('')}</div></div>
+    <div class="field"><label class="l">Cronômetro</label><div class="seg" id="segM">${[['item','Por '+il],['total','Tempo total'],['none','Sem tempo']].map(([m,l])=>`<button type="button" aria-pressed="${cfg.mode===m}" data-m="${m}">${l}</button>`).join('')}</div></div>
+    ${tOpts.length?`<div class="field"><label class="l">${cfg.mode==='total'?'Duração da prova':'Tempo por '+il}</label><div class="seg" id="segT">${tOpts.map(([t,l])=>`<button type="button" aria-pressed="${cfg[tk]===t}" data-t="${t}">${l}</button>`).join('')}</div></div>`:''}
+    <div class="field"><button class="btn" id="go" type="button" ${S.length?'':'disabled'}>Começar a prova</button></div></div>
+    <div class="panel"><h2>Como funciona</h2><ul class="rules">
+      <li>${timeRule}</li>
+      <li>No modo <b>Treino</b> a correção aparece na hora, com filtro por tópico.</li>
+      <li>Para treinar só os casos abertos no estilo N2, use a aba <b>Discursivo</b>.</li></ul>${histHTML()}</div></section>`;
+  app.querySelectorAll('#segN button').forEach(b=>b.onclick=()=>{cfg.n=+b.dataset.n;saveCfg();renderSetup()});
+  app.querySelectorAll('#segM button').forEach(b=>b.onclick=()=>{cfg.mode=b.dataset.m;saveCfg();renderSetup()});
+  app.querySelectorAll('#segT button').forEach(b=>b.onclick=()=>{cfg[tk]=+b.dataset.t;saveCfg();renderSetup()});
+  app.querySelector('#go').onclick=()=>{run=buildRun('prova',S);startStation()};
+  const c=app.querySelector('#clr');if(c)c.onclick=()=>{history=[];wrongIds=new Set();store('hist',[]);store('wrong',[]);renderSetup()};
+}
+function renderTreinoSetup(){
+  const keys=['todos',...(wrongIds.size?['erros']:[]),...Object.keys(D)];
+  if(treinoFilter==='erros'&&!wrongIds.size)treinoFilter='todos';
+  const pick=k=>k==='todos'?S:k==='erros'?S.filter(s=>wrongIds.has(s.id)):S.filter(s=>s.topic===k);
+  const pool=pick(treinoFilter);
+  app.innerHTML=`<section class="panel"><h2 style="font-size:28px;text-transform:uppercase">Treino por tópico</h2>
+    <p class="muted">Sem cronômetro. Responda e veja na hora o porquê da resposta.</p>
+    <div class="filters">${keys.map(k=>`<button type="button" class="chip ${k==='erros'?'err':''}" aria-pressed="${treinoFilter===k}" data-k="${k}">${k==='todos'?'Todas':k==='erros'?'Meus erros':esc(D[k])} <span class="muted">${pick(k).length}</span></button>`).join('')}</div>
+    <button class="btn" id="go" type="button" ${pool.length?'':'disabled'}>Treinar ${pool.length} ${pool.length>1?esc(M.itemLabelPl):esc(IL())}</button></section>`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{treinoFilter=b.dataset.k;renderTreinoSetup()});
+  app.querySelector('#go').onclick=()=>{run=buildRun('treino',pool);startStation()};
+}
+const timed=()=>run&&run.mode==='prova'&&cfg.mode!=='none';
+function startTimer(){
+  stopTimer();if(!timed())return;
+  tick=setInterval(()=>{run.left--;updateTimer();if(run.left===10)beep(660);if(run.left<=0)beep(440,.4);
+    if(run.left<=0){stopTimer();run.locked=true;
+      if(cfg.mode==='total'){toast('Tempo esgotado: prova encerrada');setTimeout(finish,1200)}
+      else{toast('Tempo esgotado: próximo item');setTimeout(next,1200)}}},1000);
+}
+function startStation(){
+  const keep=timed()&&cfg.mode==='total'&&run.i>0;   // no tempo total o relógio não reinicia a cada item
+  if(!keep)stopTimer();
+  run.locked=false;run.checked=false;
+  if(!(run.mode==='prova'&&cfg.mode==='total'))run.left=cfg.t;
+  render();window.scrollTo({top:0});
+  if(timed()&&!keep)startTimer();
+}
+function updateTimer(){
+  const el=$('timer');if(!el)return;const tot=cfg.mode==='total'?cfg.tt:cfg.t,t=Math.max(0,run.left),m=Math.floor(t/60),s=String(t%60).padStart(2,'0');
+  el.querySelector('span').textContent=`${m}:${s}`;const C=2*Math.PI*16;el.querySelector('.fg').style.strokeDashoffset=C*(1-t/tot);el.classList.toggle('low',t<=10);
+}
+function finish(){stopTimer();run.done=true;render();window.scrollTo({top:0})}
+function next(){if(run.i<run.stations.length-1){run.i++;startStation()}else finish()}
+function tableHTML(t){return `<div class="gallery"><div class="labcard"><h3>${esc(t.title)}</h3><table>${t.rows.map(r=>`<tr><td>${esc(r[0])}</td><td ${r[3]?'class="flag"':''}>${esc(r[1])}</td><td>${esc(r[2]||'')}</td></tr>`).join('')}</table>${t.note?`<p class="zoomhint">${esc(t.note)}</p>`:''}</div></div>`}
+function stationMedia(s){
+  let h='';
+  if(s.table)h+=tableHTML(s.table);
+  if(s.imgs&&s.imgs.length){const two=s.imgs.length>1;h+=`<div class="gallery ${two?'two':''}">${s.imgs.map((n,k)=>`<figure>${tagImg(n,'Imagem '+(k+1)+' do item','loading="eager"')}</figure>`).join('')}</div><p class="zoomhint">Toque na imagem para ampliar.</p>`}
+  return h;
+}
+function discFb(q,qi){
+  return `<div class="why"><b>Resposta-modelo:</b> ${q.model||''}</div><div class="chk"><p class="muted">Marque o que a sua resposta trouxe:</p>${chkList(q).map((c,i)=>`<label><input type="checkbox" data-sq="${qi}" data-ci="${i}" ${q.self[i]?'checked':''}> <span>${esc(c)}</span></label>`).join('')}</div>`;
+}
+function renderStation(){
+  const st=run.stations[run.i],s=st.s,prova=run.mode==='prova',total=run.stations.length,showFb=!prova&&run.checked;
+  const media=stationMedia(s), timer=prova&&cfg.mode!=='none';
+  const qHTML=(q,qi)=>isD(q)
+    ?`<div class="q"><p>${qi+1}. ${esc(q.q)} <span class="muted" style="font-weight:400">(discursiva)</span></p>
+      <textarea class="ta" data-q="${qi}" rows="${q.rows||5}" placeholder="Escreva sua resposta…" aria-label="Resposta da pergunta ${qi+1}" ${showFb||run.locked?'readonly':''}>${esc(q.text||'')}</textarea>${showFb?discFb(q,qi):''}</div>`
+    :`<div class="q"><p>${qi+1}. ${esc(q.q)}</p><div class="opts">${q.order.map((o,oi)=>{let cls='';if(showFb){if(o===q.a)cls='right';else if(o===q.pick)cls='wrong'}
+      return `<button type="button" class="opt ${cls}" data-q="${qi}" data-o="${oi}" aria-pressed="${q.pick===o}" ${run.locked||showFb?'disabled':''}><span class="k">${'ABCDE'[oi]}</span><span>${esc(o)}</span></button>`}).join('')}</div>
+      ${showFb?`<div class="why"><b>${q.pick===q.a?'Certo.':'Errado.'}</b> ${esc(q.why||'')}</div>`:''}</div>`;
+  app.innerHTML=`<div class="stationbar"><span class="placard">${esc(M.itemLabel)} ${String(run.i+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}</span>
+    <div class="progress" aria-hidden="true"><i style="width:${run.i/total*100}%"></i></div>
+    ${timer?`<div class="timer" id="timer" role="timer"><svg viewBox="0 0 38 38"><circle class="bgc" cx="19" cy="19" r="16"/><circle class="fg" cx="19" cy="19" r="16" stroke-dasharray="${2*Math.PI*16}" stroke-dashoffset="0"/></svg><span>0:00</span></div>`:''}</div>
+  <section class="station" ${media?'':'style="grid-template-columns:1fr"'}>${media?`<div>${media}</div>`:''}
+    <div class="case">${s.case||showFb?`<div class="who">${esc(M.caseLabel)} ${showFb?'· '+esc(D[s.topic]||''):''}</div>`:''}${s.case?`<p class="story">${esc(s.case)}</p>`:''}
+    ${st.qs.map(qHTML).join('')}
+    ${showFb&&s.look?`<div class="look"><b>${esc(M.lookLabel)}:</b> ${esc(s.look)}</div>`:''}
+    <div class="actions">${prova?`<button class="btn" id="nx" type="button">${run.i<total-1?'Próximo item':'Entregar prova'}</button>`
+      :showFb?`<button class="btn" id="nx" type="button">${run.i<total-1?'Próximo item':'Ver resumo'}</button>`
+      :`<button class="btn" id="ck" type="button" ${st.qs.every(answered)?'':'disabled'}>Corrigir</button>`}</div></div></section>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const q=st.qs[+b.dataset.q];q.pick=q.order[+b.dataset.o];
+    app.querySelectorAll(`.opt[data-q="${b.dataset.q}"]`).forEach(x=>x.setAttribute('aria-pressed',x===b));
+    const ck=$('ck');if(ck)ck.disabled=!st.qs.every(answered)});
+  app.querySelectorAll('.ta').forEach(a=>a.oninput=()=>{st.qs[+a.dataset.q].text=a.value});
+  app.querySelectorAll('[data-sq]').forEach(c=>c.onchange=()=>{st.qs[+c.dataset.sq].self[+c.dataset.ci]=c.checked});
+  const nx=$('nx');if(nx)nx.onclick=next;
+  const ck=$('ck');if(ck)ck.onclick=()=>{run.checked=true;renderStation()};
+  if(timer)updateTimer();
+}
+function calc(){
+  let pts=0,max=0;
+  run.stations.forEach(st=>st.qs.forEach(q=>{max++;pts+=qScore(q)}));
+  return {pts,max};
+}
+function renderResult(){
+  const y=window.scrollY,{pts,max}=calc();
+  const prova=run.mode==='prova',pct=Math.round(pts/max*100);
+  run.stations.forEach(st=>{if(st.qs.every(qOK))wrongIds.delete(st.s.id);else wrongIds.add(st.s.id)});store('wrong',[...wrongIds]);
+  if(prova){
+    const rec={t:run.t0||(run.t0=Date.now()),pts,max,wrong:[...new Set(run.stations.filter(st=>!st.qs.every(qOK)).map(st=>st.s.topic))]};
+    if(run.hidx==null){history.push(rec);history=history.slice(-50);run.hidx=history.length-1}else history[run.hidx]=rec;
+    store('hist',history)}
+  const hasD=run.stations.some(st=>st.qs.some(isD));
+  const hi=M.passRules.hi,mid=M.passRules.mid;
+  const rvQ=(q,si,qi)=>isD(q)
+    ?`<li>${esc(q.q)} <span class="muted">(discursiva · ${Math.round(qScore(q)*100)}%)</span>
+      <div class="why"><b>Sua resposta:</b> ${q.text?esc(q.text).replace(/\n/g,'<br>'):'<i>em branco</i>'}</div>
+      <div class="why"><b>Resposta-modelo:</b> ${q.model||''}</div>
+      <div class="chk">${chkList(q).map((c,i)=>`<label><input type="checkbox" data-si="${si}" data-qi="${qi}" data-ci="${i}" ${q.self[i]?'checked':''}> <span>${esc(c)}</span></label>`).join('')}</div></li>`
+    :`<li>${esc(q.q)} ${q.pick===q.a?`<span class="c">✓ ${esc(q.a)}</span>`:`<span class="y">✗ ${q.pick?esc(q.pick):'em branco'}</span><br><span class="c">Correta: ${esc(q.a)}</span>`}</li>`;
+  app.innerHTML=`<section class="panel"><div class="score"><div class="big">${fmt(pts)}<span class="muted" style="font-size:36px">/${max}</span></div>
+    <div class="verdict"><h2 style="font-size:30px;text-transform:uppercase">${pct>=hi?'Pronto para a prova':pct>=mid?'Quase lá':'Volte ao material'}</h2><p class="muted" style="margin:4px 0 0">${pct}% de acerto. Abaixo, cada ${esc(IL())} com a resposta e o que observar.${hasD?' Nas discursivas, marque a checklist: a nota atualiza na hora.':''}</p></div>
+    <div class="actions"><button class="btn" id="again" type="button">Nova ${prova?'prova':'rodada'}</button>${wrongIds.size?`<button class="btn ghost" id="rev" type="button">Treinar meus erros (${wrongIds.size})</button>`:''}</div></div></section>
+  <section class="review">${run.stations.map((st,i)=>{const ok=st.qs.every(qOK),s=st.s;
+    return `<article class="rv ${ok?'':'bad'}">${s.imgs&&s.imgs[0]?tagImg(s.imgs[0],''):`<div class="labcard" style="padding:8px;font-size:13px"><b>${esc((s.table&&s.table.title)||M.itemLabel+' '+(i+1))}</b></div>`}
+    <div><h3>${esc(M.itemLabel)} ${i+1} · ${esc(D[s.topic]||'')} </h3><ul>${st.qs.map((q,qi)=>rvQ(q,i,qi)).join('')}</ul>
+    ${s.look?`<p class="muted" style="margin:6px 0 0;font-size:14px"><b>${esc(M.lookLabel)}:</b> ${esc(s.look)}</p>`:''}</div></article>`}).join('')}</section>`;
+  $('again').onclick=()=>{run=null;render()};
+  const rv=app.querySelector('#rev');if(rv)rv.onclick=()=>{treinoFilter='erros';$('tab-treino')&&$('tab-treino').click()};
+  app.querySelectorAll('[data-si]').forEach(c=>c.onchange=()=>{run.stations[+c.dataset.si].qs[+c.dataset.qi].self[+c.dataset.ci]=c.checked;renderResult()});
+  window.scrollTo(0,y);
+}
+
+/* ---------- simulado discursivo (estilo N2, lido direto de DATA.questoes) ---------- */
+function renderDiscursivo(){
+  const discAll=S.filter(s=>s.qs.some(isD));
+  const topics=['todos',...Object.keys(D).filter(k=>discAll.some(d=>d.topic===k))];
+  const list=discAll.filter(d=>discFilter==='todos'||d.topic===discFilter);
+  app.innerHTML=`<div class="hy-intro"><h2>Simulado Discursivo</h2><p class="muted" style="margin:0">Casos clínicos abertos no estilo da N2, com gabarito comentado e checklist de autoavaliação.</p></div>
+  <div class="filters">${topics.map(k=>`<button type="button" class="chip" aria-pressed="${discFilter===k}" data-k="${k}">${k==='todos'?'Todos':esc(D[k])}</button>`).join('')}</div>
+  <section class="disc-list">${list.map((d,idx)=>{
+    const open=discOpen.has(d.id), chk=discState.checks[d.id]||{}, allChecks=[];
+    d.qs.forEach((q,qi)=>chkList(q).forEach((c,ci)=>allChecks.push({key:`${qi}-${ci}`,txt:c})));
+    const doneCount=allChecks.filter(x=>chk[x.key]).length;
+    return `<article class="disc-card">
+      <div class="disc-head"><h3 style="font-size:24px;text-transform:uppercase">${esc(d.title||('Caso '+(idx+1)))}</h3><span class="topic-tag">${esc(D[d.topic]||d.topic)}</span></div>
+      ${d.table?tableHTML(d.table):''}
+      <p style="margin:0;font-size:16.5px">${esc(d.case)}</p>
+      <div style="display:grid;gap:10px">${d.qs.map((q,qi)=>`<div><div style="margin-bottom:6px"><b>${'abcdefgh'[qi]})</b> ${esc(q.q)}</div>
+        <textarea class="ta" data-draft="${d.id}-${qi}" rows="${q.rows||4}" placeholder="Rascunhe sua resposta para o item ${'abcdefgh'[qi]}) antes de abrir o gabarito (opcional — salvo neste aparelho)...">${esc(discState.drafts[`${d.id}-${qi}`]||'')}</textarea></div>`).join('')}</div>
+      <div class="actions" style="justify-content:flex-start"><button type="button" class="btn ${open?'ghost':''}" data-toggle="${d.id}">${open?'Ocultar gabarito':'Mostrar gabarito e checklist'}</button></div>
+      <div class="disc-ans" ${open?'':'hidden'}>
+        ${d.qs.map((q,qi)=>`<div class="why"><b>Resposta-modelo · ${'abcdefgh'[qi]})</b> ${q.model||''}</div>`).join('')}
+        <div class="chk"><p><b>Checklist de autoavaliação (<span id="cnt-${d.id}">${doneCount}</span>/${allChecks.length})</b></p>
+          ${allChecks.map(x=>`<label><input type="checkbox" data-chk="${d.id}" data-key="${x.key}" ${chk[x.key]?'checked':''}> <span>${esc(x.txt)}</span></label>`).join('')}
+        </div>
+      </div>
+    </article>`}).join('')}</section>`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{discFilter=b.dataset.k;renderDiscursivo()});
+  app.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>{const id=b.dataset.toggle;if(discOpen.has(id))discOpen.delete(id);else discOpen.add(id);renderDiscursivo()});
+  app.querySelectorAll('[data-draft]').forEach(t=>t.oninput=()=>{discState.drafts[t.dataset.draft]=t.value;store('disc',discState)});
+  app.querySelectorAll('[data-chk]').forEach(cb=>cb.onchange=()=>{
+    const id=cb.dataset.chk, key=cb.dataset.key;
+    if(!discState.checks[id])discState.checks[id]={};
+    discState.checks[id][key]=cb.checked; store('disc',discState);
+    const d=S.find(x=>x.id===id), c=$(`cnt-${id}`);
+    if(d&&c){let n=0;d.qs.forEach((q,qi)=>chkList(q).forEach((_,ci)=>{if(discState.checks[id][`${qi}-${ci}`])n++}));c.textContent=n}
+  });
+}
+
+/* ---------- provas antigas ---------- */
+function renderProvas(){
+  const topics=['todos','hot',...Object.keys(D).filter(k=>DATA.oldExams.some(q=>q.topic===k))];
+  const list=DATA.oldExams.filter(q=>oldFilter==='todos'||(oldFilter==='hot'?q.hot:q.topic===oldFilter));
+  app.innerHTML=`<div class="hy-intro"><h2>Provas Antigas</h2><p class="muted" style="margin:0">Questões originais da Parcial sobre Talassemia (a N2 enviada abordou outras anemias e foi usada como referência de estilo no Discursivo).</p></div>
+  <div class="filters">${topics.map(k=>`<button type="button" class="chip" aria-pressed="${oldFilter===k}" data-k="${k}">${k==='todos'?'Todas ('+DATA.oldExams.length+')':k==='hot'?'Cai muito':esc(D[k])}</button>`).join('')}
+    <button type="button" class="btn ghost" id="rev-all" style="margin-left:auto;padding:6px 12px;font-size:14px">${oldRevealAll?'Ocultar gabaritos':'Revelar todos os gabaritos'}</button></div>
+  <section class="old-list">${list.map(q=>{
+    const pick=oldPick[q.id], show=oldRevealAll||oldOpen.has(q.id)||pick!==undefined;
+    return `<article class="old-card">
+      <div class="old-head"><div class="old-meta"><span class="placard" style="font-size:17px;padding:4px 10px">Q${q.num}</span><span class="muted" style="font-size:14px">${esc(q.source)}</span><span class="topic-tag">${esc(D[q.topic]||q.topic)}</span>${q.hot?'<span class="hot-tag">Cai muito</span>':''}</div></div>
+      <p style="margin:0;font-weight:700;font-size:17px">${esc(q.stem)}</p>
+      <div class="opts">${q.opts.map((o,oi)=>{let cls='';if(show){if(o===q.a)cls='right';else if(o===pick)cls='wrong'}
+        return `<button type="button" class="opt ${cls}" data-qid="${q.id}" data-oi="${oi}" aria-pressed="${pick===o}"><span class="k">${'ABCDE'[oi]}</span><span>${esc(o)}</span></button>`}).join('')}</div>
+      ${show?`<div class="why">${q.comment}</div>`:`<div><button type="button" class="linkbtn" data-show="${q.id}">Ver gabarito e comentário</button></div>`}
+    </article>`}).join('')}</section>`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{oldFilter=b.dataset.k;renderProvas()});
+  $('rev-all').onclick=()=>{oldRevealAll=!oldRevealAll;renderProvas()};
+  app.querySelectorAll('[data-qid]').forEach(b=>b.onclick=()=>{
+    const q=DATA.oldExams.find(x=>x.id===b.dataset.qid);
+    if(q){oldPick[q.id]=q.opts[+b.dataset.oi];oldOpen.add(q.id);renderProvas()}
+  });
+  app.querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{oldOpen.add(b.dataset.show);renderProvas()});
+}
+
+/* ---------- comparativo ---------- */
+function renderComparativo(){
+  const keys=['todas',...DATA.comparisons.map(c=>c.id)];
+  const list=DATA.comparisons.filter(c=>compFilter==='todas'||c.id===compFilter);
+  app.innerHTML=`<div class="hy-intro"><h2>Quadros Comparativos</h2><p class="muted" style="margin:0">Diferenciais e classificações lado a lado para decidir rápido na prova.</p></div>
+  <div class="filters">${keys.map(k=>{const item=DATA.comparisons.find(c=>c.id===k);return `<button type="button" class="chip" aria-pressed="${compFilter===k}" data-k="${k}">${k==='todas'?'Todos ('+DATA.comparisons.length+')':esc(item.title.split('(')[0].trim())}</button>`}).join('')}</div>
+  <section class="cmp-list">${list.map(c=>`<article class="panel">
+    <h3 style="font-size:24px;text-transform:uppercase">${esc(c.title)}</h3>
+    ${c.subtitle?`<p class="muted" style="margin:2px 0 0">${esc(c.subtitle)}</p>`:''}
+    <div class="cmp-wrap"><table class="cmp-table"><thead><tr>${c.cols.map(col=>`<th>${esc(col)}</th>`).join('')}</tr></thead>
+      <tbody>${c.rows.map(r=>{const hi=r[r.length-1]===true, cells=typeof r[r.length-1]==='boolean'?r.slice(0,-1):r;
+        return `<tr>${cells.map((cell,idx)=>`<td class="${hi&&idx===0?'hi':''}">${idx===0?`<b>${cell}</b>`:cell}</td>`).join('')}</tr>`}).join('')}</tbody></table></div>
+    ${c.pearl?`<div class="look" style="margin-top:12px"><b>Ponto de prova:</b> ${esc(c.pearl)}</div>`:''}
+  </article>`).join('')}</section>`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{compFilter=b.dataset.k;renderComparativo()});
+}
+
+/* ---------- atlas ---------- */
+function renderAtlas(){
+  const keys=['todos',...Object.keys(D).filter(k=>DATA.atlas.some(a=>a[1]===k))];
+  const items=DATA.atlas.filter(a=>atlasFilter==='todos'||a[1]===atlasFilter);
+  app.innerHTML=`<div class="filters">${keys.map(k=>`<button type="button" class="chip" aria-pressed="${atlasFilter===k}" data-k="${k}">${k==='todos'?'Todas':esc(D[k])}</button>`).join('')}
+    <label class="switch"><input type="checkbox" id="hide" ${hideNames?'checked':''}> Esconder nomes (modo flashcard)</label></div>
+  <section class="atlas">${items.map(([img,dz,cap])=>{const show=!hideNames||revealed.has(img);
+    return `<article class="card">${tagImg(img,show?D[dz]+': '+cap:'Imagem para identificar','loading="lazy"')}<div class="cb">${show?`<div class="dz">${esc(D[dz])}</div><div class="cap">${esc(cap)}</div>`:`<button type="button" class="reveal" data-r="${img}">Qual é? Revelar</button>`}</div></article>`}).join('')}</section>
+  ${DATA.sheet.length?`<h2 style="font-size:30px;text-transform:uppercase;margin-top:28px">Cola rápida</h2><section class="sheet">${DATA.sheet.map(([k,lines,cd])=>`<div class="panel"><h3>${esc(D[k]||k)}</h3><ul>${lines.map(l=>`<li>${l}</li>`).join('')}</ul>${cd?`<div class="tx"><b>${esc(M.condLabel)}:</b> ${cd}</div>`:''}</div>`).join('')}</section>`:''}`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{atlasFilter=b.dataset.k;renderAtlas()});
+  app.querySelector('#hide').onchange=e=>{hideNames=e.target.checked;revealed.clear();renderAtlas()};
+  app.querySelectorAll('.reveal').forEach(b=>b.onclick=()=>{revealed.add(b.dataset.r);renderAtlas()});
+}
+
+/* ---------- 80/20 ---------- */
+function renderResumo(){
+  const side=x=>x?`<div class="side"><strong>${x[0]}</strong>${x[1]}</div>`:'';
+  const nR=DATA.rules.length;
+  app.innerHTML=`<div class="hy-intro"><h2>Resumo 80/20</h2><p class="muted" style="margin:0">O pouco que resolve a maior parte da prova.</p></div>
+  ${nR?`<section class="hy-sec"><h2>As ${nR} regras</h2><ol class="rules20">${DATA.rules.map(([t,d])=>`<li><div><b>${t}</b>${d}</div></li>`).join('')}</ol></section>`:''}
+  ${DATA.pairs.length?`<section class="hy-sec"><h2>Pares que confundem</h2><p class="muted">Quando duas coisas parecem iguais, decida pelo critério da última linha.</p><div class="pairs">${DATA.pairs.map(p=>`<article class="pair"><h3>${p.t}</h3><div class="vs">${side(p.a)}${side(p.b)}${side(p.c)}</div><p class="key">${p.k}</p></article>`).join('')}</div></section>`:''}
+  ${DATA.snaps.length?`<section class="hy-sec"><h2>Um tópico, uma síntese</h2><p class="muted">Visão direta de cada eixo temático para revisão rápida.</p><div class="dcards">${DATA.snaps.map(([k,img,ag,tags,cl,cd])=>`<article class="dcard">${img?tagImg(img,D[k],'loading="lazy"'):`<div class="nolab">${esc(ag)}</div>`}<div class="db"><h3>${esc(D[k]||k)}</h3><div class="ag">${ag}</div>${tags&&tags.length?`<div>${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`:''}<div>${cl}</div><div class="cd"><b>${esc(M.condLabel)}:</b> ${cd}</div></div></article>`).join('')}</div></section>`:''}`;
+}
+
+/* ---------- cards ---------- */
+function renderCards(){
+  const shortTag={fisio:'Fisio',hb:'Hb',alfa:'α-Tal',beta:'β-Tal',clinica:'Clínica',diag:'Diag',trat:'Trat',gen:'Gen'};
+  app.innerHTML=`<div class="hy-intro"><h2>Cards</h2><p class="muted" style="margin:0">Um card por tópico, com o essencial e os alertas.</p></div>
+  <section class="notes">${DATA.notes.map(([k,img,f,att])=>{const t=DATA.topics[k]||{p:'#eee',d:'#333',name:k};
+    return `<article class="ncard" style="--p:${t.p};--d:${t.d}"><div class="nh">${img?tagImg(img,t.name,'loading="lazy"'):`<div class="ph">${esc(shortTag[k]||t.name.split(' ')[0])}</div>`}<h3>${esc(t.name)}</h3></div>
+    <dl>${DATA.noteLabels.map((l,i)=>f[i]?`<div><dt>${esc(l)}</dt><dd>${f[i]}</dd></div>`:'').join('')}</dl>${att?`<div class="att">${att}</div>`:''}</article>`}).join('')}</section>`;
+}
+
+/* ---------- definitivo ---------- */
+const defList=a=>`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+let defStudy=false,defOpen=new Set();
+function defSheet(o,half){
+  const t=DATA.topics[o.k]||{p:'#eee',d:'#333',name:o.k};
+  const imgs=o.table?`<div class="dimgs one"><div class="dlab"><b>${esc(o.table.title)}</b><table>${o.table.rows.map(r=>`<tr><td>${esc(r[0])}</td><td ${r[3]?'class="flag"':''}>${esc(r[1])}</td></tr>`).join('')}</table>${o.table.note?`<small>${esc(o.table.note)}</small>`:''}</div></div>`
+    :(o.imgs&&o.imgs.length?`<div class="dimgs ${o.imgs.length>1?'two':'one'}">${o.imgs.map(([i,c])=>`<figure>${tagImg(i,c,'loading="lazy"')}<figcaption>${c}</figcaption></figure>`).join('')}</div>`:'');
+  const hidden=defStudy&&!defOpen.has(o.k);
+  return `<div class="dsheet ${half?'half':''}" style="--p:${t.p};--d:${t.d}"><header class="dhead"><h3>${esc(t.name)}</h3></header>${imgs}
+  ${o.case?`<div class="dcase"><div class="dl">${o.practice?'Fora da aula · exemplo de treino':esc(M.caseLabel)}</div><p>${o.case}</p>${o.case2?`<div class="dl" style="margin-top:10px">${esc(M.caseLabel)} 2</div><p>${o.case2}</p>`:''}${o.question?`<p class="dq"><b>Pergunta:</b> ${o.question}</p>`:''}</div>`:''}
+  <div class="dans" ${hidden?'':'hidden'}><button type="button" class="btn" data-open="${o.k}">Mostrar resposta</button><span class="muted">Responda de cabeça antes de abrir.</span></div>
+  <div class="dbody" ${hidden?'hidden':''}><div class="dgrid">${o.sections.map(([h,a])=>`<section class="df"><h4>${h}</h4>${defList(a)}</section>`).join('')}</div>
+  ${o.dif&&o.dif.length?`<section class="ddif"><h4>${esc(M.difLabel)}</h4><ul>${o.dif.map(([n,x])=>`<li><b>${n}:</b> ${x}</li>`).join('')}</ul></section>`:''}
+  ${o.alerts&&o.alerts.length?`<section class="dprof"><h4>${o.alertsTitle||'Pontos de atenção'}</h4>${defList(o.alerts)}</section>`:''}</div></div>`;
+}
+function renderDef(){
+  const y=window.scrollY,pages=[],used=new Set();
+  DATA.def.forEach(o=>{if(used.has(o.k))return;used.add(o.k);const d=o.duo&&DATA.def.find(x=>x.k===o.duo);if(d)used.add(d.k);pages.push(d?[o,d]:[o])});
+  app.innerHTML=`<div class="hy-intro"><h2>Resumo definitivo</h2><p class="muted" style="margin:0">Uma página por tópico: material do professor, complementos das provas e pontos de atenção.</p></div>
+  <label class="switch dstudy"><input type="checkbox" id="dstudy" ${defStudy?'checked':''}> Modo estudo: esconder as respostas</label>
+  <nav class="dnav">${pages.map((pg,i)=>pg.map(o=>`<button type="button" class="chip" data-go="pg${i}">${esc((DATA.topics[o.k]||{}).name||o.k)}</button>`).join('')).join('')}</nav>
+  ${pages.map((pg,i)=>`<article class="dpage ${pg.length>1?'duo':''}" id="pg${i}">${pg.map(o=>defSheet(o,pg.length>1)).join('')}<footer class="dfoot">Página ${i+1} de ${pages.length} · ${esc(M.title)}${M.author?' · '+esc(M.author):''}</footer></article>`).join('')}`;
+  const ds=app.querySelector('#dstudy');ds.onchange=()=>{defStudy=ds.checked;defOpen.clear();renderDef()};
+  app.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{defOpen.add(b.dataset.open);renderDef()});
+  window.scrollTo(0,y);
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>$(b.dataset.go).scrollIntoView({behavior:'smooth',block:'start'}));
+}
+
+/* ---------- flashcards com repetição espaçada (caixas de Leitner) ---------- */
+const BOX_DAYS=[0,1,3,7,16];
+let flashState=load('flash',{}), flashQueue=null, flashShow=false, flashTopic='todos';
+function flashId(c,i){return c.id||('f'+i)}
+function flashDue(){const now=Date.now();return DATA.flash.map((c,i)=>({c,id:flashId(c,i)})).filter(x=>(flashTopic==='todos'||x.c.topic===flashTopic)&&((flashState[x.id]||{due:0}).due<=now))}
+function renderFlash(){
+  if(!flashQueue)flashQueue=shuffle(flashDue());
+  const tk=['todos',...Object.keys(D)];
+  const cur=flashQueue[0];
+  app.innerHTML=`<div class="hy-intro"><h2>Flashcards</h2><p class="muted" style="margin:0">Repetição espaçada: o que você erra volta logo; o que acerta volta cada vez mais tarde.</p></div>
+  <div class="filters">${tk.map(k=>`<button type="button" class="chip" aria-pressed="${flashTopic===k}" data-k="${k}">${k==='todos'?'Todos':esc(D[k])}</button>`).join('')}</div>
+  ${cur?`<section class="panel"><p class="muted">Restam ${flashQueue.length} para revisar hoje</p>
+    <h2 style="font-size:30px;margin:8px 0 14px">${cur.c.front}</h2>
+    ${flashShow?`<div class="why">${cur.c.back}</div><div class="actions" style="justify-content:flex-start;margin-top:14px"><button class="btn ghost" data-g="0">Errei</button><button class="btn" data-g="1">Acertei</button></div>`
+      :`<button class="btn" id="show">Mostrar resposta</button>`}</section>`
+    :`<section class="panel"><h2 style="font-size:28px;text-transform:uppercase">Tudo revisado por hoje</h2><p class="muted">Volte amanhã: os cards que você acertou reaparecem no prazo certo.</p></section>`}`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{flashTopic=b.dataset.k;flashQueue=null;flashShow=false;renderFlash()});
+  const s=app.querySelector('#show');if(s)s.onclick=()=>{flashShow=true;renderFlash()};
+  app.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{
+    const st=flashState[cur.id]||{box:0};st.box=b.dataset.g==='1'?Math.min(st.box+1,BOX_DAYS.length-1):0;st.due=Date.now()+BOX_DAYS[st.box]*864e5;flashState[cur.id]=st;store('flash',flashState);
+    flashQueue.shift();if(b.dataset.g==='0')flashQueue.push(cur);flashShow=false;renderFlash()});
+}
+
+/* ---------- glossário ---------- */
+let glossQ='';
+function renderGloss(){
+  const q=glossQ.toLowerCase();
+  const items=DATA.glossary.filter(g=>!q||(g.term+' '+g.def).toLowerCase().includes(q)).sort((a,b)=>a.term.localeCompare(b.term,'pt-BR'));
+  app.innerHTML=`<div class="hy-intro"><h2>Glossário</h2></div>
+  <div class="filters"><input id="gq" type="search" placeholder="Buscar termo…" value="${esc(glossQ)}" style="flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit"></div>
+  <section class="sheet">${items.map(g=>`<div class="panel"><h3>${esc(g.term)}</h3><p style="margin:0">${g.def}</p>${g.topic?`<div class="tx">${esc(D[g.topic]||g.topic)}</div>`:''}</div>`).join('')||'<p class="muted">Nada encontrado.</p>'}</section>`;
+  const i=$('gq');i.oninput=()=>{glossQ=i.value;const p=i.selectionStart;renderGloss();const n=$('gq');n.focus();n.setSelectionRange(p,p)};
+}
+
+render();
+/* exportar/importar progresso (histórico, erros, flashcards, discursivo, configuração) */
+(function(){
+  const f=document.createElement('footer');f.style.cssText='margin-top:32px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center';
+  f.innerHTML='<button type="button" class="btn ghost" id="exp">Exportar progresso</button><button type="button" class="btn ghost" id="imp">Importar progresso</button><input type="file" id="impf" accept="application/json" hidden>';
+  document.querySelector('.wrap').appendChild(f);
+  $('exp').onclick=()=>{const o={};['cfg','hist','wrong','flash','disc'].forEach(k=>o[k]=load(k,null));
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({key:M.storageKey,data:o})],{type:'application/json'}));a.download=`progresso-${M.storageKey}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
+  $('imp').onclick=()=>$('impf').click();
+  $('impf').onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);
+    if(j.key!==M.storageKey)throw new Error('outro site');Object.entries(j.data).forEach(([k,v])=>{if(v!==null)store(k,v)});toast('Progresso importado');setTimeout(()=>location.reload(),900)}catch(err){toast('Arquivo inválido para este site')}};r.readAsText(file)};
+})();
+</script>
+</body></html>
