@@ -3994,7 +3994,7 @@ async function gradeAI(si,qi,redraw){
   if(!q||!M.aiEndpoint||q.aiBusy)return;
   q.aiBusy=true;q.aiErr='';redraw();
   try{
-    const res=await fetch(M.aiEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q.q,model:q.model||'',check:chkList(q),answer:q.text||''})});
+    const res=await fetch(M.aiEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({context:sCase(st.s),question:q.q,model:q.model||'',check:chkList(q),answer:q.text||''})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const j=await res.json();
     if(!Array.isArray(j.ok))throw new Error('Formato inválido');
