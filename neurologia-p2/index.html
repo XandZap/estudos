@@ -411,10 +411,8 @@ body.study .fld.shown .reveal{display:none}
 
 /* Rodapé */
 .foot{border-top:1px solid var(--line);background:var(--surface)}
-.foot .wrap{padding-block:22px 36px;display:grid;gap:16px;font-size:.88rem}
-.foot h4{font-size:.92rem;margin-bottom:6px;text-transform:uppercase}
-.foot ul{margin:0;padding-left:1.1rem;display:grid;gap:4px}
-.foot-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;padding-top:12px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted)}
+.foot .wrap{padding-block:16px 28px;display:grid;gap:12px;font-size:.88rem}
+.foot-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;font-size:.8rem;color:var(--muted)}
 .foot-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
 .foot-link{background:none;border:0;padding:4px 2px;min-height:32px;cursor:pointer;color:var(--muted);font:inherit;font-size:.8rem;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent);text-underline-offset:3px}
 .foot-link:hover{color:var(--ink)}
@@ -2993,19 +2991,20 @@ document.addEventListener('click',e=>{const t=e.target,g=t.closest&&t.closest('.
 
 /* ---------- rodapé e exportar/importar ---------- */
 (function renderFooter(){
-  let h='';
-  if(M.verification&&M.verification.length)h+=`<div><h4>Verificação cruzada</h4><ul>${M.verification.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
-  if(DATA.refs&&Object.keys(DATA.refs).length)h+=`<div><h4>Referências consultadas</h4><ul>${Object.values(DATA.refs).map(d=>`<li>${d.url?`<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.src||d.t)}</a>`:esc(d.src||d.t)}${d.year?' ('+esc(d.year)+')':''} · ${esc(d.t)}</li>`).join('')}</ul></div>`;
-  if(DATA.sources&&Object.keys(DATA.sources).length)h+=`<div><h4>Material usado</h4><ul>${Object.values(DATA.sources).map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`;
-  const hasHist=M.history&&M.history.length;
-  h+=`<div class="foot-bar"><span>${revStr?esc(revStr):''}</span><div class="foot-links"><button type="button" class="foot-link" id="exp">Exportar progresso</button><button type="button" class="foot-link" id="imp">Importar progresso</button>${hasHist?'<button type="button" class="foot-link" id="histbtn">Histórico de revisões</button>':''}<input type="file" id="impf" accept="application/json" hidden></div></div>`;
-  $('foot').innerHTML=h;
-  const hm=$('histmodal'),hl=$('hm-list'),hx=$('hm-x'),hb=$('histbtn');
-  if(hasHist&&hm&&hl&&hb){
-    hl.innerHTML=M.history.map(x=>`<li><b>${esc(x[0])}</b> (${esc(x[1])}): ${esc(x[2])}</li>`).join('');
-    hb.onclick=()=>{hm.hidden=false;if(hx)hx.focus()};
+  const secs=[];
+  if(M.verification&&M.verification.length)secs.push(['verif','Verificação cruzada',M.verification.map(x=>`<li>${esc(x)}</li>`).join('')]);
+  if(DATA.refs&&Object.keys(DATA.refs).length)secs.push(['refs','Referências consultadas',Object.values(DATA.refs).map(d=>`<li>${d.url?`<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.src||d.t)}</a>`:esc(d.src||d.t)}${d.year?' ('+esc(d.year)+')':''} · ${esc(d.t)}</li>`).join('')]);
+  if(DATA.sources&&Object.keys(DATA.sources).length)secs.push(['srcs','Material usado',Object.values(DATA.sources).map(s=>`<li>${esc(s)}</li>`).join('')]);
+  if(M.history&&M.history.length)secs.push(['hist','Histórico de revisões',M.history.map(x=>`<li><b>${esc(x[0])}</b> (${esc(x[1])}): ${esc(x[2])}</li>`).join('')]);
+  $('foot').innerHTML=`<div class="foot-bar"><span>${revStr?esc(revStr):''}</span><div class="foot-links"><button type="button" class="foot-link" id="exp">Exportar progresso</button><button type="button" class="foot-link" id="imp">Importar progresso</button>${secs.map(([id,lbl])=>`<button type="button" class="foot-link" data-fmod="${id}">${esc(lbl)}</button>`).join('')}<input type="file" id="impf" accept="application/json" hidden></div></div>`;
+  const hm=$('histmodal'),ht=$('hm-t'),hl=$('hm-list'),hx=$('hm-x');
+  if(hm&&hl){
     if(hx)hx.onclick=()=>{hm.hidden=true};
     hm.onclick=e=>{if(e.target===hm)hm.hidden=true};
+    $('foot').querySelectorAll('[data-fmod]').forEach(b=>b.onclick=()=>{
+      const s=secs.find(x=>x[0]===b.dataset.fmod);if(!s)return;
+      if(ht)ht.textContent=s[1];hl.innerHTML=s[2];hm.hidden=false;if(hx)hx.focus();
+    });
   }
   $('exp').onclick=()=>{const o={};['cfg','cfgD','hist','wrong','flash','feyn','study','cheat','disc'].forEach(k=>o[k]=load(k,null));
     const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({key:M.storageKey,data:o})],{type:'application/json'}));a.download=`progresso-${M.storageKey}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
